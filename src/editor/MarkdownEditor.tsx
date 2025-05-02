@@ -18,10 +18,12 @@ import {$createLinkNode} from "@lexical/link";
 import {$createHeadingNode, $createQuoteNode} from "@lexical/rich-text";
 import {parseAllowedFontSize} from "./plugins/ToolbarPlugin/fontSize.tsx";
 import {parseAllowedColor} from "./ui/ColorPicker.tsx";
-import { FlashMessageContext } from "./context/FlashMessageContext.tsx";
-import { CustomScroll } from "react-custom-scroll";
-import {useEffect, useState, UIEvent} from "react";
+import {FlashMessageContext} from "./context/FlashMessageContext.tsx";
+import {CustomScroll} from "react-custom-scroll";
+import {UIEvent, useEffect, useState} from "react";
 import './index.css'
+import {FileProvider} from "./context/FileContext.tsx";
+import {IFolderTreeNodeProps} from "@dtinsight/molecule/esm/model";
 
 function getExtraStyles(element: HTMLElement): string {
     // Parse styles from pasted input, but only if they match exactly the
@@ -169,7 +171,7 @@ function $prepopulatedRichText() {
 }
 
 
-const MarkdownEditor: React.FC<{ markdown: string, id:string }> = ({id, markdown}) => {
+const MarkdownEditor: React.FC<{ file: IFolderTreeNodeProps }> = ({file}) => {
     const {
         settings: {isCollab, emptyEditor, measureTypingPerf},
     } = useSettings();
@@ -192,11 +194,11 @@ const MarkdownEditor: React.FC<{ markdown: string, id:string }> = ({id, markdown
 
     const handleScroll = (event: UIEvent) => {
         // console.log('scroll', event.currentTarget.scrollTop)
-        localStorage.setItem(id + '-editor-scroll-position', event.currentTarget.scrollTop.toString());
+        localStorage.setItem(file.id + '-editor-scroll-position', event.currentTarget.scrollTop.toString());
     };
 
     useEffect(() => {
-        const savedScrollTop = localStorage.getItem(id + '-editor-scroll-position');
+        const savedScrollTop = localStorage.getItem(file.id + '-editor-scroll-position');
         // console.log('savedScrollTop', savedScrollTop, Date.now());
         if (savedScrollTop) {
             setHeight(parseInt(savedScrollTop, 10));
@@ -210,32 +212,34 @@ const MarkdownEditor: React.FC<{ markdown: string, id:string }> = ({id, markdown
             scrollTo={height}
         >
             <div style={{padding: '0 10px'}} id='editor-wrapper'>
-        <SettingsContext>
-            <FlashMessageContext>
-                <LexicalComposer initialConfig={initialConfig}>
-                    <SharedHistoryContext>
-                        <TableContext>
-                            <ToolbarContext>
-                                {/*<header>*/}
-                                {/*    <a href="https://lexical.dev" target="_blank" rel="noreferrer">*/}
-                                {/*        <img src={logo} alt="Lexical Logo" />*/}
-                                {/*    </a>*/}
-                                {/*</header>*/}
-                                <div className="editor-shell">
-                                    <Editor markdown={markdown}/>
-                                </div>
-                                {/*<Settings/>*/}
-                                {/*{isDevPlayground ? <DocsPlugin/> : null}*/}
-                                {/*{isDevPlayground ? <PasteLogPlugin/> : null}*/}
-                                {/*{isDevPlayground ? <TestRecorderPlugin/> : null}*/}
+                <FileProvider file={file}>
+                    <SettingsContext>
+                        <FlashMessageContext>
+                            <LexicalComposer initialConfig={initialConfig}>
+                                <SharedHistoryContext>
+                                    <TableContext>
+                                        <ToolbarContext>
+                                            {/*<header>*/}
+                                            {/*    <a href="https://lexical.dev" target="_blank" rel="noreferrer">*/}
+                                            {/*        <img src={logo} alt="Lexical Logo" />*/}
+                                            {/*    </a>*/}
+                                            {/*</header>*/}
+                                            <div className="editor-shell">
+                                                <Editor/>
+                                            </div>
+                                            {/*<Settings/>*/}
+                                            {/*{isDevPlayground ? <DocsPlugin/> : null}*/}
+                                            {/*{isDevPlayground ? <PasteLogPlugin/> : null}*/}
+                                            {/*{isDevPlayground ? <TestRecorderPlugin/> : null}*/}
 
-                                {measureTypingPerf ? <TypingPerfPlugin/> : null}
-                            </ToolbarContext>
-                        </TableContext>
-                    </SharedHistoryContext>
-                </LexicalComposer>
-            </FlashMessageContext>
-        </SettingsContext>
+                                            {measureTypingPerf ? <TypingPerfPlugin/> : null}
+                                        </ToolbarContext>
+                                    </TableContext>
+                                </SharedHistoryContext>
+                            </LexicalComposer>
+                        </FlashMessageContext>
+                    </SettingsContext>
+                </FileProvider>
             </div>
         </CustomScroll>
     );

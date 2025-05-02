@@ -78,7 +78,7 @@ const skipCollaborationInit =
     // @ts-expect-error
     window.parent != null && window.parent.frames.right === window;
 
-const Editor: React.FC<{ markdown: string }> = ({markdown}) => {
+const Editor: React.FC = () => {
     const {historyState} = useSharedHistoryContext();
     const {
         settings: {
@@ -92,7 +92,7 @@ const Editor: React.FC<{ markdown: string }> = ({markdown}) => {
             showTreeView,
             showTableOfContents,
             shouldUseLexicalContextMenu,
-            shouldPreserveNewLinesInMarkdown,
+            //shouldPreserveNewLinesInMarkdown,
             tableCellMerge,
             tableCellBackgroundColor,
             tableHorizontalScroll,
@@ -112,6 +112,7 @@ const Editor: React.FC<{ markdown: string }> = ({markdown}) => {
     const [isSmallWidthViewport, setIsSmallWidthViewport] =
         useState<boolean>(false);
     const [editor] = useLexicalComposerContext();
+    //@ts-ignore
     const [activeEditor, setActiveEditor] = useState(editor);
     const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
 
@@ -222,7 +223,7 @@ const Editor: React.FC<{ markdown: string }> = ({markdown}) => {
                         <CollapsiblePlugin/>
                         <PageBreakPlugin/>
                         <LayoutPlugin/>
-                        <MarkdownUpdater markdown={markdown}/>
+                        <MarkdownUpdater/>
                         {floatingAnchorElem && (
                             <>
                                 <FloatingLinkEditorPlugin

@@ -6,7 +6,6 @@ import { readDir, readTextFile } from '@tauri-apps/plugin-fs';
 // import API from '../../api';
 
 export async function initFolderTree() {
-    console.log('going to read folder content')
     let entries: any = await readDir("/Users/shunyun/Documents/Notes");
     if (entries) {
         molecule.folderTree.reset();

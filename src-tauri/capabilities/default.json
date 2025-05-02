@@ -10,7 +10,8 @@
     "opener:default",
     "fs:default",
     {
-      "identifier": "fs:allow-document-read-recursive"
+      "identifier": "fs:allow-document-read-recursive",
+      "allow":[{"path":"$DOCUMENT/**"}, {"path": "/Users/shunyun/Documents/Notes/**"}]
     },
     {
       "identifier": "fs:allow-document-write-recursive"
