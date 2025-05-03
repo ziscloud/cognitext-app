@@ -60,6 +60,12 @@
   line-height: 1.6;
   text-transform: uppercase;
 }
+.PlaygroundEditorTheme__h6 {
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
 .PlaygroundEditorTheme__indent {
   --lexical-indent-base-value: 40px;
 }

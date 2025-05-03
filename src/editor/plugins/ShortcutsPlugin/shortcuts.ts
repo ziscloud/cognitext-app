@@ -13,12 +13,17 @@ import {isModifierMatch} from 'lexical';
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 export const SHORTCUTS = Object.freeze({
   // (Ctrl|⌘) + (Alt|Option) + <key> shortcuts
-  NORMAL: IS_APPLE ? '⌘+Opt+0' : 'Ctrl+Alt+0',
-  HEADING1: IS_APPLE ? '⌘+Opt+1' : 'Ctrl+Alt+1',
-  HEADING2: IS_APPLE ? '⌘+Opt+2' : 'Ctrl+Alt+2',
-  HEADING3: IS_APPLE ? '⌘+Opt+3' : 'Ctrl+Alt+3',
+  NORMAL: IS_APPLE ? '⌘+0' : 'Ctrl+0',
+  HEADING1: IS_APPLE ? '⌘+1' : 'Ctrl+1',
+  HEADING2: IS_APPLE ? '⌘+2' : 'Ctrl+2',
+  HEADING3: IS_APPLE ? '⌘+3' : 'Ctrl+3',
+  HEADING4: IS_APPLE ? '⌘+4' : 'Ctrl+4',
+  HEADING5: IS_APPLE ? '⌘+5' : 'Ctrl+5',
+  HEADING6: IS_APPLE ? '⌘+6' : 'Ctrl+6',
+  //
   BULLET_LIST: IS_APPLE ? '⌘+Opt+4' : 'Ctrl+Alt+4',
   NUMBERED_LIST: IS_APPLE ? '⌘+Opt+5' : 'Ctrl+Alt+5',
+
   CHECK_LIST: IS_APPLE ? '⌘+Opt+6' : 'Ctrl+Alt+6',
   CODE_BLOCK: IS_APPLE ? '⌘+Opt+C' : 'Ctrl+Alt+C',
   QUOTE: IS_APPLE ? '⌘+Opt+Q' : 'Ctrl+Alt+Q',
@@ -67,8 +72,8 @@ export function isFormatHeading(event: KeyboardEvent): boolean {
   const keyNumber = code[code.length - 1];
 
   return (
-    ['1', '2', '3'].includes(keyNumber) &&
-    isModifierMatch(event, {...CONTROL_OR_META, altKey: true})
+    ['1', '2', '3', '4', '5', '6'].includes(keyNumber) &&
+    isModifierMatch(event, {...CONTROL_OR_META, altKey: false})
   );
 }
 
