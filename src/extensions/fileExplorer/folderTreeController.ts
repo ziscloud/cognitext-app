@@ -2,8 +2,6 @@ import molecule from '@dtinsight/molecule';
 import {IFolderTreeNodeProps} from '@dtinsight/molecule/esm/model';
 import {transformToEditorTab} from '../../common';
 import { readDir, readTextFile } from '@tauri-apps/plugin-fs';
-// import { cloneDeep } from 'lodash';
-// import API from '../../api';
 
 export async function initFolderTree() {
     let entries: any = await readDir("/Users/shunyun/Documents/Notes");
@@ -11,7 +9,7 @@ export async function initFolderTree() {
         molecule.folderTree.reset();
         molecule.folderTree.add({
             id: 0,
-            name: "Molecule-Demo",
+            name: "Notes",
             fileType: "RootFolder",
             location: "Notes",
             isLeaf: false,

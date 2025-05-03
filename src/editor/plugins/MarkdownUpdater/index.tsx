@@ -14,7 +14,7 @@ const MarkdownUpdater: React.FC<MarkdownUpdaterProps> = () => {
     useEffect(() => {
         if (file) {
             editor.update(() => {
-                $convertFromMarkdownString(file.data.value, PLAYGROUND_TRANSFORMERS);
+                $convertFromMarkdownString(file.value, PLAYGROUND_TRANSFORMERS);
             });
         }
     }, [editor, file]);

@@ -36,8 +36,8 @@ export default function SavePlugin(): JSX.Element {
                         undefined, //node
                         false,
                     );
-                    writeTextFile("/Users/shunyun/Documents/" + file.location, markdown).then(() => {
-                        console.log('save is done.')
+                    writeTextFile("/Users/shunyun/Documents/" + file.path, markdown).then(() => {
+                        console.log('save is done.', file.path, markdown)
                     })
                     return true;
                 },

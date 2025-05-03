@@ -3,28 +3,34 @@ import MarkdownEditor from "../editor/MarkdownEditor.tsx";
 
 export function transformToEditorTab(item: IFolderTreeNodeProps): IEditorTab {
     if (item.data?.language == 'markdown') {
-        const tabData: IEditorTab = {
+        return {
             id: item.id,
             name: item.name,
+            data: {
+                path: item.location,
+                value: item.data.value,
+                language: item.data.language,
+            },
             closable: true,
-            renderPane: () => {
-                return <MarkdownEditor key={item.id} file={item}/>;
+            //@ts-ignore
+            renderPane: (data, tab, group) => {
+                console.log('going to render the editor pane of ', tab?.id)
+                return <MarkdownEditor key={tab?.id} file={{...data, tabId: tab?.id, groupId: group?.id}}/>;
             },
         };
-        return tabData;
+    } else {
+        return {
+            ...item,
+            id: item.id?.toString(),
+            data: {
+                path: item.location,
+                ...(item.data || {}),
+            },
+            breadcrumb: item.location
+                ? item.location
+                    .split('/')
+                    .map((local: string) => ({id: local, name: local}))
+                : []
+        };
     }
-    const tabData: IEditorTab = {
-        ...item,
-        id: item.id?.toString(),
-        data: {
-            path: item.location,
-            ...(item.data || {}),
-        },
-        breadcrumb: item.location
-            ? item.location
-                .split('/')
-                .map((local: string) => ({id: local, name: local}))
-            : []
-    };
-    return tabData;
 }

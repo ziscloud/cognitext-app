@@ -1,9 +1,16 @@
 import {createContext, ReactNode, useContext} from 'react';
-import {IFolderTreeNodeProps} from "@dtinsight/molecule/esm/model";
 
-const FileContext = createContext<IFolderTreeNodeProps | undefined>(undefined);
+export type EditorTabFile = {
+    tabId: string;
+    groupId: string;
+    path: string;
+    value: string;
+    language: string
+};
 
-export const useFile = (): IFolderTreeNodeProps => {
+const FileContext = createContext<EditorTabFile | undefined>(undefined);
+
+export const useFile = (): EditorTabFile => {
     const context = useContext(FileContext);
     if (!context) {
         throw new Error('useFile must be used within a FileProvider');
@@ -12,7 +19,7 @@ export const useFile = (): IFolderTreeNodeProps => {
 };
 
 interface FileProviderProps {
-    file: IFolderTreeNodeProps;
+    file: EditorTabFile;
     children: ReactNode;
 }
 

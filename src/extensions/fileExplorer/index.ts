@@ -1,6 +1,7 @@
 import { IExtension } from '@dtinsight/molecule/esm/model/extension';
 import { IExtensionService } from '@dtinsight/molecule/esm/services';
 import * as folderTreeController from './folderTreeController';
+import molecule from "@dtinsight/molecule";
 
 export class FirstExtension implements IExtension {
     id: string = 'TheFirstExtension';
@@ -10,6 +11,9 @@ export class FirstExtension implements IExtension {
     activate(extensionCtx: IExtensionService): void {
         folderTreeController.initFolderTree();
         folderTreeController.handleSelectFolderTree();
+        molecule.editor.onSelectTab((tab) => {
+            console.log('tab selected', tab)
+        })
     }
 
     // @ts-ignore

@@ -20,10 +20,9 @@ import {parseAllowedFontSize} from "./plugins/ToolbarPlugin/fontSize.tsx";
 import {parseAllowedColor} from "./ui/ColorPicker.tsx";
 import {FlashMessageContext} from "./context/FlashMessageContext.tsx";
 import {CustomScroll} from "react-custom-scroll";
-import {UIEvent, useEffect, useState} from "react";
+import React, {UIEvent, useEffect, useState} from "react";
 import './index.css'
-import {FileProvider} from "./context/FileContext.tsx";
-import {IFolderTreeNodeProps} from "@dtinsight/molecule/esm/model";
+import {EditorTabFile, FileProvider} from "./context/FileContext.tsx";
 
 function getExtraStyles(element: HTMLElement): string {
     // Parse styles from pasted input, but only if they match exactly the
@@ -171,7 +170,7 @@ function $prepopulatedRichText() {
 }
 
 
-const MarkdownEditor: React.FC<{ file: IFolderTreeNodeProps }> = ({file}) => {
+const MarkdownEditor: React.FC<{ file: EditorTabFile }> = ({file}) => {
     const {
         settings: {isCollab, emptyEditor, measureTypingPerf},
     } = useSettings();
@@ -194,12 +193,12 @@ const MarkdownEditor: React.FC<{ file: IFolderTreeNodeProps }> = ({file}) => {
 
     const handleScroll = (event: UIEvent) => {
         // console.log('scroll', event.currentTarget.scrollTop)
-        localStorage.setItem(file.id + '-editor-scroll-position', event.currentTarget.scrollTop.toString());
+        localStorage.setItem(file.tabId + '-editor-scroll-position', event.currentTarget.scrollTop.toString());
     };
 
     useEffect(() => {
-        const savedScrollTop = localStorage.getItem(file.id + '-editor-scroll-position');
-        // console.log('savedScrollTop', savedScrollTop, Date.now());
+        const savedScrollTop = localStorage.getItem(file.tabId + '-editor-scroll-position');
+        console.log('savedScrollTop', file.tabId, savedScrollTop, Date.now());
         if (savedScrollTop) {
             setHeight(parseInt(savedScrollTop, 10));
         }
@@ -245,4 +244,4 @@ const MarkdownEditor: React.FC<{ file: IFolderTreeNodeProps }> = ({file}) => {
     );
 }
 
-export default MarkdownEditor;
+export default React.memo(MarkdownEditor)
