@@ -2,13 +2,35 @@
 // import reactLogo from "./assets/react.svg";
 // import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
-import { create, Workbench } from '@dtinsight/molecule';
+import molecule, { create, Workbench } from '@dtinsight/molecule';
 import '@dtinsight/molecule/esm/style/mo.css';
 import extensions from "./extensions";
 
 const moInstance = create({
     extensions: extensions,
 });
+
+moInstance.onBeforeInit(() => {
+    molecule.builtin.inactiveModule("builtInPanelProblems")
+    molecule.builtin.inactiveModule("builtInMenuBarData")
+    molecule.builtin.inactiveModule("builtInPanelToolboxResize")
+    molecule.builtin.inactiveModule("builtInPanelToolboxReStore")
+    molecule.builtin.inactiveModule("builtInPanelToolbox")
+    molecule.builtin.inactiveModule("builtInExplorerEditorPanel")
+    molecule.builtin.inactiveModule("builtInExplorerOutlinePanel")
+    molecule.builtin.inactiveModule("builtInStatusProblems")
+    molecule.builtin.inactiveModule("builtInNotification")
+    molecule.builtin.inactiveModule("BuiltInSettingsTab")
+    molecule.builtin.inactiveModule("builtInOutputPanel")
+    molecule.builtin.inactiveModule("quickAcessViewAction")
+    molecule.builtin.inactiveModule("quickSelectColorThemeAction")
+    molecule.builtin.inactiveModule("quickSelectLocaleAction")
+    molecule.builtin.inactiveModule("quickTogglePanelAction")
+    molecule.builtin.inactiveModule("quickSelectAllAction")
+    molecule.builtin.inactiveModule("quickCopyLineUpAction")
+    molecule.builtin.inactiveModule("quickUndoAction")
+    molecule.builtin.inactiveModule("quickRedoAction")
+})
 
 function App() {
   // const [greetMsg, setGreetMsg] = useState("");

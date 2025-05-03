@@ -15,8 +15,8 @@ export default class MDExtension implements IExtension {
         molecule.layout.togglePanelVisibility();
         // molecule.layout.toggleSidebarVisibility();
         // molecule.layout.toggleActivityBarVisibility();
-        molecule.explorer.removePanel('outline');
-        molecule.explorer.removePanel('sidebar.explore.openEditor');
+        // molecule.explorer.removePanel('outline');
+        // molecule.explorer.removePanel('sidebar.explore.openEditor');
         molecule.colorTheme.setTheme("Default Light+");
 
         // const editor = await new Promise<MonacoEditor.IStandaloneCodeEditor>(
