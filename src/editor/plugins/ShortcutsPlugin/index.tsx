@@ -56,12 +56,13 @@ import {
   isLeftAlign,
   isLowercase,
   isOutdent,
-  isRightAlign,
+  isRightAlign, isSave,
   isStrikeThrough,
   isSubscript,
   isSuperscript,
   isUppercase,
 } from './shortcuts';
+import {SAVE_COMMAND} from "../SavePlugin";
 
 export default function ShortcutsPlugin({
   editor,
@@ -139,6 +140,8 @@ export default function ShortcutsPlugin({
         editor.dispatchCommand(TOGGLE_LINK_COMMAND, url);
       } else if (isAddComment(event)) {
         editor.dispatchCommand(INSERT_INLINE_COMMAND, undefined);
+      } else if (isSave(event)) {
+        editor.dispatchCommand(SAVE_COMMAND, undefined);
       } else {
         // No match for any of the event handlers
         return false;

@@ -51,6 +51,7 @@ export const SHORTCUTS = Object.freeze({
   REDO: IS_APPLE ? '⌘+Shift+Z' : 'Ctrl+Y',
   UNDO: IS_APPLE ? '⌘+Z' : 'Ctrl+Z',
   BOLD: IS_APPLE ? '⌘+B' : 'Ctrl+B',
+  SAVE:  IS_APPLE ? '⌘+S' : 'Ctrl+S',
   ITALIC: IS_APPLE ? '⌘+I' : 'Ctrl+I',
   UNDERLINE: IS_APPLE ? '⌘+U' : 'Ctrl+U',
   INSERT_LINK: IS_APPLE ? '⌘+K' : 'Ctrl+K',
@@ -146,6 +147,14 @@ export function isStrikeThrough(event: KeyboardEvent): boolean {
   return (
     code === 'KeyS' &&
     isModifierMatch(event, {...CONTROL_OR_META, shiftKey: true})
+  );
+}
+
+export function isSave(event: KeyboardEvent): boolean {
+  const {code} = event;
+  return (
+      code === 'KeyS' &&
+      isModifierMatch(event, {...CONTROL_OR_META, shiftKey: false})
   );
 }
 

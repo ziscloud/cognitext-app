@@ -73,6 +73,7 @@ import TwitterPlugin from './plugins/TwitterPlugin';
 import YouTubePlugin from './plugins/YouTubePlugin';
 import ContentEditable from './ui/ContentEditable';
 import MarkdownUpdater from "./plugins/MarkdownUpdater";
+import SavePlugin from "./plugins/SavePlugin";
 
 const skipCollaborationInit =
     // @ts-expect-error
@@ -212,6 +213,7 @@ const Editor: React.FC = () => {
                         <LinkPlugin hasLinkAttributes={hasLinkAttributes}/>
                         <PollPlugin/>
                         <TwitterPlugin/>
+                        <SavePlugin/>
                         <YouTubePlugin/>
                         <FigmaPlugin/>
                         <ClickableLinkPlugin disabled={isEditable}/>
