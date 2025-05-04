@@ -164,7 +164,7 @@ const Editor: React.FC = () => {
                     !isRichText ? 'plain-text' : ''
                 }`}
                 onBlur={() => {
-                console.log('blur', file.path, Date.now());
+                console.log('blur', file.treeNodeId, Date.now());
                 //editor.dispatchCommand(SAVE_COMMAND, undefined);
                 //console.log('after dispatch save command', file.id, Date.now());
                 editor.read(()=>{
