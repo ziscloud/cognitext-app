@@ -40,31 +40,26 @@
   font-weight: 700;
   margin: 0;
   line-height: 1.6;
-  text-transform: uppercase;
 }
 .PlaygroundEditorTheme__h3 {
   font-size: 22px;
   margin: 0;
   line-height: 1.6;
-  text-transform: uppercase;
 }
 .PlaygroundEditorTheme__h4 {
   font-size: 18px;
   margin: 0;
   line-height: 1.6;
-  text-transform: uppercase;
 }
 .PlaygroundEditorTheme__h5 {
   font-size: 16px;
   margin: 0;
   line-height: 1.6;
-  text-transform: uppercase;
 }
 .PlaygroundEditorTheme__h6 {
   font-size: 14px;
   margin: 0;
   line-height: 1.6;
-  text-transform: uppercase;
 }
 .PlaygroundEditorTheme__indent {
   --lexical-indent-base-value: 40px;
