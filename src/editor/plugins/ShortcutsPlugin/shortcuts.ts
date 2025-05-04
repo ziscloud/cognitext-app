@@ -64,7 +64,7 @@ export function isFormatParagraph(event: KeyboardEvent): boolean {
 
   return (
     (code === 'Numpad0' || code === 'Digit0') &&
-    isModifierMatch(event, {...CONTROL_OR_META, altKey: true})
+    isModifierMatch(event, {...CONTROL_OR_META, altKey: false})
   );
 }
 
