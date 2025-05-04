@@ -40,7 +40,7 @@ export default function SavePlugin(): JSX.Element {
                     const fileLocation = getFileLocationById(file.treeNodeId);
                     if (fileLocation) {
                         writeTextFile("/Users/shunyun/Documents/" + fileLocation, markdown).then(() => {
-                            console.log('save is done.', fileLocation, markdown)
+                            console.log('save is done.', fileLocation)
                         })
                     }
                     return true;
