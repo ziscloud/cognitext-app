@@ -1,5 +1,6 @@
 import {IEditorTab, IFolderTreeNodeProps} from '@dtinsight/molecule/esm/model';
 import MarkdownEditor from "../editor/MarkdownEditor.tsx";
+import {getFileLocation} from "../extensions/fileExplorer/folderTreeController.ts";
 
 export function transformToEditorTab(item: IFolderTreeNodeProps): IEditorTab {
     if (item.data?.language == 'markdown') {
@@ -7,7 +8,7 @@ export function transformToEditorTab(item: IFolderTreeNodeProps): IEditorTab {
             id: item.id,
             name: item.name,
             data: {
-                path: item.location,
+                treeNodeId: item.id,
                 value: item.data.value,
                 language: item.data.language,
             },
@@ -19,15 +20,16 @@ export function transformToEditorTab(item: IFolderTreeNodeProps): IEditorTab {
             },
         };
     } else {
+        const fileLocation = getFileLocation(item);
         return {
             ...item,
             id: item.id?.toString(),
             data: {
-                path: item.location,
+                treeNodeId: item.id,
                 ...(item.data || {}),
             },
-            breadcrumb: item.location
-                ? item.location
+            breadcrumb: fileLocation
+                ? fileLocation
                     .split('/')
                     .map((local: string) => ({id: local, name: local}))
                 : []

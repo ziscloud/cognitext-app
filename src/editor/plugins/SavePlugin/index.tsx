@@ -16,7 +16,8 @@ import {mergeRegister} from '@lexical/utils';
 import {$convertToMarkdownString} from "@lexical/markdown";
 import {PLAYGROUND_TRANSFORMERS} from "../MarkdownTransformers";
 import {useFile} from "../../context/FileContext.tsx";
-import {writeTextFile } from "@tauri-apps/plugin-fs";
+import {writeTextFile} from "@tauri-apps/plugin-fs";
+import {getFileLocationById} from "../../../extensions/fileExplorer/folderTreeController.ts";
 
 export const SAVE_COMMAND: LexicalCommand<void> = createCommand(
     'SAVE_COMMAND',
@@ -36,9 +37,12 @@ export default function SavePlugin(): JSX.Element {
                         undefined, //node
                         false,
                     );
-                    writeTextFile("/Users/shunyun/Documents/" + file.path, markdown).then(() => {
-                        console.log('save is done.', file.path, markdown)
-                    })
+                    const fileLocation = getFileLocationById(file.treeNodeId);
+                    if (fileLocation) {
+                        writeTextFile("/Users/shunyun/Documents/" + fileLocation, markdown).then(() => {
+                            console.log('save is done.', fileLocation, markdown)
+                        })
+                    }
                     return true;
                 },
                 COMMAND_PRIORITY_EDITOR,

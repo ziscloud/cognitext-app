@@ -30,6 +30,7 @@
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-fs": "~2",
     "@tauri-apps/plugin-opener": "^2",
+    "crypto-js": "^4.2.0",
     "katex": "^0.16.22",
     "lexical": "^0.31.0",
     "lodash-es": "^4.17.21",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
+    "@types/crypto-js": "^4.2.2",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",

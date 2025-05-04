@@ -11,6 +11,8 @@ const moInstance = create({
 });
 
 moInstance.onBeforeInit(() => {
+    //const modules = molecule.builtin.getModules();
+    //console.log('builtin modules', modules)
     molecule.builtin.inactiveModule("builtInPanelProblems")
     molecule.builtin.inactiveModule("builtInMenuBarData")
     molecule.builtin.inactiveModule("builtInPanelToolboxResize")

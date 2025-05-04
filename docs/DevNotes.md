@@ -3,6 +3,8 @@
 ## 保存和恢复编辑器视图状态
 
 在controller/editor.tsx中，通过下面的代码来保存和恢复编辑器视图状态：
+
+
 ```tsx
         editorInstance.onDidBlurEditorText(() => {
             const { current } = this.editorService.getState();

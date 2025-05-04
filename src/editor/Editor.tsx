@@ -73,7 +73,7 @@ import TwitterPlugin from './plugins/TwitterPlugin';
 import YouTubePlugin from './plugins/YouTubePlugin';
 import ContentEditable from './ui/ContentEditable';
 import MarkdownUpdater from "./plugins/MarkdownUpdater";
-import SavePlugin, {SAVE_COMMAND} from "./plugins/SavePlugin";
+import SavePlugin from "./plugins/SavePlugin";
 import {useFile} from "./context/FileContext.tsx";
 import molecule from "@dtinsight/molecule";
 import {$convertToMarkdownString} from "@lexical/markdown";
@@ -163,29 +163,30 @@ const Editor: React.FC = () => {
                 className={`editor-container ${showTreeView ? 'tree-view' : ''} ${
                     !isRichText ? 'plain-text' : ''
                 }`}
-                // onBlur={() => {
-                // console.log('blur', file.path, Date.now());
-                // editor.dispatchCommand(SAVE_COMMAND, undefined);
-                // console.log('after dispatch save command', file.id, Date.now());
-                // editor.read(()=>{
-                //     const tabById = molecule.editor.getTabById(file.tabId, file.groupId);
-                //     const markdown = $convertToMarkdownString(
-                //         PLAYGROUND_TRANSFORMERS,
-                //         undefined, //node
-                //         false,
-                //     );
-                //     console.log('tabById', tabById)
-                //     tabById.data.value = markdown;
-                //     // molecule.editor.updateTab({
-                //     //     ...tabById,
-                //     //     data: {
-                //     //         ...tabById?.data,
-                //     //         value: markdown,
-                //     //     }
-                //     // }, file.groupId);
-                // });
-                // return true;
-                //}}
+                onBlur={() => {
+                console.log('blur', file.path, Date.now());
+                //editor.dispatchCommand(SAVE_COMMAND, undefined);
+                //console.log('after dispatch save command', file.id, Date.now());
+                editor.read(()=>{
+                    const tabById = molecule.editor.getTabById(file.tabId, file.groupId);
+                    const markdown = $convertToMarkdownString(
+                        PLAYGROUND_TRANSFORMERS,
+                        undefined, //node
+                        false,
+                    );
+                    //console.log('tabById', tabById)
+                    //@ts-ignore
+                    tabById.data.value = markdown;
+                    // molecule.editor.updateTab({
+                    //     ...tabById,
+                    //     data: {
+                    //         ...tabById?.data,
+                    //         value: markdown,
+                    //     }
+                    // }, file.groupId);
+                });
+                return true;
+                }}
             >
                 {isMaxLength && <MaxLengthPlugin maxLength={30}/>}
                 <DragDropPaste/>
