@@ -11,10 +11,18 @@
     "fs:default",
     {
       "identifier": "fs:allow-document-read-recursive",
-      "allow":[{"path":"$DOCUMENT/**"}, {"path": "/Users/shunyun/Documents/Notes/**"}]
+      "allow": [
+        {
+          "path": "$DOCUMENT/**"
+        },
+        {
+          "path": "/Users/shunyun/Documents/Notes/**"
+        }
+      ]
     },
     {
       "identifier": "fs:allow-document-write-recursive"
-    }
+    },
+    "dialog:default"
   ]
 }

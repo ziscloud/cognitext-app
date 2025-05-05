@@ -61,6 +61,26 @@ export async function initFolderTree() {
     }
 }
 
+export function getFileParentIds(id: UniqueId) {
+    const node = molecule.folderTree.get(id);
+    if (node) {
+        const parentIds: UniqueId[] = [];
+        let currentId = node.id;
+        while (true) {
+            const parentNode = molecule.folderTree.getParentNode(currentId);
+            if (!parentNode || parentNode.fileType === FileTypes.RootFolder) {
+                console.log('node with no parent node or it is RootFolder', node)
+                break;
+            }
+            if (parentNode?.name) {
+                parentIds.push(parentNode.id);
+            }
+        }
+        return parentIds;
+    }
+    return [];
+}
+
 export function getFileLocationById(id: UniqueId) {
     const node = molecule.folderTree.get(id);
     if (node) {
