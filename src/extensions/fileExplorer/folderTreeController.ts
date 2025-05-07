@@ -6,7 +6,15 @@ import crypto from 'crypto-js'
 import {UniqueId} from "@dtinsight/molecule/esm/common/types";
 
 export async function initFolderTree() {
-    const rootPath = "/Users/shunyun/Documents/Notes";
+    if (molecule.settings.getSettings().actionOnStartup?.action  !== 1) {
+        console.log("action on startup is not enabled", molecule.settings.getSettings().actionOnStartup?.action)
+        return;
+    }
+    if (!molecule.settings.getSettings().actionOnStartup?.dir) {
+        console.log("action on startup dir is not set", molecule.settings.getSettings().actionOnStartup?.dir)
+        return;
+    }
+    const rootPath = molecule.settings.getSettings().actionOnStartup?.dir;
     let entries: any = await readDir(rootPath);
     if (entries) {
         molecule.folderTree.reset();
@@ -17,7 +25,7 @@ export async function initFolderTree() {
             id: rootId,
             name: "Notes",
             fileType: "RootFolder",
-            location: "Notes",
+            location: rootPath,
             isLeaf: false,
             icon: 'file-code',
             data: "",
@@ -87,7 +95,7 @@ export function getFileLocationById(id: UniqueId) {
         return getFileLocation(node);
     } else {
         console.error('node with id cannot be found in the folder tree', id)
-        return null;
+        return "";
     }
 }
 
@@ -97,16 +105,15 @@ export function getFileLocation(file: IFolderTreeNodeProps) {
     const pathSeg: string[] = [file.name];
     while (true) {
         const parentNode = molecule.folderTree.getParentNode(currentId);
-        if (!parentNode) {
-            console.error('unexpected node with no parent node', file)
+        if (parentNode?.fileType === FileTypes.RootFolder) {
+            //@ts-ignore
+            pathSeg.push(parentNode.location);
             break;
         }
+
         if (parentNode?.name) {
             pathSeg.push(parentNode.name);
             currentId = parentNode.id;
-        }
-        if (parentNode?.fileType === FileTypes.RootFolder) {
-            break;
         }
     }
     return pathSeg.reverse().join('/');
@@ -128,7 +135,7 @@ export function handleSelectFolderTree() {
                 const fileLocation = getFileLocation(file);
                 console.log("locations:", fileLocation)
 
-                let entries: any = await readDir("/Users/shunyun/Documents/" + fileLocation);
+                let entries: any = await readDir(fileLocation);
                 if (entries) {
                     for (let i = 0; i < entries.length; i++) {
                         const item = entries[i];
@@ -170,7 +177,7 @@ export function handleSelectFolderTree() {
         } else {
             const fileLocation = getFileLocation(file);
             console.log("going to read file content ", fileLocation)
-            const value = await readTextFile("/Users/shunyun/Documents/" + fileLocation, {});
+            const value = await readTextFile(fileLocation, {});
             file.data.value = value;
             molecule.editor.open(transformToEditorTab(file));
         }

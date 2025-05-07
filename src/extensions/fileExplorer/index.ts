@@ -7,21 +7,24 @@ import {ExplorerEvent, FileTypes, TreeNodeModel} from "@dtinsight/molecule/esm/m
 import {constants, modules} from "@dtinsight/molecule/esm/services/builtinService/const";
 import {randomId} from '@dtinsight/molecule/esm/common/utils'
 import {isSamePath} from "../../common/utils.ts";
-import {create, exists, mkdir, rename, remove} from '@tauri-apps/plugin-fs';
-import { confirm } from '@tauri-apps/plugin-dialog';
+import {create, exists, mkdir, remove, rename} from '@tauri-apps/plugin-fs';
+import {confirm} from '@tauri-apps/plugin-dialog';
 
 export class LocalExplorerExtension implements IExtension {
     id: string = 'com.cognitext.localExplorer';
     name: string = 'Local Explorer Extension';
 
     // @ts-ignore
-    private readonly _s = "/Users/shunyun/Documents/";
+    // private readonly _s = "/Users/shunyun/Documents/";
 
     //@ts-ignore
     activate(extensionCtx: IExtensionService): void {
+        console.log('Activate Local Explorer Extension')
         molecule.folderTree.setFileContextMenu([...molecule.folderTree.getFileContextMenu(),/*...modules.BASE_CONTEXT_MENU(),*/ ...modules.COMMON_CONTEXT_MENU()])
         molecule.folderTree.setFolderContextMenu([...molecule.folderTree.getFolderContextMenu(), ...modules.COMMON_CONTEXT_MENU()])
-        folderTreeController.initFolderTree();
+        molecule.event.EventBus.subscribe("settings-loaded", () => {
+            folderTreeController.initFolderTree();
+        })
         folderTreeController.handleSelectFolderTree();
 
         molecule.editor.onSelectTab((tab) => {
@@ -83,8 +86,7 @@ export class LocalExplorerExtension implements IExtension {
 
             if (node.fileType === FileTypes.Folder) {
                 if (actionType === 'create') {
-                    const newLocation = fileLocation + "/" + node.name;
-                    const path = this._s + newLocation;
+                    const path = fileLocation + "/" + node.name;
                     const isExists = await exists(path);
                     if (isExists) {
                         console.error('folder already exists ', path)
@@ -93,22 +95,21 @@ export class LocalExplorerExtension implements IExtension {
                         await mkdir(path)
                     }
                 } else {
-                    const oldPath = this._s + node.location;
-                    const newLocation = fileLocation?.split("/").slice(0, -1).join("/") + "/" + node.name;
-                    const newPath = this._s + newLocation;
+                    const oldPath = node.location;
+                    const newPath = fileLocation?.split("/").slice(0, -1).join("/") + "/" + node.name;
                     const isExists = await exists(newPath);
                     if (isExists) {
                         console.error('folder already exists ', newPath)
                         return;
                     } else {
+                        //@ts-ignore
                         await rename(oldPath, newPath);
-                        node.location = newLocation;
+                        node.location = newPath;
                     }
                 }
             } else {
                 if (actionType === 'create') {
-                    const newLocation = fileLocation + "/" + node.name;
-                    const path = this._s + newLocation;
+                    const path = fileLocation + "/" + node.name;
                     const isExists = await exists(path);
                     if (isExists) {
                         console.error('file already exists ', path)
@@ -119,16 +120,16 @@ export class LocalExplorerExtension implements IExtension {
                         await file.close();
                     }
                 } else {
-                    const oldPath = this._s + node.location;
-                    const newLocation = fileLocation?.split("/").slice(0, -1).join("/") + "/" + node.name;
-                    const newPath = this._s + newLocation;
+                    const oldPath = node.location;
+                    const newPath = fileLocation?.split("/").slice(0, -1).join("/") + "/" + node.name;
                     const isExists = await exists(newPath);
                     if (isExists) {
                         console.error('file already exists ', newPath)
                         return;
                     } else {
+                        //@ts-ignore
                         await rename(oldPath, newPath);
-                        node.location = newLocation;
+                        node.location = newPath;
                         const groupIdByTab = molecule.editor.getGroupIdByTab(node.id);
                         //@ts-ignore
                         const tabById = molecule.editor.getTabById(node.id, groupIdByTab);
@@ -158,10 +159,10 @@ export class LocalExplorerExtension implements IExtension {
             console.log("going to remove node", nodeId)
             const confirmation = await confirm(
                 'This action cannot be reverted. Are you sure?',
-                { title: 'Delete Confirm', kind: 'warning' }
+                {title: 'Delete Confirm', kind: 'warning'}
             );
 
-            if(!confirmation) {
+            if (!confirmation) {
                 return;
             }
 
@@ -172,7 +173,7 @@ export class LocalExplorerExtension implements IExtension {
             }
             if (node.fileType === FileTypes.Folder) {
                 const fileLocationById = getFileLocationById(nodeId);
-                await remove(this._s + "/"+ fileLocationById, {
+                await remove(fileLocationById, {
                     recursive: true,
                 });
                 const groupIdByTab = molecule.editor.getGroupIdByTab(nodeId);
@@ -187,7 +188,7 @@ export class LocalExplorerExtension implements IExtension {
                 molecule.folderTree.remove(nodeId);
             } else if (node.fileType === FileTypes.File) {
                 const fileLocationById = getFileLocationById(nodeId);
-                await remove(this._s + "/"+ fileLocationById);
+                await remove(fileLocationById);
                 const groupIdByTab = molecule.editor.getGroupIdByTab(nodeId);
                 //@ts-ignore
                 molecule.editor.closeTab(nodeId, groupIdByTab);
