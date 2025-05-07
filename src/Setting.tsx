@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import type {GetProps, MenuProps} from 'antd';
-import {Flex, Input, Menu, Splitter, Typography} from 'antd';
+import {ConfigProvider, Flex, GetProps, Input, Menu, MenuProps, Splitter, Typography} from 'antd';
 import {FileImageOutlined, ProductOutlined, SettingOutlined} from '@ant-design/icons';
 import {Route, Routes, useNavigate} from "react-router";
 import './Setting.css'
@@ -9,6 +8,9 @@ import molecule from "@dtinsight/molecule";
 import {BaseDirectory, exists, readTextFile} from '@tauri-apps/plugin-fs';
 import {SETTINGS_FILE} from "./common/consts.ts";
 import ImageSettings from "./settings/ImageSettings.tsx";
+import LanguageSettings from "./settings/LanguageSettings.tsx";
+import zhCN from 'antd/locale/zh_CN';
+import enUS from 'antd/locale/en_US';
 
 type SearchProps = GetProps<typeof Input.Search>;
 
@@ -58,10 +60,8 @@ function Home({settings}: HomeProps) {
             <Typography.Title type="secondary" level={3} style={{whiteSpace: 'nowrap'}}>
                 General
             </Typography.Title>
-            <Typography.Title type="secondary" level={5} style={{whiteSpace: 'nowrap'}}>
-                Action on startup:
-            </Typography.Title>
             <ActionOnStartup settings={settings}/>
+            <LanguageSettings settings={settings}/>
         </Flex>
     );
 }
@@ -94,7 +94,7 @@ const Desc: React.FC<Readonly<{ text?: string | number }>> = (props) => {
             <Typography.Title type="secondary" level={5} style={{whiteSpace: 'nowrap'}}>
                 {props.text}
             </Typography.Title>
-            <Search placeholder="input search text" onSearch={onSearch}/>
+            <Search onSearch={onSearch}/>
             <Menu
                 onClick={onClick}
                 style={{width: 256}}
@@ -109,6 +109,7 @@ const Desc: React.FC<Readonly<{ text?: string | number }>> = (props) => {
 
 const Setting: React.FC = () => {
     const [settings, setSettings] = useState()
+    const navigate = useNavigate();
     const loadSettings = async () => {
         if (await exists(SETTINGS_FILE, {baseDir: BaseDirectory.AppConfig,})) {
             const settingsJson = await readTextFile(SETTINGS_FILE, {
@@ -122,26 +123,30 @@ const Setting: React.FC = () => {
     useEffect(() => {
         loadSettings().then(settings => {
             setSettings(settings);
+            navigate('/home' )
         })
     }, [])
 
     return (
-        <Splitter style={{height: '100%'}}>
-            <Splitter.Panel defaultSize="30%" min="30%" max="50%">
-                <Desc text="Preferences"/>
-            </Splitter.Panel>
-            <Splitter.Panel>
+        //@ts-ignore
+        <ConfigProvider locale={settings?.locale === 'zh-CN' ? zhCN : enUS}>
+            <Splitter style={{height: '100%'}}>
+                <Splitter.Panel defaultSize="30%" min="30%" max="50%">
+                    <Desc text="Preferences"/>
+                </Splitter.Panel>
+                <Splitter.Panel>
 
-                <Routes>
-                    <Route index path="/home" element={<Home settings={settings}/>}/>
-                    <Route path="/about" element={<About settings={settings}/>}/>
+                    <Routes>
+                        <Route index path="/home" element={<Home settings={settings}/>}/>
+                        <Route path="/about" element={<About settings={settings}/>}/>
 
-                    <Route path="/users" element={<Users/>}/>
+                        <Route path="/users" element={<Users/>}/>
 
 
-                </Routes>
-            </Splitter.Panel>
-        </Splitter>
+                    </Routes>
+                </Splitter.Panel>
+            </Splitter>
+        </ConfigProvider>
     )
 };
 

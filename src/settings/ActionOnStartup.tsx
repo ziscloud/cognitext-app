@@ -18,7 +18,7 @@ interface ActionOnStartupProps {
     settings?: any
 }
 
-async function extracted(action:string, defaultDir: string | null) {
+async function extracted(action: string, defaultDir: string | null) {
     console.log('action on startup changed', action, defaultDir)
     const settings = {
         actionOnStartup: {
@@ -46,30 +46,35 @@ const ActionOnStartup: React.FC<ActionOnStartupProps> = ({settings}: ActionOnSta
     };
 
     return (
-        <Radio.Group
-            style={style}
-            onChange={onChange}
-            value={value}
-            options={[
-                {
-                    value: 1,
-                    label: (
-                        <Flex gap="small" justify="start" align="start" vertical>
-                            <Text>Open the default directory: {defaultDir}</Text>
-                            <Button disabled={value !== 1} onClick={onSelect}>Select Folder</Button>
-                        </Flex>
-                    ),
-                },
-                {
-                    value: 2,
-                    label: (
-                        <Flex gap="small" justify="center" align="center" vertical>
-                            <Text>Open a blank page</Text>
-                        </Flex>
-                    ),
-                },
-            ]}
-        />
+        <>
+            <Typography.Title type="secondary" level={5} style={{whiteSpace: 'nowrap'}}>
+                Action on startup:
+            </Typography.Title>
+            <Radio.Group
+                style={style}
+                onChange={onChange}
+                value={value}
+                options={[
+                    {
+                        value: 1,
+                        label: (
+                            <Flex gap="small" justify="start" align="start" vertical>
+                                <Text>Open the default directory: {defaultDir}</Text>
+                                <Button disabled={value !== 1} onClick={onSelect}>Select Folder</Button>
+                            </Flex>
+                        ),
+                    },
+                    {
+                        value: 2,
+                        label: (
+                            <Flex gap="small" justify="center" align="center" vertical>
+                                <Text>Open a blank page</Text>
+                            </Flex>
+                        ),
+                    },
+                ]}
+            />
+        </>
     );
 };
 

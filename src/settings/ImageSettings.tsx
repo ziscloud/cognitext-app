@@ -81,7 +81,7 @@ const ImageSettings: React.FC<ActionOnStartupProps> = ({settings}: ActionOnStart
                 Relative image folder name:
             </Typography.Title>
             <Input defaultValue={relativeFolderName} onChange={(e) => setRelativeFolderName(e.target.value)}/>
-            <Text type="secondary">include {("${filename}")} in the text-box above to automatically insert the document
+            <Text type="secondary">Include {("${filename}")} in the text-box above to automatically insert the document
                 file name.</Text>
         </>
     );
