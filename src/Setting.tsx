@@ -1,17 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {Flex, Splitter, Typography, Input, Menu} from 'antd';
-import {AppstoreOutlined, ProductOutlined, SettingOutlined} from '@ant-design/icons';
-import {
-    Route,
-    Routes,
-    useNavigate
-} from "react-router";
-import './Setting.css'
 import type {GetProps, MenuProps} from 'antd';
+import {Flex, Input, Menu, Splitter, Typography} from 'antd';
+import {FileImageOutlined, ProductOutlined, SettingOutlined} from '@ant-design/icons';
+import {Route, Routes, useNavigate} from "react-router";
+import './Setting.css'
 import ActionOnStartup from "./settings/ActionOnStartup.tsx";
 import molecule from "@dtinsight/molecule";
-import {readTextFile, BaseDirectory, exists} from '@tauri-apps/plugin-fs';
+import {BaseDirectory, exists, readTextFile} from '@tauri-apps/plugin-fs';
 import {SETTINGS_FILE} from "./common/consts.ts";
+import ImageSettings from "./settings/ImageSettings.tsx";
 
 type SearchProps = GetProps<typeof Input.Search>;
 
@@ -28,8 +25,8 @@ const items: MenuItem[] = [
     },
     {
         key: 'about',
-        label: 'Navigation Two',
-        icon: <AppstoreOutlined/>,
+        label: 'Image',
+        icon: <FileImageOutlined/>,
     },
     {
         type: 'divider',
@@ -69,8 +66,16 @@ function Home({settings}: HomeProps) {
     );
 }
 
-function About() {
-    return <h2>About</h2>;
+function About({settings}: HomeProps) {
+
+    return (
+        <Flex justify="flex-start" align="start" style={{height: '100%', padding: '0 16px',}} vertical>
+            <Typography.Title type="secondary" level={3} style={{whiteSpace: 'nowrap'}}>
+                Image
+            </Typography.Title>
+            <ImageSettings settings={settings}/>
+        </Flex>
+    );
 }
 
 function Users() {
@@ -85,7 +90,6 @@ const Desc: React.FC<Readonly<{ text?: string | number }>> = (props) => {
     };
 
     return (
-
         <Flex justify="flex-start" align="center" style={{height: '100%', overflowX: 'hidden'}} vertical>
             <Typography.Title type="secondary" level={5} style={{whiteSpace: 'nowrap'}}>
                 {props.text}
@@ -130,7 +134,7 @@ const Setting: React.FC = () => {
 
                 <Routes>
                     <Route index path="/home" element={<Home settings={settings}/>}/>
-                    <Route path="/about" element={<About/>}/>
+                    <Route path="/about" element={<About settings={settings}/>}/>
 
                     <Route path="/users" element={<Users/>}/>
 

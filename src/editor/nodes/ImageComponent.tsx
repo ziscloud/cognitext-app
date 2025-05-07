@@ -51,6 +51,9 @@ import ContentEditable from '../ui/ContentEditable';
 import ImageResizer from '../ui/ImageResizer';
 import {$isImageNode} from './ImageNode';
 import {convertFileSrc} from "@tauri-apps/api/core";
+import {useFile} from "../context/FileContext.tsx";
+import {getFileLocationById} from "../../extensions/fileExplorer/folderTreeController.ts";
+import molecule from "@dtinsight/molecule";
 
 const imageCache = new Map<string, Promise<boolean> | boolean>();
 
@@ -104,6 +107,8 @@ function LazyImage({
         width: number;
         height: number;
     } | null>(null);
+    const file = useFile();
+    console.log("file: ", getFileLocationById(file.treeNodeId).split(/\/|\\\\/).slice(0, -1).join("/"))
     let newSrc: string;
 
     if (src.startsWith("/")) {
@@ -111,7 +116,21 @@ function LazyImage({
     } else if (src.startsWith("http") || src.startsWith("data:")) {
         newSrc = src;
     } else {
-        newSrc = convertFileSrc(decodeURI("/Users/shunyun/Documents/Notes/" + src))
+        console.log("src: ", src)
+        if (molecule.settings.getSettings().image?.action == 1) {
+            if (molecule.settings.getSettings().image?.preferRelativeFolder) {
+                newSrc = convertFileSrc(decodeURI(getFileLocationById(file.treeNodeId).split(/\/|\\\\/).slice(0, -1).join("/") + "/" + src))
+            } else {
+                if (molecule.settings.getSettings().image?.globalDir) {
+                    newSrc = convertFileSrc(decodeURI(molecule.settings.getSettings().image?.globalDir + "/" + src))
+                } else {
+                    newSrc = convertFileSrc(decodeURI(src));
+                }
+            }
+        } else {
+            newSrc = convertFileSrc(decodeURI(src));
+        }
+
     }
     const isSVGImage = isSVG(newSrc);
 
@@ -126,8 +145,17 @@ function LazyImage({
         }
     }, [imageRef, isSVGImage]);
 
-
-    const hasError = useSuspenseImage(newSrc);
+    //process the mixed usage of image path
+    let hasError = useSuspenseImage(newSrc);
+    if (hasError) {
+        if (molecule.settings.getSettings().image?.preferRelativeFolder && molecule.settings.getSettings().image?.globalDir) {
+            newSrc = convertFileSrc(decodeURI(molecule.settings.getSettings().image?.globalDir + "/" + src))
+            hasError = useSuspenseImage(newSrc);
+        } else {
+            newSrc = convertFileSrc(decodeURI(getFileLocationById(file.treeNodeId).split(/\/|\\\\/).slice(0, -1).join("/") + "/" + src))
+            hasError = useSuspenseImage(newSrc);
+        }
+    }
 
     useEffect(() => {
         if (hasError) {
