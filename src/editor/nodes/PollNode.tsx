@@ -6,7 +6,7 @@
  *
  */
 
-import type {JSX} from 'react';
+import React, {JSX} from 'react';
 
 import {makeStateWrapper} from '@lexical/utils';
 import {
@@ -19,7 +19,7 @@ import {
   SerializedLexicalNode,
   Spread,
 } from 'lexical';
-import * as React from 'react';
+
 
 export type Options = ReadonlyArray<Option>;
 

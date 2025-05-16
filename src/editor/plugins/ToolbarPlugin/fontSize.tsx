@@ -9,7 +9,7 @@
 import './fontSize.css';
 
 import {LexicalEditor} from 'lexical';
-import * as React from 'react';
+
 
 import {
   MAX_ALLOWED_FONT_SIZE,
@@ -21,6 +21,7 @@ import {
   updateFontSizeInSelection,
   UpdateFontSizeType,
 } from './utils';
+import React from "react";
 
 export function parseAllowedFontSize(input: string): string {
   const match = input.match(/^(\d+(?:\.\d+)?)px$/);

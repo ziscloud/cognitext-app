@@ -65,7 +65,7 @@ export class AutocompleteNode extends TextNode {
     super(text, key);
     this.__uuid = uuid;
   }
-
+  //@ts-ignore
   updateDOM(prevNode: this, dom: HTMLElement, config: EditorConfig): boolean {
     return false;
   }

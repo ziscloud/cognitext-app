@@ -24,7 +24,7 @@ import {
   COMMAND_PRIORITY_LOW,
   NodeKey,
 } from 'lexical';
-import * as React from 'react';
+
 import {useEffect, useMemo, useRef, useState} from 'react';
 
 import Button from '../ui/Button';
@@ -72,6 +72,7 @@ function PollOptionComponent({
           ref={checkboxRef}
           className="PollNode__optionCheckbox"
           type="checkbox"
+          //@ts-ignore
           onChange={(e) => {
             withPollNode((node) => {
               node.toggleVote(option, clientID);

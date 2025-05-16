@@ -18,11 +18,17 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self' ipc: http://ipc.localhost; img-src 'self' asset: http://asset.localhost",
+      "csp": {
+        "default-src": ["'self'", "asset:"],
+        "connect-src": ["ipc:" ,"http://ipc.localhost"],
+        "img-src": ["'self'", "asset:", "http://asset.localhost", "blob:", "data:"],
+        "style-src": ["'unsafe-inline'", "'self'", "https://fonts.googleapis.com"],
+        "font-src": ["'self'", "asset:", "https://fonts.gstatic.com", "data:"]
+      },
       "assetProtocol": {
         "enable": true,
         "scope": {
-          "allow": ["**/*"]
+          "allow": ["**/*", "$RESOURCE/**"]
         }
       }
     }

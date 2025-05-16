@@ -63,7 +63,7 @@ export class CollapsibleContainerNode extends ElementNode {
   isShadowRoot(): boolean {
     return true;
   }
-
+  //@ts-ignore
   collapseAtStart(selection: RangeSelection): boolean {
     // Unwrap the CollapsibleContainerNode by replacing it with the children
     // of its children (CollapsibleTitleNode, CollapsibleContentNode)
@@ -83,7 +83,7 @@ export class CollapsibleContainerNode extends ElementNode {
     }
     return true;
   }
-
+  //@ts-ignore
   createDOM(config: EditorConfig, editor: LexicalEditor): HTMLElement {
     // details is not well supported in Chrome #5582
     let dom: HTMLElement;
@@ -132,6 +132,7 @@ export class CollapsibleContainerNode extends ElementNode {
 
   static importDOM(): DOMConversionMap<HTMLDetailsElement> | null {
     return {
+      //@ts-ignore
       details: (domNode: HTMLDetailsElement) => {
         return {
           conversion: $convertDetailsElement,

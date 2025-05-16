@@ -16,10 +16,10 @@ import type {
   SerializedLexicalNode,
   Spread,
 } from 'lexical';
-import type {JSX} from 'react';
+import React, {JSX} from 'react';
 
 import {$setSelection, createEditor, DecoratorNode} from 'lexical';
-import * as React from 'react';
+
 import {createPortal} from 'react-dom';
 
 const StickyComponent = React.lazy(() => import('./StickyComponent'));
@@ -99,7 +99,7 @@ export class StickyNode extends DecoratorNode<JSX.Element> {
       yOffset: this.__y,
     };
   }
-
+  //@ts-ignore
   createDOM(config: EditorConfig): HTMLElement {
     const div = document.createElement('div');
     div.style.display = 'contents';
@@ -121,7 +121,7 @@ export class StickyNode extends DecoratorNode<JSX.Element> {
     const writable = this.getWritable();
     writable.__color = writable.__color === 'pink' ? 'yellow' : 'pink';
   }
-
+  //@ts-ignore
   decorate(editor: LexicalEditor, config: EditorConfig): JSX.Element {
     return createPortal(
       <StickyComponent

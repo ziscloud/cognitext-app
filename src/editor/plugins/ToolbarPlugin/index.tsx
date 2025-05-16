@@ -55,7 +55,7 @@ import {
   UNDO_COMMAND,
 } from 'lexical';
 import {Dispatch, useCallback, useEffect, useState} from 'react';
-import * as React from 'react';
+
 
 import {
   blockTypeToBlockName,
@@ -187,6 +187,7 @@ function dropDownActiveClass(active: boolean) {
 function BlockFormatDropDown({
   editor,
   blockType,
+  //@ts-ignore
   rootType,
   disabled = false,
 }: {

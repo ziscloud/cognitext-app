@@ -24,6 +24,7 @@ import {domOnBeforeMatch, setDomHiddenUntilFound} from './CollapsibleUtils';
 type SerializedCollapsibleContentNode = SerializedElementNode;
 
 export function $convertCollapsibleContentElement(
+  //@ts-ignore
   domNode: HTMLElement,
 ): DOMConversionOutput | null {
   const node = $createCollapsibleContentNode();
@@ -40,7 +41,7 @@ export class CollapsibleContentNode extends ElementNode {
   static clone(node: CollapsibleContentNode): CollapsibleContentNode {
     return new CollapsibleContentNode(node.__key);
   }
-
+  //@ts-ignore
   createDOM(config: EditorConfig, editor: LexicalEditor): HTMLElement {
     const dom = document.createElement('div');
     dom.classList.add('Collapsible__content');
@@ -72,7 +73,7 @@ export class CollapsibleContentNode extends ElementNode {
     }
     return dom;
   }
-
+  //@ts-ignore
   updateDOM(prevNode: this, dom: HTMLElement): boolean {
     return false;
   }

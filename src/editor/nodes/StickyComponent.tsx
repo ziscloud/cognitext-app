@@ -20,7 +20,7 @@ import {LexicalNestedComposer} from '@lexical/react/LexicalNestedComposer';
 import {PlainTextPlugin} from '@lexical/react/LexicalPlainTextPlugin';
 import {calculateZoomLevel} from '@lexical/utils';
 import {$getNodeByKey} from 'lexical';
-import * as React from 'react';
+
 import {useEffect, useLayoutEffect, useRef} from 'react';
 
 import {createWebsocketProvider} from '../collaboration';
@@ -159,7 +159,7 @@ export default function StickyComponent({
       positionSticky(stickyContainer, positioning);
     }
   };
-
+  //@ts-ignore
   const handlePointerUp = (event: PointerEvent) => {
     const stickyContainer = stickyContainerRef.current;
     const positioning = positioningRef.current;

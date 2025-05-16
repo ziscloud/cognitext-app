@@ -22,7 +22,7 @@ import {
   isDOMNode,
 } from 'lexical';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import * as React from 'react';
+
 
 import ExcalidrawModal from '../../ui/ExcalidrawModal';
 import ImageResizer from '../../ui/ImageResizer';

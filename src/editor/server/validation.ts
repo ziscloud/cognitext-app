@@ -18,11 +18,12 @@ const hostname = 'localhost';
 const port = 1235;
 
 let stringifiedEditorStateJSON = '';
-
+//@ts-ignore
 global.__DEV__ = true;
-
+//@ts-ignore
 const editor = createHeadlessEditor({
   namespace: 'validation',
+  //@ts-ignore
   nodes: [...PlaygroundNodes],
   onError: (error) => {
     console.error(error);

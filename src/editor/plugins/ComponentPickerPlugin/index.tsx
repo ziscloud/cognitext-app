@@ -34,7 +34,7 @@ import {
   TextNode,
 } from 'lexical';
 import {useCallback, useMemo, useState} from 'react';
-import * as React from 'react';
+
 import * as ReactDOM from 'react-dom';
 
 import useModal from '../../hooks/useModal';

@@ -4,7 +4,7 @@
 //     Manager,
 // };
 
-use tauri::Emitter;
+// use tauri::Emitter;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -16,13 +16,13 @@ pub fn run() {
     tauri::Builder::default()
 //         .setup(|app| {
 //             //let handle = app.handle();
-// 
+//
 //             // my custom settings menu item
 //             let settings = MenuItemBuilder::new("Settings...")
 //                 .id("settings")
 //                 .accelerator("CmdOrCtrl+,")
 //                 .build(app)?;
-// 
+//
 //             // my custom app submenu
 //             let app_submenu = SubmenuBuilder::new(app, "App")
 //                 .about(Some(AboutMetadata {
@@ -37,19 +37,19 @@ pub fn run() {
 //                 .hide_others()
 //                 .quit()
 //                 .build()?;
-// 
+//
 //             // ... any other submenus
-// 
+//
 //             let menu = MenuBuilder::new(app)
 //                 .items(&[
 //                     &app_submenu,
 //                     // ... include references to any other submenus
 //                 ])
 //                 .build()?;
-// 
+//
 //             // set the menu
 //             app.set_menu(menu)?;
-// 
+//
 //             // listen for menu item click events
 // //             app.on_menu_event(move |app, event| {
 // //                 if event.id() == settings.id() {
@@ -57,7 +57,7 @@ pub fn run() {
 // //                     let _event = app.emit("custom-event", "/settings");
 // //                 }
 // //             });
-// 
+//
 //             Ok(())
 //         })
         .plugin(tauri_plugin_dialog::init())

@@ -12,7 +12,7 @@ import './ColorPicker.css';
 
 import {calculateZoomLevel} from '@lexical/utils';
 import {useEffect, useMemo, useRef, useState} from 'react';
-import * as React from 'react';
+
 
 import TextInput from './TextInput';
 
@@ -282,6 +282,7 @@ function hex2rgb(hex: string): RGB {
     hex
       .replace(
         /^#?([a-f\d])([a-f\d])([a-f\d])$/i,
+          //@ts-ignore
         (m, r, g, b) => '#' + r + r + g + g + b + b,
       )
       .substring(1)

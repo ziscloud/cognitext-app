@@ -19,7 +19,7 @@ import type {
   SerializedLexicalNode,
   Spread,
 } from 'lexical';
-import type {JSX} from 'react';
+import React, {JSX} from 'react';
 
 import {
   addClassNamesToElement,
@@ -31,7 +31,7 @@ import {
   DecoratorNode,
   isHTMLElement,
 } from 'lexical';
-import * as React from 'react';
+
 
 const InlineImageComponent = React.lazy(() => import('./InlineImageComponent'));
 
@@ -135,6 +135,7 @@ export class InlineImageNode extends DecoratorNode<JSX.Element> {
 
   static importDOM(): DOMConversionMap | null {
     return {
+      //@ts-ignore
       img: (node: Node) => ({
         conversion: $convertInlineImageElement,
         priority: 0,
@@ -252,7 +253,7 @@ export class InlineImageNode extends DecoratorNode<JSX.Element> {
     }
     return span;
   }
-
+  //@ts-ignore
   updateDOM(prevNode: this, dom: HTMLElement, config: EditorConfig): false {
     const position = this.__position;
     if (position !== prevNode.__position) {

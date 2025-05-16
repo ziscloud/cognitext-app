@@ -17,10 +17,10 @@ import type {
   SerializedLexicalNode,
   Spread,
 } from 'lexical';
-import type {JSX} from 'react';
+import React, {JSX} from 'react';
 
 import {DecoratorNode} from 'lexical';
-import * as React from 'react';
+
 
 type Dimension = number | 'inherit';
 
@@ -176,7 +176,7 @@ export class ExcalidrawNode extends DecoratorNode<JSX.Element> {
     const self = this.getWritable();
     self.__height = height;
   }
-
+  //@ts-ignore
   decorate(editor: LexicalEditor, config: EditorConfig): JSX.Element {
     return (
       <ExcalidrawComponent

@@ -24,7 +24,7 @@ import {
   DecoratorBlockNode,
   SerializedDecoratorBlockNode,
 } from '@lexical/react/LexicalDecoratorBlockNode';
-import * as React from 'react';
+
 import {useCallback, useEffect, useRef, useState} from 'react';
 
 const WIDGET_SCRIPT_URL = 'https://platform.twitter.com/widgets.js';
@@ -190,7 +190,7 @@ export class TweetNode extends DecoratorBlockNode {
   ): string {
     return `https://x.com/i/web/status/${this.__id}`;
   }
-
+  //@ts-ignore
   decorate(editor: LexicalEditor, config: EditorConfig): JSX.Element {
     const embedBlockTheme = config.theme.embedBlock || {};
     const className = {

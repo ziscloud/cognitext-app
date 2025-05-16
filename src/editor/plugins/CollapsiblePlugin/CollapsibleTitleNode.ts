@@ -26,6 +26,7 @@ import {$isCollapsibleContentNode} from './CollapsibleContentNode';
 type SerializedCollapsibleTitleNode = SerializedElementNode;
 
 export function $convertSummaryElement(
+  //@ts-ignore
   domNode: HTMLElement,
 ): DOMConversionOutput | null {
   const node = $createCollapsibleTitleNode();
@@ -42,7 +43,7 @@ export class CollapsibleTitleNode extends ElementNode {
   static clone(node: CollapsibleTitleNode): CollapsibleTitleNode {
     return new CollapsibleTitleNode(node.__key);
   }
-
+  //@ts-ignore
   createDOM(config: EditorConfig, editor: LexicalEditor): HTMLElement {
     const dom = document.createElement('summary');
     dom.classList.add('Collapsible__title');
@@ -61,13 +62,14 @@ export class CollapsibleTitleNode extends ElementNode {
     }
     return dom;
   }
-
+  //@ts-ignore
   updateDOM(prevNode: this, dom: HTMLElement): boolean {
     return false;
   }
 
   static importDOM(): DOMConversionMap | null {
     return {
+      //@ts-ignore
       summary: (domNode: HTMLElement) => {
         return {
           conversion: $convertSummaryElement,

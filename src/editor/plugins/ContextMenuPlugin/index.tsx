@@ -6,8 +6,8 @@
  *
  */
 
-import type {JSX} from 'react';
-import * as React from 'react';
+import React, {JSX} from 'react';
+
 import {useCallback, useMemo} from 'react';
 
 import {$isLinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link';
@@ -121,6 +121,7 @@ export default function ContextMenuPlugin(): JSX.Element {
             }),
             new ContextMenuOption(`Paste`, {
                 onSelect: (_node) => {
+                    //@ts-ignore
                     navigator.clipboard.read().then(async function (...args) {
                         const data = new DataTransfer();
 
@@ -151,6 +152,7 @@ export default function ContextMenuPlugin(): JSX.Element {
             }),
             new ContextMenuOption(`Paste as Plain Text`, {
                 onSelect: (_node) => {
+                    //@ts-ignore
                     navigator.clipboard.read().then(async function (...args) {
                         const permission = await navigator.permissions.query({
                             // @ts-expect-error These types are incorrect.
@@ -180,6 +182,7 @@ export default function ContextMenuPlugin(): JSX.Element {
                         const currentNode = selection.anchor.getNode();
                         const ancestorNodeWithRootAsParent = currentNode
                             .getParents()
+                            //@ts-ignore
                             .at(-2);
 
                         ancestorNodeWithRootAsParent?.remove();

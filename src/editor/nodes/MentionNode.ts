@@ -121,6 +121,7 @@ export class MentionNode extends TextNode {
 
 export function $createMentionNode(
   mentionName: string,
+  //@ts-ignore
   textContent?: string,
 ): MentionNode {
   const mentionNode = new MentionNode(mentionName, (textContent = mentionName));

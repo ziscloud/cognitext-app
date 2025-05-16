@@ -19,7 +19,7 @@ import type {
   SerializedLexicalNode,
   Spread,
 } from 'lexical';
-import type {JSX} from 'react';
+import React, {JSX} from 'react';
 
 import {HashtagNode} from '@lexical/hashtag';
 import {LinkNode} from '@lexical/link';
@@ -32,7 +32,7 @@ import {
   RootNode,
   TextNode,
 } from 'lexical';
-import * as React from 'react';
+
 
 import {EmojiNode} from './EmojiNode';
 import {KeywordNode} from './KeywordNode';
