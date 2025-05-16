@@ -164,28 +164,27 @@ const Editor: React.FC = () => {
                     !isRichText ? 'plain-text' : ''
                 }`}
                 onBlur={() => {
-                console.log('blur', file.treeNodeId, Date.now());
-                //editor.dispatchCommand(SAVE_COMMAND, undefined);
-                //console.log('after dispatch save command', file.id, Date.now());
-                editor.read(()=>{
-                    const tabById = molecule.editor.getTabById(file.tabId, file.groupId);
-                    const markdown = $convertToMarkdownString(
-                        PLAYGROUND_TRANSFORMERS,
-                        undefined, //node
-                        false,
-                    );
-                    //console.log('tabById', tabById)
-                    //@ts-ignore
-                    tabById.data.value = markdown;
-                    // molecule.editor.updateTab({
-                    //     ...tabById,
-                    //     data: {
-                    //         ...tabById?.data,
-                    //         value: markdown,
-                    //     }
-                    // }, file.groupId);
-                });
-                return true;
+                    console.log('blur', file.treeNodeId, Date.now());
+                    //editor.dispatchCommand(SAVE_COMMAND, undefined);
+                    //console.log('after dispatch save command', file.id, Date.now());
+                    editor.read(() => {
+                        const tabById = molecule.editor.getTabById(file.tabId, file.groupId);
+                        const markdown = $convertToMarkdownString(
+                            PLAYGROUND_TRANSFORMERS,
+                            undefined, //node
+                            false,
+                        );
+                        //console.log('tabById', tabById)
+                        //@ts-ignore
+                        tabById.data.value = markdown;
+                        // molecule.editor.updateTab({
+                        //     ...tabById,
+                        //     data: {
+                        //         ...tabById?.data,
+                        //         value: markdown,
+                        //     }
+                        // }, file.groupId);
+                    });
                 }}
             >
                 {isMaxLength && <MaxLengthPlugin maxLength={30}/>}
