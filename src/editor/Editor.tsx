@@ -28,7 +28,7 @@ import {CAN_USE_DOM} from '@lexical/utils';
 import {useEffect, useState} from 'react';
 
 import {createWebsocketProvider} from './collaboration';
-import {useSettings} from './context/SettingsContext';
+import {useEditorSettings} from './context/EditorSettingsContext.tsx';
 import {useSharedHistoryContext} from './context/SharedHistoryContext';
 // import ActionsPlugin from './plugins/ActionsPlugin';
 import AutocompletePlugin from './plugins/AutocompletePlugin';
@@ -103,7 +103,7 @@ const Editor: React.FC = () => {
             selectionAlwaysOnDisplay,
             listStrictIndent,
         },
-    } = useSettings();
+    } = useEditorSettings();
     const isEditable = useLexicalEditable();
     const placeholder = isCollab
         ? 'Enter some collaborative rich text...'

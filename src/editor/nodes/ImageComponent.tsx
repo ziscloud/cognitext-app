@@ -39,7 +39,7 @@ import {useLexicalNodeSelection} from '@lexical/react/useLexicalNodeSelection';
 import {mergeRegister} from '@lexical/utils';
 
 import {createWebsocketProvider} from '../collaboration';
-import {useSettings} from '../context/SettingsContext';
+import {useEditorSettings} from '../context/EditorSettingsContext.tsx';
 import {useSharedHistoryContext} from '../context/SharedHistoryContext';
 import brokenImage from '../images/image-broken.svg';
 import EmojisPlugin from '../plugins/EmojisPlugin';
@@ -52,7 +52,7 @@ import ImageResizer from '../ui/ImageResizer';
 import {$isImageNode} from './ImageNode';
 import {convertFileSrc} from "@tauri-apps/api/core";
 import {useFile} from "../context/FileContext.tsx";
-import molecule from "@dtinsight/molecule";
+import {useSettings} from "../../settings/SettingsContext.tsx";
 
 const imageCache = new Map<string, Promise<boolean> | boolean>();
 
@@ -102,6 +102,7 @@ function LazyImage({
     width: 'inherit' | number;
     onError: () => void;
 }): JSX.Element {
+    const settings = useSettings();
     const [dimensions, setDimensions] = useState<{
         width: number;
         height: number;
@@ -116,12 +117,12 @@ function LazyImage({
         newSrc = src;
     } else {
         console.log("src: ", src)
-        if (molecule.settings.getSettings().image?.action == 1) {
-            if (molecule.settings.getSettings().image?.preferRelativeFolder) {
+        if (settings.image?.action == 1) {
+            if (settings.image?.preferRelativeFolder) {
                 newSrc = convertFileSrc(decodeURI(file.path?.split(/\/|\\\\/).slice(0, -1).join("/") + "/" + src))
             } else {
-                if (molecule.settings.getSettings().image?.globalDir) {
-                    newSrc = convertFileSrc(decodeURI(molecule.settings.getSettings().image?.globalDir + "/" + src))
+                if (settings.image?.globalDir) {
+                    newSrc = convertFileSrc(decodeURI(settings.image?.globalDir + "/" + src))
                 } else {
                     newSrc = convertFileSrc(decodeURI(src));
                 }
@@ -147,8 +148,8 @@ function LazyImage({
     //process the mixed usage of image path
     let hasError = useSuspenseImage(newSrc);
     if (hasError) {
-        if (molecule.settings.getSettings().image?.preferRelativeFolder && molecule.settings.getSettings().image?.globalDir) {
-            newSrc = convertFileSrc(decodeURI(molecule.settings.getSettings().image?.globalDir + "/" + src))
+        if (settings.image?.preferRelativeFolder && settings.image?.globalDir) {
+            newSrc = convertFileSrc(decodeURI(settings.image?.globalDir + "/" + src))
             hasError = useSuspenseImage(newSrc);
         } else {
             newSrc = convertFileSrc(decodeURI(file.path?.split(/\/|\\\\/).slice(0, -1).join("/") + "/" + src))
@@ -476,7 +477,7 @@ export default function ImageComponent({
     const {historyState} = useSharedHistoryContext();
     const {
         settings: {showNestedEditorTreeView},
-    } = useSettings();
+    } = useEditorSettings();
 
     const draggable = isSelected && $isNodeSelection(selection) && !isResizing;
     const isFocused = (isSelected || isResizing) && isEditable;

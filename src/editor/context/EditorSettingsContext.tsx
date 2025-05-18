@@ -21,12 +21,12 @@ import {
 
 import {DEFAULT_SETTINGS, INITIAL_SETTINGS} from '../appSettings';
 
-type SettingsContextShape = {
+type EditorSettingsContextShape = {
   setOption: (name: SettingName, value: boolean) => void;
   settings: Record<SettingName, boolean>;
 };
 
-const Context: React.Context<SettingsContextShape> = createContext({
+const Context: React.Context<EditorSettingsContextShape> = createContext({
   // @ts-ignore
   setOption: (name: SettingName, value: boolean) => {
     return;
@@ -34,7 +34,7 @@ const Context: React.Context<SettingsContextShape> = createContext({
   settings: INITIAL_SETTINGS,
 });
 
-export const SettingsContext = ({
+export const EditorSettingsContext = ({
   children,
 }: {
   children: ReactNode;
@@ -56,7 +56,7 @@ export const SettingsContext = ({
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;
 };
 
-export const useSettings = (): SettingsContextShape => {
+export const useEditorSettings = (): EditorSettingsContextShape => {
   return useContext(Context);
 };
 

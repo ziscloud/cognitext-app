@@ -3,12 +3,11 @@ import {ConfigProvider, Flex, GetProps, Input, Menu, MenuProps, Splitter, Typogr
 import {FileImageOutlined, ProductOutlined, SettingOutlined} from '@ant-design/icons';
 import {Route, Routes, useNavigate} from "react-router";
 import './Setting.css'
-import ActionOnStartup from "./settings/ActionOnStartup.tsx";
-import molecule from "@dtinsight/molecule";
+import ActionOnStartup from "./ActionOnStartup.tsx";
 import {BaseDirectory, exists, readTextFile} from '@tauri-apps/plugin-fs';
-import {SETTINGS_FILE} from "./common/consts.ts";
-import ImageSettings from "./settings/ImageSettings.tsx";
-import LanguageSettings from "./settings/LanguageSettings.tsx";
+import {SETTINGS_FILE} from "../common/consts.ts";
+import ImageSettings from "./ImageSettings.tsx";
+import LanguageSettings from "./LanguageSettings.tsx";
 import zhCN from 'antd/locale/zh_CN';
 import enUS from 'antd/locale/en_US';
 
@@ -84,8 +83,8 @@ function Users() {
 
 const Desc: React.FC<Readonly<{ text?: string | number }>> = (props) => {
     const navigate = useNavigate();
+    //@ts-ignore
     const onClick: MenuProps['onClick'] = ({item, key, keyPath, domEvent}) => {
-        console.log('click ', item, key, keyPath, domEvent);
         navigate('/' + key)
     };
 
@@ -117,13 +116,14 @@ const Setting: React.FC = () => {
             });
             return JSON.parse(settingsJson);
         }
-        return molecule.settings.getSettings();
+        return {};
     }
+
 
     useEffect(() => {
         loadSettings().then(settings => {
             setSettings(settings);
-            navigate('/home' )
+            navigate('/home')
         })
     }, [])
 
@@ -139,10 +139,7 @@ const Setting: React.FC = () => {
                     <Routes>
                         <Route index path="/home" element={<Home settings={settings}/>}/>
                         <Route path="/about" element={<About settings={settings}/>}/>
-
                         <Route path="/users" element={<Users/>}/>
-
-
                     </Routes>
                 </Splitter.Panel>
             </Splitter>

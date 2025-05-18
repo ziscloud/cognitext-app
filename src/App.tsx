@@ -1,46 +1,16 @@
 // import { useState } from "react";
 // import reactLogo from "./assets/react.svg";
 // import { invoke } from "@tauri-apps/api/core";
-import molecule, {create} from '@dtinsight/molecule';
-import '@dtinsight/molecule/esm/style/mo.css';
-import extensions from "./extensions";
 import {Menu, Submenu} from '@tauri-apps/api/menu';
 import {useEffect, useState} from "react";
 import {getCurrentWindow} from "@tauri-apps/api/window";
 import {WebviewWindow} from "@tauri-apps/api/webviewWindow";
-import {BaseDirectory, exists, readTextFile} from "@tauri-apps/plugin-fs";
+import {BaseDirectory, exists, mkdir, readTextFile, writeTextFile} from "@tauri-apps/plugin-fs";
 import {SETTINGS_FILE} from "./common/consts.ts";
-import MainLayout from "./MainLayout.tsx";
+import MainLayout from "./components/MainLayout.tsx";
 import "./App.css";
 import {SettingsProvider} from "./settings/SettingsContext.tsx";
-
-const moInstance = create({
-    extensions: extensions,
-});
-
-moInstance.onBeforeInit(() => {
-    //const modules = molecule.builtin.getModules();
-    //console.log('builtin modules', modules)
-    molecule.builtin.inactiveModule("builtInPanelProblems")
-    molecule.builtin.inactiveModule("builtInMenuBarData")
-    molecule.builtin.inactiveModule("builtInPanelToolboxResize")
-    molecule.builtin.inactiveModule("builtInPanelToolboxReStore")
-    molecule.builtin.inactiveModule("builtInPanelToolbox")
-    molecule.builtin.inactiveModule("builtInExplorerEditorPanel")
-    molecule.builtin.inactiveModule("builtInExplorerOutlinePanel")
-    molecule.builtin.inactiveModule("builtInStatusProblems")
-    molecule.builtin.inactiveModule("builtInNotification")
-    molecule.builtin.inactiveModule("BuiltInSettingsTab")
-    molecule.builtin.inactiveModule("builtInOutputPanel")
-    molecule.builtin.inactiveModule("quickAcessViewAction")
-    molecule.builtin.inactiveModule("quickSelectColorThemeAction")
-    molecule.builtin.inactiveModule("quickSelectLocaleAction")
-    molecule.builtin.inactiveModule("quickTogglePanelAction")
-    molecule.builtin.inactiveModule("quickSelectAllAction")
-    molecule.builtin.inactiveModule("quickCopyLineUpAction")
-    molecule.builtin.inactiveModule("quickUndoAction")
-    molecule.builtin.inactiveModule("quickRedoAction")
-})
+import {listen} from "@tauri-apps/api/event";
 
 const macOS = navigator.userAgent.includes('Macintosh')
 
@@ -57,7 +27,6 @@ async function showSettings() {
 
     // when Settings closes, re-enable main
     settingsWin.once('tauri://destroyed', async (e) => {
-        console.log('settingsWin destroyed', e)
         await mainWin.setEnabled(true);
     });
 
@@ -69,7 +38,6 @@ async function showSettings() {
     settingsWin.once('tauri://created', async (event) => {
         // bring Settings to front
         await mainWin.setEnabled(false);
-        console.log('settingsWin created', event)
         settingsWin.setFocus();
     })
 }
@@ -120,17 +88,13 @@ async function initMenu() {
 
 async function loadSettings() {
     const hasSettings = await exists(SETTINGS_FILE, {baseDir: BaseDirectory.AppConfig});
-    console.log('has settings', hasSettings)
     if (hasSettings) {
         const settingJson = await readTextFile(SETTINGS_FILE, {
             baseDir: BaseDirectory.AppConfig,
         });
-        const settings = JSON.parse(settingJson);
-        molecule.settings.update(settings)
-        molecule.settings.applySettings(settings)
-        return settings;
+        return JSON.parse(settingJson);
     } else {
-        return null;
+        return {};
     }
 }
 
@@ -148,7 +112,20 @@ function App() {
             if (settings) {
                 setSettings(settings);
             }
-            molecule.event.EventBus.emit("settings-loaded", null);
+        });
+        listen('settings-updated', async (event) => {
+            const payload = event.payload;
+            // Process and save the settings
+            //@ts-ignore
+            const updatedSettings = {...settings, ...payload};
+            const dirExists = await exists('', {baseDir: BaseDirectory.AppConfig});
+            if (!dirExists) {
+                await mkdir('', {baseDir: BaseDirectory.AppConfig, recursive: true});
+            }
+            await writeTextFile(SETTINGS_FILE, JSON.stringify(updatedSettings), {
+                baseDir: BaseDirectory.AppConfig,
+                create: true
+            });
         });
     }, [])
 

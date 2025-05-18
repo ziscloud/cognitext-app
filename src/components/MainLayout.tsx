@@ -5,7 +5,7 @@ import Side from "./Side.tsx";
 import FolderTree from "./FolderTree.tsx";
 import {PlusOutlined} from '@ant-design/icons';
 import {readTextFile} from "@tauri-apps/plugin-fs";
-import MarkdownEditor from "./editor/MarkdownEditor.tsx";
+import MarkdownEditor from "../editor/MarkdownEditor.tsx";
 
 const {Header} = Layout;
 

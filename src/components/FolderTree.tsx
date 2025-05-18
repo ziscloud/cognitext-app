@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {FolderOutlined} from '@ant-design/icons';
 import type {MenuProps} from 'antd';
 import {Menu} from 'antd';
-import {SettingsType, useSettings} from "./settings/SettingsContext.tsx";
+import {SettingsType, useSettings} from "../settings/SettingsContext.tsx";
 import {DirEntry, readDir} from "@tauri-apps/plugin-fs";
 import {join} from '@tauri-apps/api/path';
 import crypto from "crypto-js";

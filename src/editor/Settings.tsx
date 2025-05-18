@@ -12,7 +12,7 @@ import {CAN_USE_BEFORE_INPUT} from '@lexical/utils';
 import {useEffect, useMemo, useState} from 'react';
 
 import {INITIAL_SETTINGS, isDevPlayground} from './appSettings';
-import {useSettings} from './context/SettingsContext';
+import {useEditorSettings} from './context/EditorSettingsContext.tsx';
 import Switch from './ui/Switch';
 
 export default function Settings(): JSX.Element {
@@ -38,7 +38,7 @@ export default function Settings(): JSX.Element {
       // tableHorizontalScroll,
       selectionAlwaysOnDisplay,
     },
-  } = useSettings();
+  } = useEditorSettings();
   useEffect(() => {
     if (INITIAL_SETTINGS.disableBeforeInput && CAN_USE_BEFORE_INPUT) {
       console.error(

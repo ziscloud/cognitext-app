@@ -1,4 +1,4 @@
-import {SettingsContext, useSettings} from "./context/SettingsContext.tsx";
+import {EditorSettingsContext, useEditorSettings} from "./context/EditorSettingsContext.tsx";
 import PlaygroundEditorTheme from "./themes/PlaygroundEditorTheme.ts";
 import {LexicalComposer} from "@lexical/react/LexicalComposer";
 import {SharedHistoryContext} from "./context/SharedHistoryContext.tsx";
@@ -173,7 +173,7 @@ function $prepopulatedRichText() {
 const MarkdownEditor: React.FC<{ file: EditorTabFile }> = ({file}) => {
     const {
         settings: {isCollab, emptyEditor, measureTypingPerf},
-    } = useSettings();
+    } = useEditorSettings();
     const [height, setHeight] = useState<number>();
 
     const initialConfig = {
@@ -212,7 +212,7 @@ const MarkdownEditor: React.FC<{ file: EditorTabFile }> = ({file}) => {
         >
             <div style={{padding: '0'}} id='editor-wrapper'>
                 <FileProvider file={file}>
-                    <SettingsContext>
+                    <EditorSettingsContext>
                         <FlashMessageContext>
                             <LexicalComposer initialConfig={initialConfig}>
                                 <SharedHistoryContext>
@@ -237,7 +237,7 @@ const MarkdownEditor: React.FC<{ file: EditorTabFile }> = ({file}) => {
                                 </SharedHistoryContext>
                             </LexicalComposer>
                         </FlashMessageContext>
-                    </SettingsContext>
+                    </EditorSettingsContext>
                 </FileProvider>
             </div>
         </CustomScroll>
