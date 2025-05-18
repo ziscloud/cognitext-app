@@ -117,15 +117,15 @@ function App() {
             const payload = event.payload;
             // Process and save the settings
             //@ts-ignore
-            const updatedSettings = {...settings, ...payload};
             const dirExists = await exists('', {baseDir: BaseDirectory.AppConfig});
             if (!dirExists) {
                 await mkdir('', {baseDir: BaseDirectory.AppConfig, recursive: true});
             }
-            await writeTextFile(SETTINGS_FILE, JSON.stringify(updatedSettings), {
+            await writeTextFile(SETTINGS_FILE, JSON.stringify(payload), {
                 baseDir: BaseDirectory.AppConfig,
                 create: true
             });
+            setSettings(payload);
         });
     }, [])
 

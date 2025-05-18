@@ -18,16 +18,16 @@ interface ActionOnStartupProps {
     settings?: any
 }
 
-async function extracted(action: string, defaultDir: string | null) {
+async function emitEvent(settings:any, action: string, defaultDir: string | null) {
     console.log('action on startup changed', action, defaultDir)
-    const settings = {
+    //这段代码是运行在Setting的Window中，如果要触发到main Window中的事件，需要通过Window之间的通讯协议才行
+    await emit('settings-updated', {
+        ...settings,
         actionOnStartup: {
             action: action,
             dir: defaultDir
         }
-    };
-    //这段代码是运行在Setting的Window中，如果要触发到main Window中的事件，需要通过Window之间的通讯协议才行
-    await emit('settings-updated', settings);
+    });
 }
 
 const ActionOnStartup: React.FC<ActionOnStartupProps> = ({settings}: ActionOnStartupProps) => {
@@ -36,13 +36,13 @@ const ActionOnStartup: React.FC<ActionOnStartupProps> = ({settings}: ActionOnSta
 
     const onChange = async (e: RadioChangeEvent) => {
         setValue(e.target.value);
-        await extracted(e.target.value, defaultDir);
+        await emitEvent(settings, e.target.value, defaultDir);
     };
 
     const onSelect = async () => {
         const file = await open({multiple: false, directory: true, file: false});
         setDefaultDir(file);
-        await extracted(value, file);
+        await emitEvent(settings, value, file);
     };
 
     return (
