@@ -73,7 +73,7 @@ import TwitterPlugin from './plugins/TwitterPlugin';
 import YouTubePlugin from './plugins/YouTubePlugin';
 import ContentEditable from './ui/ContentEditable';
 import MarkdownUpdater from "./plugins/MarkdownUpdater";
-import SavePlugin from "./plugins/SavePlugin";
+import SavePlugin, {SAVE_COMMAND} from "./plugins/SavePlugin";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
 // import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
@@ -122,6 +122,12 @@ const Editor: React.FC = () => {
             setFloatingAnchorElem(_floatingAnchorElem);
         }
     };
+
+    useEffect(() => {
+        return ()=> {
+            editor.dispatchCommand(SAVE_COMMAND, undefined);
+        }
+    }, []);
 
     useEffect(() => {
         const updateViewPortWidth = () => {
