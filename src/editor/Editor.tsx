@@ -74,10 +74,8 @@ import YouTubePlugin from './plugins/YouTubePlugin';
 import ContentEditable from './ui/ContentEditable';
 import MarkdownUpdater from "./plugins/MarkdownUpdater";
 import SavePlugin from "./plugins/SavePlugin";
-import {useFile} from "./context/FileContext.tsx";
-import molecule from "@dtinsight/molecule";
-import {$convertToMarkdownString} from "@lexical/markdown";
-import {PLAYGROUND_TRANSFORMERS} from "./plugins/MarkdownTransformers";
+import ToolbarPlugin from "./plugins/ToolbarPlugin";
+// import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
 const skipCollaborationInit =
     // @ts-expect-error
@@ -118,7 +116,6 @@ const Editor: React.FC = () => {
     //@ts-ignore
     const [activeEditor, setActiveEditor] = useState(editor);
     const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
-    const file = useFile();
 
     const onRef = (_floatingAnchorElem: HTMLDivElement) => {
         if (_floatingAnchorElem !== null) {
@@ -145,14 +142,14 @@ const Editor: React.FC = () => {
 
     return (
         <>
-            {/*{isRichText && (*/}
-            {/*  <ToolbarPlugin*/}
-            {/*    editor={editor}*/}
-            {/*    activeEditor={activeEditor}*/}
-            {/*    setActiveEditor={setActiveEditor}*/}
-            {/*    setIsLinkEditMode={setIsLinkEditMode}*/}
-            {/*  />*/}
-            {/*)}*/}
+            {isRichText && (
+                <ToolbarPlugin
+                    editor={editor}
+                    activeEditor={activeEditor}
+                    setActiveEditor={setActiveEditor}
+                    setIsLinkEditMode={setIsLinkEditMode}
+                />
+            )}
             {isRichText && (
                 <ShortcutsPlugin
                     editor={activeEditor}
@@ -163,29 +160,29 @@ const Editor: React.FC = () => {
                 className={`editor-container ${showTreeView ? 'tree-view' : ''} ${
                     !isRichText ? 'plain-text' : ''
                 }`}
-                onBlur={() => {
-                    console.log('blur', file.treeNodeId, Date.now());
-                    //editor.dispatchCommand(SAVE_COMMAND, undefined);
-                    //console.log('after dispatch save command', file.id, Date.now());
-                    editor.read(() => {
-                        const tabById = molecule.editor.getTabById(file.tabId, file.groupId);
-                        const markdown = $convertToMarkdownString(
-                            PLAYGROUND_TRANSFORMERS,
-                            undefined, //node
-                            false,
-                        );
-                        //console.log('tabById', tabById)
-                        //@ts-ignore
-                        tabById.data.value = markdown;
-                        // molecule.editor.updateTab({
-                        //     ...tabById,
-                        //     data: {
-                        //         ...tabById?.data,
-                        //         value: markdown,
-                        //     }
-                        // }, file.groupId);
-                    });
-                }}
+                // onBlur={() => {
+                //     console.log('blur', file.treeNodeId, Date.now());
+                //     //editor.dispatchCommand(SAVE_COMMAND, undefined);
+                //     //console.log('after dispatch save command', file.id, Date.now());
+                //     editor.read(() => {
+                //         // const tabById = molecule.editor.getTabById(file.tabId, file.groupId);
+                //         // const markdown = $convertToMarkdownString(
+                //         //     PLAYGROUND_TRANSFORMERS,
+                //         //     undefined, //node
+                //         //     false,
+                //         // );
+                //         //console.log('tabById', tabById)
+                //         //@ts-ignore
+                //         // tabById.data.value = markdown;
+                //         // molecule.editor.updateTab({
+                //         //     ...tabById,
+                //         //     data: {
+                //         //         ...tabById?.data,
+                //         //         value: markdown,
+                //         //     }
+                //         // }, file.groupId);
+                //     });
+                // }}
             >
                 {isMaxLength && <MaxLengthPlugin maxLength={30}/>}
                 <DragDropPaste/>

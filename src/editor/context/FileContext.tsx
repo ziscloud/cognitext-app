@@ -3,7 +3,7 @@ import {createContext, ReactNode, useContext} from 'react';
 export type EditorTabFile = {
     tabId: string;
     groupId: string;
-    treeNodeId: string;
+    path: string;
     value: string;
     language: string
 };

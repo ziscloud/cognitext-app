@@ -1,16 +1,18 @@
 // import { useState } from "react";
 // import reactLogo from "./assets/react.svg";
 // import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
-import molecule, {create, Workbench} from '@dtinsight/molecule';
+import molecule, {create} from '@dtinsight/molecule';
 import '@dtinsight/molecule/esm/style/mo.css';
 import extensions from "./extensions";
 import {Menu, Submenu} from '@tauri-apps/api/menu';
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {getCurrentWindow} from "@tauri-apps/api/window";
 import {WebviewWindow} from "@tauri-apps/api/webviewWindow";
 import {BaseDirectory, exists, readTextFile} from "@tauri-apps/plugin-fs";
 import {SETTINGS_FILE} from "./common/consts.ts";
+import MainLayout from "./MainLayout.tsx";
+import "./App.css";
+import {SettingsProvider} from "./settings/SettingsContext.tsx";
 
 const moInstance = create({
     extensions: extensions,
@@ -71,6 +73,7 @@ async function showSettings() {
         settingsWin.setFocus();
     })
 }
+
 async function initMenu() {
     const submenu = await Submenu.new({
         id: 'app',
@@ -93,7 +96,7 @@ async function initMenu() {
             {
                 text: "Add one",
                 enabled: true,
-                action:  () => {
+                action: () => {
                     alert("Test1")
                 }
             },
@@ -125,11 +128,15 @@ async function loadSettings() {
         const settings = JSON.parse(settingJson);
         molecule.settings.update(settings)
         molecule.settings.applySettings(settings)
+        return settings;
+    } else {
+        return null;
     }
 }
+
 function App() {
     // const [greetMsg, setGreetMsg] = useState("");
-    // const [name, setName] = useState("");
+    const [settings, setSettings] = useState({});
     //
     // async function greet() {
     //   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -137,14 +144,19 @@ function App() {
     // }
     useEffect(() => {
         initMenu();
-        loadSettings().then(() => {
+        loadSettings().then((settings) => {
+            if (settings) {
+                setSettings(settings);
+            }
             molecule.event.EventBus.emit("settings-loaded", null);
         });
     }, [])
 
     return (
-        moInstance.render(<Workbench/>)
-    );
+        <SettingsProvider settings={settings}>
+            <MainLayout/>
+        </SettingsProvider>
+);
 }
 
 export default App;

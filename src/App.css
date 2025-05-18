@@ -1,0 +1,34 @@
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: hidden;
+}
+
+.editor-tabs {
+    height: 100%;
+}
+
+.editor-tabs .ant-tabs-content {
+    height:  100% ;
+}
+
+.editor-tabs .ant-tabs-content .ant-tabs-tabpane {
+    height:  100% ;
+    overflow: hidden;
+}
+
+.editor-tabs .ant-tabs-nav {
+    margin-bottom: 0;
+}
+
+.main-content {
+    width: calc(100% - 56px);
+}
+
+.menu .ant-menu-item {
+    /*width: 100%;*/
+    padding: 4px 12px 0 12px;
+
+}

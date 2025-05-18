@@ -210,7 +210,7 @@ const MarkdownEditor: React.FC<{ file: EditorTabFile }> = ({file}) => {
             onScroll={handleScroll}
             scrollTo={height}
         >
-            <div style={{padding: '0 10px'}} id='editor-wrapper'>
+            <div style={{padding: '0'}} id='editor-wrapper'>
                 <FileProvider file={file}>
                     <SettingsContext>
                         <FlashMessageContext>

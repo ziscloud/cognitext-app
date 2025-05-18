@@ -52,7 +52,6 @@ import ImageResizer from '../ui/ImageResizer';
 import {$isImageNode} from './ImageNode';
 import {convertFileSrc} from "@tauri-apps/api/core";
 import {useFile} from "../context/FileContext.tsx";
-import {getFileLocationById} from "../../extensions/fileExplorer/folderTreeController.ts";
 import molecule from "@dtinsight/molecule";
 
 const imageCache = new Map<string, Promise<boolean> | boolean>();
@@ -108,7 +107,7 @@ function LazyImage({
         height: number;
     } | null>(null);
     const file = useFile();
-    console.log("file: ", getFileLocationById(file.treeNodeId).split(/\/|\\\\/).slice(0, -1).join("/"))
+    console.log("file: ",  file.path?.split(/\/|\\\\/).slice(0, -1).join("/"))
     let newSrc: string;
 
     if (src.startsWith("/")) {
@@ -119,7 +118,7 @@ function LazyImage({
         console.log("src: ", src)
         if (molecule.settings.getSettings().image?.action == 1) {
             if (molecule.settings.getSettings().image?.preferRelativeFolder) {
-                newSrc = convertFileSrc(decodeURI(getFileLocationById(file.treeNodeId).split(/\/|\\\\/).slice(0, -1).join("/") + "/" + src))
+                newSrc = convertFileSrc(decodeURI(file.path?.split(/\/|\\\\/).slice(0, -1).join("/") + "/" + src))
             } else {
                 if (molecule.settings.getSettings().image?.globalDir) {
                     newSrc = convertFileSrc(decodeURI(molecule.settings.getSettings().image?.globalDir + "/" + src))
@@ -152,7 +151,7 @@ function LazyImage({
             newSrc = convertFileSrc(decodeURI(molecule.settings.getSettings().image?.globalDir + "/" + src))
             hasError = useSuspenseImage(newSrc);
         } else {
-            newSrc = convertFileSrc(decodeURI(getFileLocationById(file.treeNodeId).split(/\/|\\\\/).slice(0, -1).join("/") + "/" + src))
+            newSrc = convertFileSrc(decodeURI(file.path?.split(/\/|\\\\/).slice(0, -1).join("/") + "/" + src))
             hasError = useSuspenseImage(newSrc);
         }
     }
