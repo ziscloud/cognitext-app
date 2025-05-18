@@ -36,6 +36,7 @@ interface SideProps {
 const Side: React.FC<SideProps> = ({onMenuClick}: SideProps) => {
     const [collapsed, setCollapsed] = useState(true);
     const {
+        //@ts-ignore
         token: {colorBgContainer, borderRadiusLG},
     } = theme.useToken();
 

@@ -129,6 +129,9 @@ importers:
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
+      '@types/node':
+        specifier: ^22.15.18
+        version: 22.15.18
       '@types/react':
         specifier: ^18.3.1
         version: 18.3.21
@@ -3436,7 +3439,6 @@ snapshots:
   '@types/node@22.15.18':
     dependencies:
       undici-types: 6.21.0
-    optional: true
 
   '@types/prop-types@15.7.14': {}
 
@@ -4752,8 +4754,7 @@ snapshots:
 
   typescript@5.6.3: {}
 
-  undici-types@6.21.0:
-    optional: true
+  undici-types@6.21.0: {}
 
   unist-util-stringify-position@3.0.3:
     dependencies:

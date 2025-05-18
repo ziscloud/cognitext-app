@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import type {MenuProps, TabsProps} from 'antd';
-import {Button, Flex, Input, Layout, Splitter, Tabs, theme, Typography} from 'antd';
+import {Button, Flex, Input, Layout, Splitter, Tabs, theme} from 'antd';
 import Side from "./Side.tsx";
 import FolderTree from "./FolderTree.tsx";
 import {PlusOutlined} from '@ant-design/icons';
@@ -9,19 +9,12 @@ import MarkdownEditor from "../editor/MarkdownEditor.tsx";
 
 const {Header} = Layout;
 
-const Desc: React.FC<Readonly<{ text?: string | number }>> = (props) => (
-    <Flex justify="center" align="center" style={{height: '100%', backgroundColor: 'red'}}>
-        <Typography.Title type="secondary" level={5} style={{whiteSpace: 'nowrap'}}>
-            {props.text}
-        </Typography.Title>
-    </Flex>
-);
-
 type TabsItem = Required<TabsProps>['items'][number];
 
 const MainLayout: React.FC = () => {
     const [openFiles, setOpenFiles] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState<string>('');
+    //@ts-ignore
     const [activeMenu, setActiveMenu] = useState<string>('');
     const [items, setItems] = useState<TabsItem[]>([])
     const {

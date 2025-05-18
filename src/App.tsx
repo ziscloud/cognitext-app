@@ -26,6 +26,7 @@ async function showSettings() {
     });
 
     // when Settings closes, re-enable main
+    //@ts-ignore
     settingsWin.once('tauri://destroyed', async (e) => {
         await mainWin.setEnabled(true);
     });
@@ -34,7 +35,7 @@ async function showSettings() {
         // an error happened creating the webview
         console.log('settingsWin created Failed', e)
     });
-
+    //@ts-ignore
     settingsWin.once('tauri://created', async (event) => {
         // bring Settings to front
         await mainWin.setEnabled(false);
@@ -125,6 +126,7 @@ function App() {
                 baseDir: BaseDirectory.AppConfig,
                 create: true
             });
+            //@ts-ignore
             setSettings(payload);
         });
     }, [])

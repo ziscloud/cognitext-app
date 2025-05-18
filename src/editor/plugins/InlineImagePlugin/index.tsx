@@ -76,7 +76,7 @@ export function InsertInlineImageDialog({
     setPosition(e.target.value as Position);
   };
 
-  const loadImage = (files: FileList | null) => {
+  const loadImage = (files: FileList |string| null) => {
     const reader = new FileReader();
     reader.onload = function () {
       if (typeof reader.result === 'string') {
@@ -85,6 +85,7 @@ export function InsertInlineImageDialog({
       return '';
     };
     if (files !== null) {
+      //@ts-ignore
       reader.readAsDataURL(files[0]);
     }
   };

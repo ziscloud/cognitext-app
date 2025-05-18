@@ -8,7 +8,7 @@ interface ActionOnStartupProps {
     settings?: any
 }
 
-async function emitEvent(settings, locale: string) {
+async function emitEvent(settings:any, locale: string) {
     console.log('action on startup changed', locale)
     //这段代码是运行在Setting的Window中，如果要触发到main Window中的事件，需要通过Window之间的通讯协议才行
     await emit('settings-updated', {
