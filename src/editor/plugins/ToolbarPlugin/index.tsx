@@ -77,7 +77,7 @@ import {
   InsertImageDialog,
   InsertImagePayload,
 } from '../ImagesPlugin';
-import {InsertInlineImageDialog} from '../InlineImagePlugin';
+//import {InsertInlineImageDialog} from '../InlineImagePlugin';
 //import InsertLayoutDialog from '../LayoutPlugin/InsertLayoutDialog';
 import {INSERT_PAGE_BREAK} from '../PageBreakPlugin';
 //import {InsertPollDialog} from '../PollPlugin';
@@ -1087,19 +1087,19 @@ export default function ToolbarPlugin({
                   <i className="icon image" />
                   <span className="text">Image</span>
                 </DropDownItem>
-                <DropDownItem
-                  onClick={() => {
-                    showModal('Insert Inline Image', (onClose) => (
-                      <InsertInlineImageDialog
-                        activeEditor={activeEditor}
-                        onClose={onClose}
-                      />
-                    ));
-                  }}
-                  className="item">
-                  <i className="icon image" />
-                  <span className="text">Inline Image</span>
-                </DropDownItem>
+                {/*<DropDownItem*/}
+                {/*  onClick={() => {*/}
+                {/*    showModal('Insert Inline Image', (onClose) => (*/}
+                {/*      <InsertInlineImageDialog*/}
+                {/*        activeEditor={activeEditor}*/}
+                {/*        onClose={onClose}*/}
+                {/*      />*/}
+                {/*    ));*/}
+                {/*  }}*/}
+                {/*  className="item">*/}
+                {/*  <i className="icon image" />*/}
+                {/*  <span className="text">Inline Image</span>*/}
+                {/*</DropDownItem>*/}
                 {/*<DropDownItem*/}
                 {/*  onClick={() =>*/}
                 {/*    insertGifOnClick({*/}
