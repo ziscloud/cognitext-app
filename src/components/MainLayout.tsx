@@ -1,13 +1,11 @@
 import React, {useState} from 'react';
-import type {MenuProps, TabsProps} from 'antd';
-import {Button, Flex, Input, Layout, Splitter, Tabs, theme} from 'antd';
+import {MenuProps, TabsProps, theme} from 'antd';
+import {Layout, Splitter, Tabs} from 'antd';
 import Side from "./Side.tsx";
 import FolderTree from "./FolderTree.tsx";
-import {PlusOutlined} from '@ant-design/icons';
 import {readTextFile} from "@tauri-apps/plugin-fs";
 import MarkdownEditor from "../editor/MarkdownEditor.tsx";
 
-const {Header} = Layout;
 
 type TabsItem = Required<TabsProps>['items'][number];
 
@@ -20,7 +18,6 @@ const MainLayout: React.FC = () => {
     const {
         token: {colorBgContainer},
     } = theme.useToken();
-
     const onFileSelected = async (key: string, path: string, fileName?: string) => {
         console.log(path, key);
         if (openFiles.includes('tab-' + key)) {
@@ -69,31 +66,13 @@ const MainLayout: React.FC = () => {
             <Side onMenuClick={onMenuClick}/>
             <Splitter style={{height: '100vh'}} className={'main-content'} lazy={true}>
                 <Splitter.Panel defaultSize="20%" min="0" max="70%">
-                    <Flex vertical={true} style={{height: '100%', width: '100%'}}>
-                        <Header style={{
-                            margin: 0,
-                            padding: 0,
-                            width: '100%',
-                            maxWidth: '100%',
-                            height: '46px',
-                            background: colorBgContainer
-                        }}>
-                            <Flex justify={'space-around'} gap={'small'} align={'center'}
-                                  style={{width: '100%', padding: '0 24px'}}>
-                                <Input placeholder="Search" style={{width: '100%'}}/>
-                                <Button icon={<PlusOutlined/>}/>
-                            </Flex>
-                        </Header>
-                        <Flex id={'left-panel'} style={{flexGrow: 3, overflowY: 'auto', width: '100%', backgroundColor:'white'}}>
-                            <FolderTree onFileSelect={onFileSelected}/>
-                        </Flex>
-                    </Flex>
+                    <FolderTree onFileSelect={onFileSelected}/>
                 </Splitter.Panel>
-                <Splitter.Panel style={{backgroundColor: 'white'}}>
+                <Splitter.Panel style={{backgroundColor: colorBgContainer}}>
                     <Tabs className="editor-tabs" type="editable-card"
                           activeKey={activeTab} items={items}
                           onChange={setActiveTab}
-                          //@ts-ignore
+                        //@ts-ignore
                           onEdit={onTabEdit}
                     />
                 </Splitter.Panel>

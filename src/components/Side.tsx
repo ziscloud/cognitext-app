@@ -25,7 +25,7 @@ function getItem(
 
 const items: MenuItem[] = [
     getItem('Notes', 'notes', <IoLogoMarkdown size={24}/>),
-    getItem('Search', 'search', <SearchOutlined size={24}/>),
+    getItem('Search File Content', 'search', <SearchOutlined size={24}/>),
     getItem('AI Chat', 'chat', <HiOutlineChatAlt2 size={24}/>),
 ];
 
@@ -41,10 +41,10 @@ const Side: React.FC<SideProps> = ({onMenuClick}: SideProps) => {
     } = theme.useToken();
 
     return (
-        <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)} collapsedWidth={56}
-               width={160}>
+        <Sider collapsed={collapsed} onCollapse={(value) => setCollapsed(value)} collapsedWidth={56}
+               width={160} style={{backgroundColor: colorBgContainer, borderRadius: borderRadiusLG}}>
             <Flex style={{width: '100%', marginTop:'12px', marginBottom:'12px'}} align={'center'} justify={'center'}><img src={'/logo.svg'} style={{width: '38px'}}/></Flex>
-            <Menu className="menu" theme="dark" defaultSelectedKeys={['notes']} mode="inline" items={items} onClick={onMenuClick}/>
+            <Menu className="menu" defaultSelectedKeys={['notes']} mode="inline" items={items} onClick={onMenuClick}/>
         </Sider>
     )
 }

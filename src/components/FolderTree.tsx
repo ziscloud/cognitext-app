@@ -1,18 +1,20 @@
 import React, {useEffect} from 'react';
-import {FolderOutlined} from '@ant-design/icons';
-import type {MenuProps} from 'antd';
+import {FolderOutlined, PlusOutlined} from '@ant-design/icons';
+import {Button, Flex, Layout, MenuProps, theme} from 'antd';
 import {Menu} from 'antd';
 import {SettingsType, useSettings} from "../settings/SettingsContext.tsx";
 import {DirEntry, readDir} from "@tauri-apps/plugin-fs";
 import {join} from '@tauri-apps/api/path';
 import crypto from "crypto-js";
 import {PiFileMdFill} from "react-icons/pi";
+import DebounceSelect from "./DebounceSelect.tsx";
 
+const {Header} = Layout;
 type MenuItem = Required<MenuProps>['items'][number];
 
 async function processEntriesRecursively(parent: string, entries: DirEntry[]) {
     const items: MenuItem[] = [];
-    const names = new Map<string, string>();
+    const names = new Map<string, DirEntry>();
     for (const entry of entries) {
         if (entry.name.startsWith(".")) {
             continue;
@@ -26,7 +28,7 @@ async function processEntriesRecursively(parent: string, entries: DirEntry[]) {
         const path = await join(parent, entry.name);
         const key = crypto.MD5(path).toString(crypto.enc.Hex);
 
-        names.set(key, entry.name);
+        names.set(key, entry);
 
         if (entry.isDirectory) {
             const children = await processEntriesRecursively(path, await readDir(path));
@@ -76,13 +78,17 @@ interface FolderTreeProps {
 
 const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect}: FolderTreeProps) => {
     const settings: SettingsType = useSettings();
-    const [items, setItems] = React.useState<{ items: MenuItem[], names: Map<string, string> }>();
+    const [items, setItems] = React.useState<{ items: MenuItem[], names: Map<string, DirEntry> }>();
+    const {
+        token: {colorBgContainer},
+    } = theme.useToken();
+
     const onClick: MenuProps['onClick'] = ({key, keyPath}) => {
         const names = keyPath.map(k => {
-            return items?.names.get(k)
+            return items?.names.get(k)?.name
         });
         const path = names.reverse().join('/');
-        onFileSelect(key, settings.actionOnStartup?.dir + "/" + path, items?.names?.get(key));
+        onFileSelect(key, settings.actionOnStartup?.dir + "/" + path, items?.names?.get(key)?.name);
     };
 
     useEffect(() => {
@@ -96,14 +102,38 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect}: FolderTreeProps) 
     }, [settings]);
 
     return (
-        <Menu
-            onClick={onClick}
-            style={{width: '100%'}}
-            defaultSelectedKeys={['1']}
-            defaultOpenKeys={['sub1']}
-            mode="inline"
-            items={items?.items || []}
-        />
+        <Flex vertical={true} style={{height: '100%', width: '100%'}}>
+            <Header style={{
+                margin: 0,
+                padding: 0,
+                width: '100%',
+                maxWidth: '100%',
+                height: '46px',
+                background: colorBgContainer
+            }}>
+                <Flex justify={'space-around'} gap={'small'} align={'center'}
+                      style={{width: '100%', padding: '0 24px'}}>
+                    <DebounceSelect
+                        placeholder="search file name"
+                        //@ts-ignore
+                        fetchOptions={items?.names}
+                        //@ts-ignore
+                        onSelect={onClick}
+                    />
+                    <Button icon={<PlusOutlined/>}/>
+                </Flex>
+            </Header>
+            <Flex id={'left-panel'} style={{flexGrow: 3, overflowY: 'auto', width: '100%', backgroundColor: colorBgContainer}}>
+                <Menu
+                    onClick={onClick}
+                    style={{width: '100%'}}
+                    defaultSelectedKeys={['1']}
+                    defaultOpenKeys={['sub1']}
+                    mode="inline"
+                    items={items?.items || []}
+                />
+            </Flex>
+        </Flex>
     );
 };
 
