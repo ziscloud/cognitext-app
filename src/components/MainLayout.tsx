@@ -65,7 +65,7 @@ const MainLayout: React.FC = () => {
         <Layout style={{minHeight: '100vh'}}>
             <Side onMenuClick={onMenuClick}/>
             <Splitter style={{height: '100vh'}} className={'main-content'} lazy={true}>
-                <Splitter.Panel defaultSize="20%" min="0" max="70%">
+                <Splitter.Panel defaultSize="20%" min="0" max="70%" collapsible={true}>
                     <FolderTree onFileSelect={onFileSelected}/>
                 </Splitter.Panel>
                 <Splitter.Panel style={{backgroundColor: colorBgContainer}}>
