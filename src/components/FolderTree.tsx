@@ -80,7 +80,7 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect}: FolderTreeProps) 
     const settings: SettingsType = useSettings();
     const [items, setItems] = React.useState<{ items: MenuItem[], names: Map<string, DirEntry> }>();
     const {
-        token: {colorBgContainer},
+        token: {colorBgContainer, colorSplit},
     } = theme.useToken();
 
     const onClick: MenuProps['onClick'] = ({key, keyPath}) => {
@@ -109,7 +109,8 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect}: FolderTreeProps) 
                 width: '100%',
                 maxWidth: '100%',
                 height: '46px',
-                background: colorBgContainer
+                background: colorBgContainer,
+                borderBottom: `1px solid ${colorSplit}`
             }}>
                 <Flex justify={'space-around'} gap={'small'} align={'center'}
                       style={{width: '100%', padding: '0 24px'}}>

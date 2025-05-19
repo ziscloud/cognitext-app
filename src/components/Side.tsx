@@ -42,7 +42,7 @@ const Side: React.FC<SideProps> = ({onMenuClick}: SideProps) => {
 
     return (
         <Sider collapsed={collapsed} onCollapse={(value) => setCollapsed(value)} collapsedWidth={56}
-               width={160} style={{backgroundColor: colorBgContainer, borderRadius: borderRadiusLG}}>
+               width={160} style={{backgroundColor: colorBgContainer}}>
             <Flex style={{width: '100%', marginTop:'12px', marginBottom:'12px'}} align={'center'} justify={'center'}><img src={'/logo.svg'} style={{width: '38px'}}/></Flex>
             <Menu className="menu" defaultSelectedKeys={['notes']} mode="inline" items={items} onClick={onMenuClick}/>
         </Sider>

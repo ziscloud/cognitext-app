@@ -21,6 +21,7 @@ html, body, #root {
 
 .editor-tabs .ant-tabs-nav {
     margin-bottom: 0;
+    height: 46px;
 }
 
 .main-content {
