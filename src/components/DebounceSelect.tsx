@@ -36,7 +36,7 @@ function DebounceSelect<
             //@ts-ignore
             const candidates = [];
             dataSource?.forEach((entry, key) => {
-                if (entry.entry.isFile && entry.entry.name.includes(value)) {
+                if (entry.entry.isFile && entry.entry.name.toLowerCase().includes(value?.toLowerCase())) {
                     candidates.push(
                         {
                             value: key,
