@@ -19,7 +19,6 @@ const MainLayout: React.FC = () => {
         token: {colorBgContainer},
     } = theme.useToken();
     const onFileSelected = async (key: string, path: string, fileName?: string) => {
-        console.log(path, key);
         if (openFiles.includes('tab-' + key)) {
             setActiveTab('tab-' + key);
         } else {

@@ -29,7 +29,24 @@ html, body, #root {
 }
 
 .menu .ant-menu-item {
-    /*width: 100%;*/
     padding: 4px 12px 0 12px;
+}
 
+#left-panel-header-search-container {
+    width: calc(100% - 56px);
+}
+
+.search-file-name, .search-file-name .ant-select-selector,.search-file-name .ant-select-selection-wrap{
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden; /* 隐藏超出部分 */
+    text-overflow: ellipsis; !important; /* 超出部分显示省略号 */
+    white-space: nowrap; !important; /* 防止文本换行 */
+}
+.left-panel-header-container .ant-select .ant-select-selection-item {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden; /* 隐藏超出部分 */
+    text-overflow: ellipsis; /* 超出部分显示省略号 */
+    white-space: nowrap; !important; /* 防止文本换行 */
 }

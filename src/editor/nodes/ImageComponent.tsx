@@ -108,7 +108,6 @@ function LazyImage({
         height: number;
     } | null>(null);
     const file = useFile();
-    console.log("file: ",  file.path?.split(/\/|\\\\/).slice(0, -1).join("/"))
     let newSrc: string;
 
     if (src.startsWith("/")) {
@@ -116,7 +115,6 @@ function LazyImage({
     } else if (src.startsWith("http") || src.startsWith("data:")) {
         newSrc = src;
     } else {
-        console.log("src: ", src)
         if (settings.image?.action == 1) {
             if (settings.image?.preferRelativeFolder) {
                 newSrc = convertFileSrc(decodeURI(file.path?.split(/\/|\\\\/).slice(0, -1).join("/") + "/" + src))

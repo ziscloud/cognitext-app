@@ -3,11 +3,11 @@ import type {SelectProps} from 'antd';
 import {Select, Spin} from 'antd';
 import {debounce} from 'lodash-es';
 import {DirEntry} from "@tauri-apps/plugin-fs";
+import {EntryItem} from './FolderTree';
 
-export interface DebounceSelectProps<ValueType = any>
-    extends Omit<SelectProps<ValueType | ValueType[]>, 'options' | 'children'> {
-    fetchOptions: Map<string, DirEntry>;
-    debounceTimeout?: number;
+export interface DebounceSelectProps<ValueType = String> extends Omit<SelectProps<ValueType | ValueType[]>, 'options' | 'children'> {
+    debounceTimeout?: number,
+    dataSource?: Map<string, EntryItem>,
 }
 
 function DebounceSelect<
@@ -17,7 +17,7 @@ function DebounceSelect<
         value: string | number;
         avatar?: string;
     } = any,
->({fetchOptions, debounceTimeout = 300, ...props}: DebounceSelectProps<ValueType>) {
+>({dataSource, debounceTimeout = 300, ...props}: DebounceSelectProps<ValueType>) {
     const [fetching, setFetching] = useState(false);
     const [options, setOptions] = useState<DirEntry[]>([]);
     const fetchRef = useRef(0);
@@ -35,12 +35,12 @@ function DebounceSelect<
             }
             //@ts-ignore
             const candidates = [];
-            fetchOptions.forEach((entry, key) => {
-                if (entry.isFile && entry.name.includes(value)) {
+            dataSource?.forEach((entry, key) => {
+                if (entry.entry.isFile && entry.entry.name.includes(value)) {
                     candidates.push(
                         {
                             value: key,
-                            label: entry.name,
+                            label: entry.entry.name,
                         }
                     );
                 }
@@ -51,16 +51,17 @@ function DebounceSelect<
         };
 
         return debounce(loadOptions, debounceTimeout);
-    }, [fetchOptions, debounceTimeout]);
+    }, [dataSource, debounceTimeout]);
 
     return (
         <Select
+            {...props}
             showSearch
+            className={'search-file-name'}
             allowClear={true}
             filterOption={false}
             onSearch={debounceFetcher}
             notFoundContent={fetching ? <Spin size="small"/> : 'No results found'}
-            {...props}
             options={options}
         />
     );

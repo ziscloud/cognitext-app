@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react';
 import {FolderOutlined, PlusOutlined} from '@ant-design/icons';
-import {Button, Flex, Layout, MenuProps, theme} from 'antd';
-import {Menu} from 'antd';
+import {Button, Flex, Layout, Menu, MenuProps, theme} from 'antd';
 import {SettingsType, useSettings} from "../settings/SettingsContext.tsx";
 import {DirEntry, readDir} from "@tauri-apps/plugin-fs";
 import {join} from '@tauri-apps/api/path';
@@ -12,9 +11,9 @@ import DebounceSelect from "./DebounceSelect.tsx";
 const {Header} = Layout;
 type MenuItem = Required<MenuProps>['items'][number];
 
-async function processEntriesRecursively(parent: string, entries: DirEntry[]) {
+async function processEntriesRecursively(parentPath: string, entries: DirEntry[], parent?: EntryItem) {
     const items: MenuItem[] = [];
-    const names = new Map<string, DirEntry>();
+    const names = new Map<string, EntryItem>();
     for (const entry of entries) {
         if (entry.name.startsWith(".")) {
             continue;
@@ -25,13 +24,14 @@ async function processEntriesRecursively(parent: string, entries: DirEntry[]) {
         if (entry.name === 'assets') {
             continue;
         }
-        const path = await join(parent, entry.name);
+        const path = await join(parentPath, entry.name);
         const key = crypto.MD5(path).toString(crypto.enc.Hex);
 
-        names.set(key, entry);
+        const item = {entry, parent};
+        names.set(key, item);
 
         if (entry.isDirectory) {
-            const children = await processEntriesRecursively(path, await readDir(path));
+            const children = await processEntriesRecursively(path, await readDir(path), item);
             //将children的names添加到当前的names中
             for (const [k, v] of children.names) {
                 names.set(k, v);
@@ -76,19 +76,45 @@ interface FolderTreeProps {
     onFileSelect: (key: string, path: string, fileName?: string) => void
 }
 
+export type EntryItem = { entry: DirEntry, parent?: EntryItem }
+
 const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect}: FolderTreeProps) => {
     const settings: SettingsType = useSettings();
-    const [items, setItems] = React.useState<{ items: MenuItem[], names: Map<string, DirEntry> }>();
+    const [items, setItems] = React.useState<{ items: MenuItem[], names: Map<string, EntryItem> }>();
     const {
         token: {colorBgContainer, colorSplit},
     } = theme.useToken();
 
-    const onClick: MenuProps['onClick'] = ({key, keyPath}) => {
-        const names = keyPath.map(k => {
-            return items?.names.get(k)?.name
-        });
-        const path = names.reverse().join('/');
-        onFileSelect(key, settings.actionOnStartup?.dir + "/" + path, items?.names?.get(key)?.name);
+    const onClick: MenuProps['onClick'] = (value) => {
+        let path;
+        let fileName;
+        const {key, keyPath} = value;
+        //event from menu item click
+        if (keyPath) {
+            const names = keyPath.map(k => {
+                return items?.names.get(k)?.entry.name
+            });
+            fileName = items?.names?.get(key)?.entry.name;
+            path = settings.actionOnStartup?.dir + "/" + names.reverse().join('/');
+            onFileSelect(key, path, fileName);
+        } else {
+            //event from search
+            const parents: string[] = [];
+            //@ts-ignore
+            let currentItem: EntryItem | undefined = items?.names?.get(value);
+            fileName = currentItem?.entry.name;
+            while (currentItem) {
+                if (currentItem.parent) {
+                    parents.push(currentItem.parent.entry.name);
+                    currentItem = currentItem.parent;
+                } else {
+                    break;
+                }
+            }
+            path = settings.actionOnStartup?.dir + "/" + parents.reverse().join('/') + "/" + fileName;
+            //@ts-ignore
+            onFileSelect(value, path, fileName);
+        }
     };
 
     useEffect(() => {
@@ -112,19 +138,21 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect}: FolderTreeProps) 
                 background: colorBgContainer,
                 borderBottom: `1px solid ${colorSplit}`
             }}>
-                <Flex justify={'space-around'} gap={'small'} align={'center'}
+                <Flex className={'left-panel-header-container'} justify={'space-between'} gap={'small'} align={'center'}
                       style={{width: '100%', padding: '0 24px'}}>
-                    <DebounceSelect
-                        placeholder="search file name"
-                        //@ts-ignore
-                        fetchOptions={items?.names}
-                        //@ts-ignore
-                        onSelect={onClick}
-                    />
+                    <Flex id={'left-panel-header-search-container'} flex={1}>
+                        <DebounceSelect
+                            placeholder="search file name"
+                            dataSource={items?.names}
+                            //@ts-ignore
+                            onSelect={onClick}
+                        />
+                    </Flex>
                     <Button icon={<PlusOutlined/>}/>
                 </Flex>
             </Header>
-            <Flex id={'left-panel'} style={{flexGrow: 3, overflowY: 'auto', width: '100%', backgroundColor: colorBgContainer}}>
+            <Flex id={'left-panel'}
+                  style={{flexGrow: 3, overflowY: 'auto', width: '100%', backgroundColor: colorBgContainer}}>
                 <Menu
                     onClick={onClick}
                     style={{width: '100%'}}
