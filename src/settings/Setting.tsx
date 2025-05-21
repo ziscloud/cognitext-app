@@ -20,30 +20,39 @@ type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
     {
-        key: 'home',
+        key: 'generalGroup',
         label: 'General',
-        icon: <ProductOutlined/>,
-    },
-    {
-        key: 'about',
-        label: 'Image',
-        icon: <FileImageOutlined/>,
-    },
-    {
-        type: 'divider',
-    },
-    {
-        key: 'users',
-        label: 'Navigation Three',
-        icon: <SettingOutlined/>,
-    },
-    {
-        key: 'grp',
-        label: 'Group',
         type: 'group',
         children: [
-            {key: '13', label: 'Option 13'},
-            {key: '14', label: 'Option 14'},
+            {
+                key: 'general',
+                label: 'General',
+                icon: <ProductOutlined/>,
+            },
+            {
+                key: 'image',
+                label: 'Image',
+                icon: <FileImageOutlined/>,
+            },
+            {
+                type: 'divider',
+            },
+            {
+                key: 'keymap',
+                label: 'Key Map',
+                icon: <SettingOutlined/>,
+            },
+        ],
+
+    },
+
+    {
+        key: 'themeGroup',
+        label: 'Theme',
+        type: 'group',
+        children: [
+            {key: 'editor-theme', label: 'Editor'},
+            {key: 'application-theme', label: 'Application'},
         ],
     },
 ];
@@ -52,7 +61,7 @@ interface HomeProps {
     settings?: any
 }
 
-function Home({settings}: HomeProps) {
+function GeneralSettingsSection({settings}: HomeProps) {
 
     return (
         <Flex justify="flex-start" align="start" style={{height: '100%', padding: '0 16px',}} vertical>
@@ -65,7 +74,7 @@ function Home({settings}: HomeProps) {
     );
 }
 
-function About({settings}: HomeProps) {
+function ImageSettingsSection({settings}: HomeProps) {
 
     return (
         <Flex justify="flex-start" align="start" style={{height: '100%', padding: '0 16px',}} vertical>
@@ -77,8 +86,8 @@ function About({settings}: HomeProps) {
     );
 }
 
-function Users() {
-    return <h2>Users</h2>;
+function KeyMapSettingsSection() {
+    return <h2>KeyMap</h2>;
 }
 
 const Desc: React.FC<Readonly<{ text?: string | number }>> = (props) => {
@@ -123,7 +132,7 @@ const Setting: React.FC = () => {
     useEffect(() => {
         loadSettings().then(settings => {
             setSettings(settings);
-            navigate('/home')
+            navigate('/general')
         })
     }, [])
 
@@ -137,9 +146,9 @@ const Setting: React.FC = () => {
                 <Splitter.Panel>
 
                     <Routes>
-                        <Route index path="/home" element={<Home settings={settings}/>}/>
-                        <Route path="/about" element={<About settings={settings}/>}/>
-                        <Route path="/users" element={<Users/>}/>
+                        <Route index path="/general" element={<GeneralSettingsSection settings={settings}/>}/>
+                        <Route path="/image" element={<ImageSettingsSection settings={settings}/>}/>
+                        <Route path="/keymap" element={<KeyMapSettingsSection/>}/>
                     </Routes>
                 </Splitter.Panel>
             </Splitter>
