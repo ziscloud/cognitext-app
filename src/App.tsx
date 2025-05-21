@@ -1,7 +1,7 @@
 // import { useState } from "react";
 // import reactLogo from "./assets/react.svg";
 // import { invoke } from "@tauri-apps/api/core";
-import {Menu, Submenu} from '@tauri-apps/api/menu';
+import {Menu, PredefinedMenuItem, Submenu} from '@tauri-apps/api/menu';
 import {useEffect, useState} from "react";
 import {getCurrentWindow} from "@tauri-apps/api/window";
 import {WebviewWindow} from "@tauri-apps/api/webviewWindow";
@@ -44,10 +44,26 @@ async function showSettings() {
 }
 
 async function initMenu() {
-    const submenu = await Submenu.new({
+    const appMenu = await Submenu.new({
         id: 'app',
         text: 'app',
         items: [
+            {
+                text: "About",
+                enabled: true,
+                action: () => {
+                    alert("About")
+                }
+            },
+            {
+                id: "checkForUpdates",
+                text: "Check For Updates...",
+                enabled: true,
+                action: () => {
+                    alert("checkForUpdates")
+                }
+            },
+            await PredefinedMenuItem.new({text: "Separator", item: 'Separator'}),
             {
                 id: "settings",
                 text: "Settings...",
@@ -56,31 +72,139 @@ async function initMenu() {
                 action: () => {
                     showSettings();
                 }
-            }
+            },
+            // await PredefinedMenuItem.new({text: "Separator", item: 'Separator'}),
+            await PredefinedMenuItem.new({text: "Services", item: 'Services'}),
+            await PredefinedMenuItem.new({text: "Hide", item: 'Hide'}),
+            await PredefinedMenuItem.new({text: "HideOthers", item: 'HideOthers'}),
+            await PredefinedMenuItem.new({text: "ShowAll", item: 'ShowAll'}),
+            await PredefinedMenuItem.new({text: "Separator", item: 'Separator'}),
+            await PredefinedMenuItem.new({text: "Quit", item: 'Quit'}),
         ]
     });
-    const submenu2 = await Submenu.new({
-        text: "Real Actions",
+    const fileMenu = await Submenu.new({
+        text: "File",
         items: [
             {
-                text: "Add one",
+                text: "New File",
                 enabled: true,
+                accelerator: macOS ? 'Cmd+N' : 'Ctrl+N',
                 action: () => {
-                    alert("Test1")
+                    alert("New File")
                 }
             },
             {
-                text: "Alert",
+                text: "New Folder",
                 enabled: true,
                 action: () => {
-                    alert("Test")
+                    alert("New Folder")
                 }
-            }
+            },
+            await PredefinedMenuItem.new({text: "Separator", item: 'Separator'}),
+            {
+                text: "Save",
+                enabled: true,
+                action: () => {
+                    alert("New Folder")
+                }
+            },
+            {
+                text: "Save As...",
+                enabled: true,
+                action: () => {
+                    alert("New Folder")
+                }
+            },
+            {
+                text: "Save All",
+                enabled: true,
+                action: () => {
+                    alert("New Folder")
+                }
+            },
+            await PredefinedMenuItem.new({text: "Separator", item: 'Separator'}),
+            await PredefinedMenuItem.new({text: "CloseWindow", item: 'CloseWindow'}),
+        ]
+    });
+    const editMenu = await Submenu.new({
+        text: "Edit",
+        items: [
+            await PredefinedMenuItem.new({text: "Undo", item: 'Undo'}),
+            await PredefinedMenuItem.new({text: "Redo", item: 'Redo'}),
+            await PredefinedMenuItem.new({text: "Separator", item: 'Separator'}),
+            await PredefinedMenuItem.new({text: "Copy", item: 'Copy'}),
+            await PredefinedMenuItem.new({text: "Cut", item: 'Cut'}),
+            await PredefinedMenuItem.new({text: "Paste", item: 'Paste'}),
+            await PredefinedMenuItem.new({text: "SelectAll", item: 'SelectAll'}),
         ]
     });
 
+    const windowMenu = await Submenu.new({
+        text: "Window",
+        items: [
+            await PredefinedMenuItem.new({text: "Minimize", item: 'Minimize'}),
+            await PredefinedMenuItem.new({text: "Maximize", item: 'Maximize'}),
+            await PredefinedMenuItem.new({text: "Fullscreen", item: 'Fullscreen'}),
+            await PredefinedMenuItem.new({text: "Copy", item: 'Copy'}),
+            await PredefinedMenuItem.new({text: "Cut", item: 'Cut'}),
+            await PredefinedMenuItem.new({text: "Paste", item: 'Paste'}),
+            await PredefinedMenuItem.new({text: "SelectAll", item: 'SelectAll'}),
+        ]
+    });
+
+    const helpMenu = await Submenu.new({
+        text: "Help",
+        items: [
+            {
+                text: "Help",
+                enabled: true,
+                action: () => {
+                    alert("Help")
+                }
+            },
+            {
+                text: "Documentation",
+                enabled: true,
+                action: () => {
+                    alert("Documentation")
+                }
+            },
+            {
+                text: "Show Release Notes",
+                enabled: true,
+                action: () => {
+                    alert("Show Release Notes")
+                }
+            },
+            await PredefinedMenuItem.new({text: "Separator", item: 'Separator'}),
+            {
+                text: 'Tips and Tricks',
+                enabled: true,
+                action: () => {
+                    alert("Tips and Tricks")
+                }
+            },
+            await PredefinedMenuItem.new({text: "Separator", item: 'Separator'}),
+            {
+                text: 'Report an Issue',
+                enabled: true,
+                action: () => {
+                    alert("Report an Issue")
+                }
+            },
+            await PredefinedMenuItem.new({text: "Separator", item: 'Separator'}),
+            {
+                text: 'View License',
+                enabled: true,
+                action: () => {
+                    alert("View License")
+                }
+            }
+        ]
+    })
+
     const menu = await Menu.new({
-        items: [submenu, submenu2]
+        items: [appMenu, fileMenu, editMenu , windowMenu, helpMenu ]
     })
 
     const res = await (macOS ? menu.setAsAppMenu() : menu.setAsWindowMenu())
@@ -135,7 +259,7 @@ function App() {
         <SettingsProvider settings={settings}>
             <MainLayout/>
         </SettingsProvider>
-);
+    );
 }
 
 export default App;
