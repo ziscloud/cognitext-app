@@ -145,10 +145,6 @@ async function initMenu() {
             await PredefinedMenuItem.new({text: "Minimize", item: 'Minimize'}),
             await PredefinedMenuItem.new({text: "Maximize", item: 'Maximize'}),
             await PredefinedMenuItem.new({text: "Fullscreen", item: 'Fullscreen'}),
-            await PredefinedMenuItem.new({text: "Copy", item: 'Copy'}),
-            await PredefinedMenuItem.new({text: "Cut", item: 'Cut'}),
-            await PredefinedMenuItem.new({text: "Paste", item: 'Paste'}),
-            await PredefinedMenuItem.new({text: "SelectAll", item: 'SelectAll'}),
         ]
     });
 
