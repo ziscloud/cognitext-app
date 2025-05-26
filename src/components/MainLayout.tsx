@@ -69,9 +69,9 @@ const MainLayout: React.FC = () => {
                 </Splitter.Panel>
                 <Splitter.Panel style={{backgroundColor: colorBgContainer}}>
                     <Tabs className="editor-tabs" type="editable-card"
-                          activeKey={activeTab} items={items}
+                          activeKey={activeTab} items={items} destroyOnHidden={true}
                           onChange={setActiveTab}
-                        //@ts-ignore
+                          //@ts-ignore
                           onEdit={onTabEdit}
                     />
                 </Splitter.Panel>
