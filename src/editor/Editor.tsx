@@ -75,6 +75,7 @@ import ContentEditable from './ui/ContentEditable';
 import MarkdownUpdater from "./plugins/MarkdownUpdater";
 import SavePlugin, {SAVE_COMMAND} from "./plugins/SavePlugin";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
+import ImagePastingPlugin from "./plugins/ImagePastingPlugin";
 // import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
 const skipCollaborationInit =
@@ -239,6 +240,7 @@ const Editor: React.FC = () => {
                         />
                         <TableCellResizer/>
                         <ImagesPlugin/>
+                        <ImagePastingPlugin/>
                         <InlineImagePlugin/>
                         <LinkPlugin hasLinkAttributes={hasLinkAttributes}/>
                         <PollPlugin/>
