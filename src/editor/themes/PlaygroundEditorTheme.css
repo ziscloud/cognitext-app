@@ -13,13 +13,11 @@
   text-align: right;
 }
 .PlaygroundEditorTheme__paragraph {
-  margin: 0;
+  margin: 5px 0;
   position: relative;
 }
 .PlaygroundEditorTheme__quote {
-  margin: 0;
-  margin-left: 20px;
-  margin-bottom: 10px;
+  margin: 0 0 10px 20px;
   font-size: 15px;
   color: rgb(101, 103, 107);
   border-left-color: rgb(206, 208, 212);
@@ -28,36 +26,36 @@
   padding-left: 16px;
 }
 .PlaygroundEditorTheme__h1 {
-  font-size: 34px;
+  font-size: 2.5em;
   color: rgb(5, 5, 5);
   font-weight: 400;
   line-height: 1.6;
   margin: 0;
 }
 .PlaygroundEditorTheme__h2 {
-  font-size: 26px;
+  font-size: 2em;
   color: rgb(5, 5, 5);
   font-weight: 700;
   margin: 0;
   line-height: 1.6;
 }
 .PlaygroundEditorTheme__h3 {
-  font-size: 22px;
+  font-size: 1.75em;
   margin: 0;
   line-height: 1.6;
 }
 .PlaygroundEditorTheme__h4 {
-  font-size: 18px;
+  font-size: 1.5em;
   margin: 0;
   line-height: 1.6;
 }
 .PlaygroundEditorTheme__h5 {
-  font-size: 16px;
+  font-size: 1.25em;
   margin: 0;
   line-height: 1.6;
 }
 .PlaygroundEditorTheme__h6 {
-  font-size: 14px;
+  font-size: 1.125em;
   margin: 0;
   line-height: 1.6;
 }
