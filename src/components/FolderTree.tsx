@@ -1,12 +1,14 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FolderOutlined, PlusOutlined} from '@ant-design/icons';
-import {Button, Flex, Layout, Menu, MenuProps, theme} from 'antd';
+import {Button, Flex, Layout, Menu, MenuProps, Skeleton, theme} from 'antd';
 import {SettingsType, useSettings} from "../settings/SettingsContext.tsx";
 import {DirEntry, readDir} from "@tauri-apps/plugin-fs";
 import {join} from '@tauri-apps/api/path';
 import crypto from "crypto-js";
 import {PiFileMdFill} from "react-icons/pi";
 import DebounceSelect from "./DebounceSelect.tsx";
+import {useEvent} from "../event/EventContext.tsx";
+import {EventType} from "../event/event.ts";
 
 const {Header} = Layout;
 type MenuItem = Required<MenuProps>['items'][number];
@@ -80,11 +82,10 @@ export type EntryItem = { entry: DirEntry, parent?: EntryItem }
 
 const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect}: FolderTreeProps) => {
     const settings: SettingsType = useSettings();
-    const [items, setItems] = React.useState<{ items: MenuItem[], names: Map<string, EntryItem> }>();
-    const {
-        token: {colorBgContainer, colorSplit},
-    } = theme.useToken();
-
+    const [items, setItems] = useState<{ items: MenuItem[], names: Map<string, EntryItem> }>();
+    const [loading, setLoading] = useState(false);
+    const {token: {colorBgContainer, colorSplit}} = theme.useToken();
+    const {subscribe} = useEvent();
     const onClick: MenuProps['onClick'] = (value) => {
         let path;
         let fileName;
@@ -120,12 +121,28 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect}: FolderTreeProps) 
     useEffect(() => {
         if (settings.actionOnStartup?.action === 1 && settings.actionOnStartup?.dir) {
             const rootPath = settings.actionOnStartup?.dir;
+            setLoading(true);
             loadDir(rootPath).then(value => {
-                    setItems(value);
-                }
-            )
+                setItems(value);
+                setLoading(false);
+            });
         }
     }, [settings]);
+
+    useEffect(() => {
+        subscribe(EventType.FILE_SAVED,  async ({file})=> {
+            if (file.isNew) {
+                if (settings.actionOnStartup?.action === 1 && settings.actionOnStartup?.dir) {
+                    const rootPath = settings.actionOnStartup?.dir;
+                    setLoading(true);
+                    loadDir(rootPath).then(value => {
+                        setItems(value);
+                        setLoading(false);
+                    });
+                }
+            }
+        })
+    }, []);
 
     return (
         <Flex vertical={true} style={{height: '100%', width: '100%'}}>
@@ -153,17 +170,18 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect}: FolderTreeProps) 
             </Header>
             <Flex id={'left-panel'}
                   style={{flexGrow: 3, overflowY: 'auto', width: '100%', backgroundColor: colorBgContainer}}>
-                <Menu
+                {loading && <Skeleton active={true}/>}
+                {!loading && <Menu
                     onClick={onClick}
                     style={{width: '100%'}}
                     defaultSelectedKeys={['1']}
                     defaultOpenKeys={['sub1']}
                     mode="inline"
                     items={items?.items || []}
-                />
+                />}
             </Flex>
         </Flex>
     );
 };
 
-export default FolderTree;
+export default React.memo(FolderTree);

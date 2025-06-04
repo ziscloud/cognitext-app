@@ -11,6 +11,9 @@ import MainLayout from "./components/MainLayout.tsx";
 import "./App.css";
 import {SettingsProvider} from "./settings/SettingsContext.tsx";
 import {listen} from "@tauri-apps/api/event";
+import {useEvent} from "./event/EventContext.tsx";
+import { EventType, EventMap } from './event/event.ts';
+import {debounce} from "lodash-es";
 
 const macOS = navigator.userAgent.includes('Macintosh')
 
@@ -43,7 +46,13 @@ async function showSettings() {
     })
 }
 
-async function initMenu() {
+async function init() {
+    if (!await exists('Backups', {baseDir: BaseDirectory.AppConfig})) {
+        await mkdir('Backups', {baseDir: BaseDirectory.AppConfig})
+    }
+}
+
+async function initMenu(publish: <E extends EventType>(event: E, data: EventMap[E]) => void) {
     const appMenu = await Submenu.new({
         id: 'app',
         text: 'app',
@@ -90,7 +99,8 @@ async function initMenu() {
                 enabled: true,
                 accelerator: macOS ? 'Cmd+N' : 'Ctrl+N',
                 action: () => {
-                    alert("New File")
+                    console.log('new file menu is triggered')
+                    publish(EventType.NEW_FILE, {});
                 }
             },
             {
@@ -104,9 +114,11 @@ async function initMenu() {
             {
                 text: "Save",
                 enabled: true,
-                action: () => {
-                    alert("New Folder")
-                }
+                accelerator: macOS ? 'Cmd+S' : 'Ctrl+S',
+                action: debounce(() => {
+                    console.log('save menu is triggered')
+                    publish(EventType.SAVE, {});
+                }, 1000)
             },
             {
                 text: "Save As...",
@@ -123,7 +135,6 @@ async function initMenu() {
                 }
             },
             await PredefinedMenuItem.new({text: "Separator", item: 'Separator'}),
-            await PredefinedMenuItem.new({text: "CloseWindow", item: 'CloseWindow'}),
         ]
     });
     const editMenu = await Submenu.new({
@@ -200,7 +211,7 @@ async function initMenu() {
     })
 
     const menu = await Menu.new({
-        items: [appMenu, fileMenu, editMenu , windowMenu, helpMenu ]
+        items: [appMenu, fileMenu, editMenu, windowMenu, helpMenu]
     })
 
     const res = await (macOS ? menu.setAsAppMenu() : menu.setAsWindowMenu())
@@ -222,13 +233,15 @@ async function loadSettings() {
 function App() {
     // const [greetMsg, setGreetMsg] = useState("");
     const [settings, setSettings] = useState({});
+    const {publish} = useEvent();
     //
     // async function greet() {
     //   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     //   setGreetMsg(await invoke("greet", { name }));
     // }
     useEffect(() => {
-        initMenu();
+        init();
+        initMenu(publish);
         loadSettings().then((settings) => {
             if (settings) {
                 setSettings(settings);
@@ -252,9 +265,10 @@ function App() {
     }, [])
 
     return (
-        <SettingsProvider settings={settings}>
-            <MainLayout/>
-        </SettingsProvider>
+
+            <SettingsProvider settings={settings}>
+                <MainLayout/>
+            </SettingsProvider>
     );
 }
 

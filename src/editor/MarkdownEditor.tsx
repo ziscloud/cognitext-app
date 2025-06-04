@@ -198,7 +198,6 @@ const MarkdownEditor: React.FC<{ file: EditorTabFile }> = ({file}) => {
 
     useEffect(() => {
         const savedScrollTop = localStorage.getItem(file.tabId + '-editor-scroll-position');
-        console.log('savedScrollTop', file.tabId, savedScrollTop, Date.now());
         if (savedScrollTop) {
             setHeight(parseInt(savedScrollTop, 10));
         }

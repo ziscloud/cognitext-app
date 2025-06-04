@@ -62,7 +62,9 @@ import {
   isSuperscript,
   isUppercase,
 } from './shortcuts';
-import {SAVE_COMMAND} from "../SavePlugin";
+// import {SAVE_COMMAND} from "../SavePlugin";
+import {useEvent} from "../../../event/EventContext.tsx";
+import {EventType} from "../../../event/event.ts";
 
 export default function ShortcutsPlugin({
   editor,
@@ -72,6 +74,7 @@ export default function ShortcutsPlugin({
   setIsLinkEditMode: Dispatch<boolean>;
 }): null {
   const {toolbarState} = useToolbarState();
+  const {publish} = useEvent();
 
   useEffect(() => {
     const keyboardShortcutsHandler = (event: KeyboardEvent) => {
@@ -141,7 +144,8 @@ export default function ShortcutsPlugin({
       } else if (isAddComment(event)) {
         editor.dispatchCommand(INSERT_INLINE_COMMAND, undefined);
       } else if (isSave(event)) {
-        editor.dispatchCommand(SAVE_COMMAND, undefined);
+        publish(EventType.SAVE, {});
+        //editor.dispatchCommand(SAVE_COMMAND, undefined);
       } else {
         // No match for any of the event handlers
         return false;
