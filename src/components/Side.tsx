@@ -4,6 +4,7 @@ import {Flex, MenuProps} from 'antd';
 import {Layout, Menu, theme} from 'antd';
 import {IoLogoMarkdown} from "react-icons/io";
 import {HiOutlineChatAlt2} from "react-icons/hi";
+import {MdToc} from "react-icons/md";
 
 const {Sider} = Layout;
 
@@ -25,6 +26,7 @@ function getItem(
 
 const items: MenuItem[] = [
     getItem('Notes', 'notes', <IoLogoMarkdown size={24}/>),
+    getItem('TOC', 'toc', <MdToc size={24}/>),
     getItem('Search File Content', 'search', <SearchOutlined size={24}/>),
     getItem('AI Chat', 'chat', <HiOutlineChatAlt2 size={24}/>),
 ];
