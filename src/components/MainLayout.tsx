@@ -10,6 +10,8 @@ import {EventType} from "../event/event.ts";
 import {save} from "@tauri-apps/plugin-dialog";
 import {useSettings} from "../settings/SettingsContext.tsx";
 import {GoDotFill} from "react-icons/go";
+import TableOfContentsList from "./TableOfContentsList.tsx";
+import type {TableOfContentsEntry} from "@lexical/react/LexicalTableOfContentsPlugin";
 
 type TabsItem = Required<TabsProps>['items'][number];
 
@@ -28,10 +30,11 @@ const MainLayout: React.FC = () => {
     const [activeTabKey, setActiveTabKey] = useState<string>('');
     const [targetTabKey, setTargetTabKey] = useState<string>('');
     //@ts-ignore
-    const [activeMenu, setActiveMenu] = useState<string>('');
+    const [activeMenu, setActiveMenu] = useState<string>('notes');
     const [items, setItems] = useState<TabsItem[]>([]);
     const [newFileCount, setNewFileCount] = useState<number>(1);
     const [open, setOpen] = useState(false);
+    const [tableOfContents, setTableOfContents] = useState<Partial<Record<string, Array<TableOfContentsEntry>>>>({});
     // refs
     const newFileCountRef = useRef(newFileCount);
     const openFilesRef = useRef(openFiles);
@@ -50,7 +53,7 @@ const MainLayout: React.FC = () => {
                 key: 'tab-' + key,
                 label: fileName?.split('.').slice(0, -1).join('.'),
                 isNew: false,
-                children: <MarkdownEditor key={'editor-' + key} file={{
+                children: <MarkdownEditor id={key} key={'editor-' + key} file={{
                     language: 'markdown',
                     value: fileContent,
                     path: path,
@@ -79,7 +82,7 @@ const MainLayout: React.FC = () => {
             label: `Untitled ${newFileCount}`,
             isNew: true,
             icon: <GoDotFill/>,
-            children: <MarkdownEditor key={'editor-' + fileName} file={{
+            children: <MarkdownEditor id={id} key={'editor-' + fileName} file={{
                 language: 'markdown',
                 value: '# ',
                 path: path,
@@ -144,7 +147,7 @@ const MainLayout: React.FC = () => {
                                 label: fileName,
                                 isNew: false,
                                 icon: false,
-                                children: <MarkdownEditor key={'editor-' + fileName} file={{
+                                children: <MarkdownEditor id={file.tabId} key={'editor-' + fileName} file={{
                                     language: 'markdown',
                                     value: content || '',
                                     path: path,
@@ -228,12 +231,22 @@ const MainLayout: React.FC = () => {
         });
     }, [subscribe]);
 
+    useEffect(() => {
+        return subscribe(EventType.FILE_TOC, ({id, toc}) => {
+            setTableOfContents(prevState => {
+                return {...prevState, [id]: toc};
+            });
+        });
+    }, [subscribe]);
+
     return (
         <Layout style={{minHeight: '100vh'}}>
             <Side onMenuClick={onMenuClick}/>
             <Splitter style={{height: '100vh'}} className={'main-content'} lazy={true}>
                 <Splitter.Panel defaultSize="20%" min="0" max="70%" collapsible={true}>
-                    <FolderTree onFileSelect={onFileSelected}/>
+                    {activeMenu === 'notes' && <FolderTree onFileSelect={onFileSelected}/>}
+                    {activeMenu === 'toc' && <TableOfContentsList id={activeTabKey?.substring(4)}
+                                                                  tableOfContents={tableOfContents[activeTabKey?.substring(4)]}/>}
                 </Splitter.Panel>
                 <Splitter.Panel style={{backgroundColor: colorBgContainer}}>
                     <Modal

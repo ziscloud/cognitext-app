@@ -23,6 +23,7 @@ import {CustomScroll} from "react-custom-scroll";
 import React, {UIEvent, useEffect, useState} from "react";
 import './index.css'
 import {EditorTabFile, FileProvider} from "./context/FileContext.tsx";
+import {MultipleEditorStorePlugin} from "./plugins/MultipleEditorStorePlugin.tsx";
 
 function getExtraStyles(element: HTMLElement): string {
     // Parse styles from pasted input, but only if they match exactly the
@@ -170,7 +171,7 @@ function $prepopulatedRichText() {
 }
 
 
-const MarkdownEditor: React.FC<{ file: EditorTabFile }> = ({file}) => {
+const MarkdownEditor: React.FC<{ file: EditorTabFile, id: string }> = ({file, id}) => {
     const {
         settings: {isCollab, emptyEditor, measureTypingPerf},
     } = useEditorSettings();
@@ -231,6 +232,7 @@ const MarkdownEditor: React.FC<{ file: EditorTabFile }> = ({file}) => {
                                             {/*{isDevPlayground ? <TestRecorderPlugin/> : null}*/}
 
                                             {measureTypingPerf ? <TypingPerfPlugin/> : null}
+                                            <MultipleEditorStorePlugin id={id} />
                                         </ToolbarContext>
                                     </TableContext>
                                 </SharedHistoryContext>

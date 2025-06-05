@@ -12,8 +12,9 @@ import "./App.css";
 import {SettingsProvider} from "./settings/SettingsContext.tsx";
 import {listen} from "@tauri-apps/api/event";
 import {useEvent} from "./event/EventContext.tsx";
-import { EventType, EventMap } from './event/event.ts';
+import {EventMap, EventType} from './event/event.ts';
 import {debounce} from "lodash-es";
+import {EditorProvider} from "./editor/EditorProvider.tsx";
 
 const macOS = navigator.userAgent.includes('Macintosh')
 
@@ -266,9 +267,11 @@ function App() {
 
     return (
 
-            <SettingsProvider settings={settings}>
+        <SettingsProvider settings={settings}>
+            <EditorProvider>
                 <MainLayout/>
-            </SettingsProvider>
+            </EditorProvider>
+        </SettingsProvider>
     );
 }
 

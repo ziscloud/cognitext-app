@@ -28,7 +28,7 @@ export const DEFAULT_SETTINGS = {
   shouldPreserveNewLinesInMarkdown: true,
   shouldUseLexicalContextMenu: true,
   showNestedEditorTreeView: false,
-  showTableOfContents: false,
+  showTableOfContents: true,
   showTreeView: true,
   tableCellBackgroundColor: true,
   tableCellMerge: true,

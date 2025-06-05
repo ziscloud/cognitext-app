@@ -1,8 +1,10 @@
 // types/event.ts
 import {EditorTabFile} from "../editor/context/FileContext.tsx";
+import type {TableOfContentsEntry} from "@lexical/react/LexicalTableOfContentsPlugin";
 
 export enum EventType {
     FILE_SAVED = 'file/saved',
+    FILE_TOC = 'file/toc',
     SAVE_FILE = 'file/save',
     FILE_CHANGED = 'file/changed',
     SAVE = 'menu/save',
@@ -15,6 +17,7 @@ export enum EventType {
 export interface EventMap {
     [EventType.FILE_SAVED]: { file: EditorTabFile; path?: string, content?: string };
     [EventType.SAVE]: {};
+    [EventType.FILE_TOC]: {id: string, toc:Array<TableOfContentsEntry>};
     [EventType.FILE_CHANGED]: {tabId: string};
     [EventType.NEW_FILE]: {};
     [EventType.SAVE_FILE]: {path?:string};
