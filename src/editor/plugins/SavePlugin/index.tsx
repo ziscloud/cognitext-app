@@ -41,13 +41,11 @@ export default function SavePlugin(): JSX.Element {
                         marginTop: '40px',
                     },
                 })
-                if (path) {
                     publish(EventType.FILE_SAVED, {
                         path: path,
                         file: file,
                         content: markdown,
                     });
-                }
             })
         }
     }

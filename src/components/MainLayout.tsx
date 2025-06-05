@@ -9,6 +9,7 @@ import {useEvent} from "../event/EventContext.tsx";
 import {EventType} from "../event/event.ts";
 import {save} from "@tauri-apps/plugin-dialog";
 import {useSettings} from "../settings/SettingsContext.tsx";
+import {GoDotFill} from "react-icons/go";
 
 type TabsItem = Required<TabsProps>['items'][number];
 
@@ -77,6 +78,7 @@ const MainLayout: React.FC = () => {
             key: 'tab-' + id,
             label: `Untitled ${newFileCount}`,
             isNew: true,
+            icon: <GoDotFill/>,
             children: <MarkdownEditor key={'editor-' + fileName} file={{
                 language: 'markdown',
                 value: '# ',
@@ -131,23 +133,32 @@ const MainLayout: React.FC = () => {
 
     useEffect(() => {
         return subscribe(EventType.FILE_SAVED, ({file, path, content}) => {
+            console.log('FILE_SAVED', path)
             if (openFilesRef.current.includes('tab-' + file.tabId)) {
                 setItems(prevState => prevState.map((item) => {
-                    if ((item.key === 'tab-' + file.tabId) && path) {
-                        const fileName = getFileNameWithoutExtension(path)
-                        return {
-                            key: 'tab-' + file.tabId,
-                            label: fileName,
-                            isNew: false,
-                            children: <MarkdownEditor key={'editor-' + fileName} file={{
-                                language: 'markdown',
-                                value: content || '',
-                                path: path,
-                                tabId: file.tabId,
-                                groupId: '0',
-                                isNew: false
-                            }}/>,
-                        };
+                    if ((item.key === 'tab-' + file.tabId)) {
+                        if (file.isNew) {
+                            const fileName = getFileNameWithoutExtension(path)
+                            return {
+                                key: 'tab-' + file.tabId,
+                                label: fileName,
+                                isNew: false,
+                                icon: false,
+                                children: <MarkdownEditor key={'editor-' + fileName} file={{
+                                    language: 'markdown',
+                                    value: content || '',
+                                    path: path,
+                                    tabId: file.tabId,
+                                    groupId: '0',
+                                    isNew: false
+                                }}/>,
+                            };
+                        } else {
+                            return {
+                                ...item,
+                                icon: false,
+                            };
+                        }
                     } else {
                         return item;
                     }
@@ -177,6 +188,26 @@ const MainLayout: React.FC = () => {
     useEffect(() => {
         return subscribe(EventType.NEW_FILE, async () => {
             await createNewFile(newFileCountRef.current);
+        });
+    }, [subscribe]);
+
+    useEffect(() => {
+        return subscribe(EventType.FILE_CHANGED, async ({tabId}) => {
+            console.log('file change of tab', tabId)
+            if (openFilesRef.current.includes('tab-' + tabId)) {
+                setItems(prevState => prevState.map((item) => {
+                    if ((item.key === 'tab-' + tabId)) {
+                        return {
+                            ...item,
+                            icon: <GoDotFill/>,
+                        };
+                    } else {
+                        return item;
+                    }
+                }));
+            } else {
+                console.log('tab is not opened', 'tab-' + tabId)
+            }
         });
     }, [subscribe]);
 

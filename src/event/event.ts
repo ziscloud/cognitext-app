@@ -4,6 +4,7 @@ import {EditorTabFile} from "../editor/context/FileContext.tsx";
 export enum EventType {
     FILE_SAVED = 'file/saved',
     SAVE_FILE = 'file/save',
+    FILE_CHANGED = 'file/changed',
     SAVE = 'menu/save',
     NEW_FILE = 'file/new',
     DATA_UPDATED = 'data/updated',
@@ -14,6 +15,7 @@ export enum EventType {
 export interface EventMap {
     [EventType.FILE_SAVED]: { file: EditorTabFile; path?: string, content?: string };
     [EventType.SAVE]: {};
+    [EventType.FILE_CHANGED]: {tabId: string};
     [EventType.NEW_FILE]: {};
     [EventType.SAVE_FILE]: {path?:string};
     [EventType.DATA_UPDATED]: { id: number; value: string };

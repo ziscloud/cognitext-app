@@ -76,6 +76,10 @@ import MarkdownUpdater from "./plugins/MarkdownUpdater";
 import SavePlugin from "./plugins/SavePlugin";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
 import ImagePastingPlugin from "./plugins/ImagePastingPlugin";
+import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin';
+import {useFile} from "./context/FileContext.tsx";
+import {useEvent} from "../event/EventContext.tsx";
+import {EventType} from "../event/event.ts";
 // import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
 const skipCollaborationInit =
@@ -118,6 +122,9 @@ const Editor: React.FC = () => {
     const [activeEditor, setActiveEditor] = useState(editor);
     const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
 
+    let file = useFile();
+    const {publish} =useEvent();
+
     const onRef = (_floatingAnchorElem: HTMLDivElement) => {
         if (_floatingAnchorElem !== null) {
             setFloatingAnchorElem(_floatingAnchorElem);
@@ -140,6 +147,10 @@ const Editor: React.FC = () => {
             window.removeEventListener('resize', updateViewPortWidth);
         };
     }, [isSmallWidthViewport]);
+
+    const onChange = ()=>{
+        publish(EventType.FILE_CHANGED, {tabId: file.tabId})
+    }
 
     return (
         <>
@@ -233,6 +244,7 @@ const Editor: React.FC = () => {
                             hasHorizontalScroll={tableHorizontalScroll}
                         />
                         <TableCellResizer/>
+                        <OnChangePlugin onChange={onChange}/>
                         <ImagesPlugin/>
                         <ImagePastingPlugin/>
                         <InlineImagePlugin/>
