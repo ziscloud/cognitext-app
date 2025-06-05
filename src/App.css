@@ -11,11 +11,11 @@ html, body, #root {
 }
 
 .editor-tabs .ant-tabs-content {
-    height:  100% ;
+    height: 100%;
 }
 
 .editor-tabs .ant-tabs-content .ant-tabs-tabpane {
-    height:  100% ;
+    height: 100%;
     overflow: hidden;
 }
 
@@ -36,17 +36,23 @@ html, body, #root {
     width: calc(100% - 56px);
 }
 
-.search-file-name, .search-file-name .ant-select-selector,.search-file-name .ant-select-selection-wrap{
+.search-file-name, .search-file-name .ant-select-selector, .search-file-name .ant-select-selection-wrap {
     width: 100%;
     max-width: 100%;
     overflow: hidden; /* 隐藏超出部分 */
-    text-overflow: ellipsis; !important; /* 超出部分显示省略号 */
-    white-space: nowrap; !important; /* 防止文本换行 */
+    text-overflow: ellipsis !important; /* 超出部分显示省略号 */
+    white-space: nowrap !important; /* 防止文本换行 */
 }
+
 .left-panel-header-container .ant-select .ant-select-selection-item {
     width: 100%;
     max-width: 100%;
     overflow: hidden; /* 隐藏超出部分 */
     text-overflow: ellipsis; /* 超出部分显示省略号 */
-    white-space: nowrap; !important; /* 防止文本换行 */
+    white-space: nowrap !important; /* 防止文本换行 */
+}
+
+.ant-tabs .ant-tabs-tab-btn .ant-tabs-tab-icon:not(:last-child) {
+    margin-inline-end: 4px;
+    vertical-align: middle;
 }
