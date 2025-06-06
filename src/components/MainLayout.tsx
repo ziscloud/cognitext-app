@@ -244,9 +244,16 @@ const MainLayout: React.FC = () => {
             <Side onMenuClick={onMenuClick}/>
             <Splitter style={{height: '100vh'}} className={'main-content'} lazy={true}>
                 <Splitter.Panel defaultSize="20%" min="0" max="70%" collapsible={true}>
-                    {activeMenu === 'notes' && <FolderTree onFileSelect={onFileSelected}/>}
-                    {activeMenu === 'toc' && <TableOfContentsList id={activeTabKey?.substring(4)}
-                                                                  tableOfContents={tableOfContents[activeTabKey?.substring(4)]}/>}
+                    <div style={{ display: activeMenu === 'notes' ? 'block' : 'none', height: '100%' }}>
+                        <FolderTree onFileSelect={onFileSelected} />
+                    </div>
+
+                    <div style={{ display: activeMenu === 'toc' ? 'block' : 'none', height: '100%' }}>
+                        <TableOfContentsList
+                            id={activeTabKey?.substring(4)}
+                            tableOfContents={tableOfContents[activeTabKey?.substring(4)]}
+                        />
+                    </div>
                 </Splitter.Panel>
                 <Splitter.Panel style={{backgroundColor: colorBgContainer}}>
                     <Modal
