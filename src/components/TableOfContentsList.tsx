@@ -26,6 +26,36 @@ function isHeadingBelowTheTopOfThePage(element: HTMLElement): boolean {
     return elementYPosition >= MARGIN_ABOVE_EDITOR + HEADING_WIDTH;
 }
 
+function findNearestParent(currentLevel: {}, tag: "h1" | "h2" | "h3" | "h4" | "h5" | "h6") {
+    let cur = currentLevel;
+    while (true) {
+        if (cur.parent) {
+            if (cur.parent.tag === tag) {
+                if (cur.parent.parent) {
+                    // current = cur.parent.parent.children;
+                    // currentLevel = cur.parent.parent;
+                    return cur.parent.parent;
+                } else {
+                    // current = data;
+                    // currentLevel = root;
+                    return undefined;
+                }
+            } else if (cur.parent.tag < tag) {
+                // current = cur.parent.children;
+                // currentLevel = cur.parent;
+                return cur.parent;
+            } else {
+                console.log('parent of cur is lower than tag', cur.parent.tag, tag);
+            }
+        } else {
+            // current = data;
+            // currentLevel = cur;
+            return undefined;
+        }
+        cur = cur.parent;
+    }
+}
+
 function TableOfContentsList({
                                  id,
                                  tableOfContents,
@@ -121,57 +151,41 @@ function TableOfContentsList({
         }
 
         const data: TreeDataNode[] = [];
-        let currentLevel = {};
-        let root = {};
-        let current = data;
+        let currentLevel:any ;
         const keys:string[] = []
         tableOfContents?.forEach(([key, text, tag], index) => {
             keys.push(key);
-                if (index === 0) {
+                if (tag === 'h1' || !currentLevel) {
                     const root = {title: text, key, index, tag, children: [], parent: null};
-                    current.push(root)
+                    data.push(root)
                     currentLevel = root;
                 } else {
                     if (tag === currentLevel.tag) {
-                        const item = {title: text, key, index, tag, children: [], parent: currentLevel.parent};
-                        current.push(item);
+                        const parent = currentLevel.parent;
+                        const item = {title: text, key, index, tag, children: [], parent: parent};
+                        if (!parent) {
+                            data.push(item)
+                        } else {
+                            parent.children.push(item);
+                        }
                         currentLevel = item;
                     }
 
                     if (tag < currentLevel.tag) {
-                        let cur = currentLevel;
-                        while (true) {
-                            if (cur.parent) {
-                                if (cur.parent.tag === tag) {
-                                    if (cur.parent.parent) {
-                                        current = cur.parent.parent.children;
-                                        currentLevel = cur.parent.parent;
-                                    } else {
-                                        current = data;
-                                        currentLevel = root;
-                                    }
-                                    break;
-                                } else if (cur.parent.tag < tag) {
-                                    current = cur.parent.children;
-                                    currentLevel = cur.parent;
-                                    break;
-                                }
-                            } else {
-                                current = data;
-                                currentLevel = cur;
-                                break
-                            }
-                            cur = cur.parent;
+                        const parent  = findNearestParent(currentLevel, tag);
+                        const item = {title: text, key, index, tag, children: [], parent: parent};
+
+                        if (!parent) {
+                            data.push(item)
+                        } else {
+                            parent.children.push(item);
                         }
-                        const item = {title: text, key, index, tag, children: [], parent: currentLevel};
-                        current.push(item);
                         currentLevel = item;
                     }
 
                     if (tag > currentLevel.tag) {
                         const item = {title: text, key, index, tag, children: [], parent: currentLevel};
-                        current = currentLevel.children;
-                        current.push(item);
+                        currentLevel.children.push(item);
                         currentLevel = item;
                     }
                 }

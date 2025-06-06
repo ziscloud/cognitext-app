@@ -26,26 +26,24 @@ function getFileNameWithoutExtension(path: string): string {
 
 const MainLayout: React.FC = () => {
     // status
-    const [openFiles, setOpenFiles] = useState<string[]>([]);
     const [activeTabKey, setActiveTabKey] = useState<string>('');
     const [targetTabKey, setTargetTabKey] = useState<string>('');
     //@ts-ignore
     const [activeMenu, setActiveMenu] = useState<string>('notes');
-    const [items, setItems] = useState<TabsItem[]>([]);
+    const [tabItems, setTabItems] = useState<TabsItem[]>([]);
     const [newFileCount, setNewFileCount] = useState<number>(1);
     const [open, setOpen] = useState(false);
     const [tableOfContents, setTableOfContents] = useState<Partial<Record<string, Array<TableOfContentsEntry>>>>({});
     // refs
     const newFileCountRef = useRef(newFileCount);
-    const openFilesRef = useRef(openFiles);
     const activeTabKeyRef = useRef(activeTabKey);
-    const itemsRef = useRef(items);
+    const tabItemsRef = useRef(tabItems);
     // mics
     const settings = useSettings();
     const {token: {colorBgContainer}} = theme.useToken();
     const {subscribe, publish} = useEvent();
     const onFileSelected = async (key: string, path: string, fileName?: string) => {
-        if (openFiles.includes('tab-' + key)) {
+        if (tabItems.find(item=>item.key === 'tab-' + key)) {
             setActiveTabKey('tab-' + key);
         } else {
             const fileContent = await readTextFile(path, {});
@@ -63,8 +61,7 @@ const MainLayout: React.FC = () => {
                 }}/>,
             } as TabsItem;
 
-            setItems(prevState => [...prevState, item])
-            setOpenFiles(prevState => [...prevState, 'tab-' + key]);
+            setTabItems(prevState => [...prevState, item])
             setActiveTabKey('tab-' + key);
         }
     }
@@ -92,40 +89,41 @@ const MainLayout: React.FC = () => {
             }}/>,
         } as TabsItem;
 
-        setItems(prevState => [...prevState, item])
-        setOpenFiles(prevState => [...prevState, 'tab-' + id]);
+        setTabItems(prevState => [...prevState, item])
         setActiveTabKey('tab-' + id);
         setNewFileCount(prevState => prevState + 1);
     }
 
-    function updateActiveTab(targetTabKey: string) {
-        const find = items.find((pane) => pane.key === targetTabKey);
+    function updateActiveTabAfterCloseTab(targetTabKey: string) {
+        const targetTab = tabItems.find((pane) => pane.key === targetTabKey);
         //@ts-ignore
-        if (find?.isNew) {
+        if (targetTab?.isNew) {//saved, closed
             setNewFileCount(prevState => prevState - 1);
         }
-        const targetIndex = items.findIndex((pane) => pane.key === targetTabKey);
-        const newPanes = items.filter((pane) => pane.key !== targetTabKey);
-        if (newPanes.length && targetTabKey === activeTabKey) {
-            const {key} = newPanes[targetIndex === newPanes.length ? targetIndex - 1 : targetIndex];
+        const targetIndex = tabItems.findIndex((pane) => pane.key === targetTabKey);
+        const otherTabs = tabItems.filter((pane) => pane.key !== targetTabKey);
+        if (otherTabs.length && targetTabKey === activeTabKey) {
+            const {key} = otherTabs[targetIndex === otherTabs.length ? targetIndex - 1 : targetIndex];
             setActiveTabKey(key);
         }
-        setOpenFiles(newPanes.map((pane) => pane.key))
-        setItems(newPanes);
+        setTabItems(otherTabs);
+        if (otherTabs.length == 0) {
+            setActiveTabKey('');
+        }
     }
 
     const onTabEdit = async (targetTabKey: string, action: 'add' | 'remove') => {
         if (action === 'add') {
             await createNewFile(newFileCount);
         } else {
-            const find = items.find((pane) => pane.key === targetTabKey);
+            const find = tabItems.find((pane) => pane.key === targetTabKey);
             //@ts-ignore
             if (find?.isNew) {
                 setOpen(true);
                 setTargetTabKey(targetTabKey);
             } else {
                 publish(EventType.SAVE_FILE, {});
-                updateActiveTab(targetTabKey)
+                updateActiveTabAfterCloseTab(targetTabKey)
             }
         }
     };
@@ -137,8 +135,8 @@ const MainLayout: React.FC = () => {
     useEffect(() => {
         return subscribe(EventType.FILE_SAVED, ({file, path, content}) => {
             console.log('FILE_SAVED', path)
-            if (openFilesRef.current.includes('tab-' + file.tabId)) {
-                setItems(prevState => prevState.map((item) => {
+            if (tabItemsRef.current.find(item => item.key ==='tab-' + file.tabId)) {
+                setTabItems(prevState => prevState.map((item) => {
                     if ((item.key === 'tab-' + file.tabId)) {
                         if (file.isNew) {
                             const fileName = getFileNameWithoutExtension(path)
@@ -177,16 +175,12 @@ const MainLayout: React.FC = () => {
     }, [newFileCount]);
 
     useEffect(() => {
-        openFilesRef.current = openFiles;
-    }, [openFiles]);
-
-    useEffect(() => {
         activeTabKeyRef.current = activeTabKey;
     }, [activeTabKey]);
 
     useEffect(() => {
-        itemsRef.current = items;
-    }, [items]);
+        tabItemsRef.current = tabItems;
+    }, [tabItems]);
 
     useEffect(() => {
         return subscribe(EventType.NEW_FILE, async () => {
@@ -197,8 +191,8 @@ const MainLayout: React.FC = () => {
     useEffect(() => {
         return subscribe(EventType.FILE_CHANGED, async ({tabId}) => {
             console.log('file change of tab', tabId)
-            if (openFilesRef.current.includes('tab-' + tabId)) {
-                setItems(prevState => prevState.map((item) => {
+            if (tabItemsRef.current.find(item => item.id === 'tab-' + tabId)) {
+                setTabItems(prevState => prevState.map((item) => {
                     if ((item.key === 'tab-' + tabId)) {
                         return {
                             ...item,
@@ -217,7 +211,7 @@ const MainLayout: React.FC = () => {
     useEffect(() => {
         return subscribe(EventType.SAVE, async () => {
             if (activeTabKeyRef.current) {
-                const find = itemsRef.current.find((pane) => pane.key === activeTabKeyRef.current);
+                const find = tabItemsRef.current.find((pane) => pane.key === activeTabKeyRef.current);
                 //@ts-ignore
                 if (find?.isNew) {
                     setOpen(true);
@@ -226,7 +220,7 @@ const MainLayout: React.FC = () => {
                     publish(EventType.SAVE_FILE, {});
                 }
             } else {
-                console.log('activeTabKey is not found', itemsRef.current, activeTabKeyRef.current)
+                console.log('activeTabKey is not found', tabItemsRef.current, activeTabKeyRef.current)
             }
         });
     }, [subscribe]);
@@ -271,7 +265,7 @@ const MainLayout: React.FC = () => {
                                     console.log('path', path)
                                     if (path) {
                                         publish(EventType.SAVE_FILE, {path: path});
-                                        updateActiveTab(targetTabKey);
+                                        updateActiveTabAfterCloseTab(targetTabKey);
                                         setTargetTabKey('');
                                     } else {
                                         console.log('save file is canceled on the location choosing step.')
@@ -282,7 +276,7 @@ const MainLayout: React.FC = () => {
                             </Button>,
                             <Button key="submit" onClick={() => {
                                 setOpen(false);
-                                updateActiveTab(targetTabKey);
+                                updateActiveTabAfterCloseTab(targetTabKey);
                                 setTargetTabKey('');
                             }}>
                                 Do not save
@@ -298,7 +292,7 @@ const MainLayout: React.FC = () => {
                         <p>Your changes will be lost if you don't save them.</p>
                     </Modal>
                     <Tabs className="editor-tabs" type="editable-card"
-                          activeKey={activeTabKey} items={items}
+                          activeKey={activeTabKey} items={tabItems}
                           onChange={setActiveTabKey}
                         //@ts-ignore
                           onEdit={onTabEdit}
