@@ -26,6 +26,7 @@ function getFileNameWithoutExtension(path: string): string {
 
 const MainLayout: React.FC = () => {
     // status
+    const [sideWidth, setSideWidth] = useState<number>(200);
     const [activeTabKey, setActiveTabKey] = useState<string>('');
     const [targetTabKey, setTargetTabKey] = useState<string>('');
     //@ts-ignore
@@ -43,7 +44,7 @@ const MainLayout: React.FC = () => {
     const {token: {colorBgContainer}} = theme.useToken();
     const {subscribe, publish} = useEvent();
     const onFileSelected = async (key: string, path: string, fileName?: string) => {
-        if (tabItems.find(item=>item.key === 'tab-' + key)) {
+        if (tabItems.find(item => item.key === 'tab-' + key)) {
             setActiveTabKey('tab-' + key);
         } else {
             const fileContent = await readTextFile(path, {});
@@ -135,7 +136,7 @@ const MainLayout: React.FC = () => {
     useEffect(() => {
         return subscribe(EventType.FILE_SAVED, ({file, path, content}) => {
             console.log('FILE_SAVED', path)
-            if (tabItemsRef.current.find(item => item.key ==='tab-' + file.tabId)) {
+            if (tabItemsRef.current.find(item => item.key === 'tab-' + file.tabId)) {
                 setTabItems(prevState => prevState.map((item) => {
                     if ((item.key === 'tab-' + file.tabId)) {
                         if (file.isNew) {
@@ -236,17 +237,22 @@ const MainLayout: React.FC = () => {
     return (
         <Layout style={{minHeight: '100vh'}}>
             <Side onMenuClick={onMenuClick}/>
-            <Splitter style={{height: '100vh'}} className={'main-content'} lazy={true}>
-                <Splitter.Panel defaultSize="20%" min="0" max="70%" collapsible={true}>
-                    <div style={{ display: activeMenu === 'notes' ? 'block' : 'none', height: '100%' }}>
-                        <FolderTree onFileSelect={onFileSelected} />
+            <Splitter style={{height: '100vh'}} className={'main-content'} lazy={true} onResizeEnd={(sizes)=>{
+                console.log('side size', sizes)
+                setSideWidth(sizes[0]);
+            }}>
+                <Splitter.Panel defaultSize={sideWidth} min="0" max="70%" collapsible={true} style={{overflowX: 'hidden'}}>
+                    <div style={{display: activeMenu === 'notes' ? 'block' : 'none', height: '100%', width: sideWidth, overflow: 'hidden'}}>
+                        <FolderTree onFileSelect={onFileSelected} width={sideWidth}/>
                     </div>
 
-                    <div style={{ display: activeMenu === 'toc' ? 'block' : 'none', height: '100%' }}>
+                    <div style={{display: activeMenu === 'toc' ? 'block' : 'none', height: '100%', width: sideWidth}}>
                         <TableOfContentsList
                             id={activeTabKey?.substring(4)}
                             tableOfContents={tableOfContents[activeTabKey?.substring(4)]}
                         />
+                    </div>
+                    <div style={{display: activeMenu === 'search' ? 'block' : 'none', height: '100%', width: sideWidth}}>
                     </div>
                 </Splitter.Panel>
                 <Splitter.Panel style={{backgroundColor: colorBgContainer}}>

@@ -1,20 +1,24 @@
 import React, {useEffect, useState} from 'react';
 import {FolderOutlined, PlusOutlined} from '@ant-design/icons';
-import {Button, Flex, Layout, Menu, MenuProps, Skeleton, theme} from 'antd';
+import type {GetProps, TreeDataNode} from 'antd';
+import {Button, Flex, Layout, Skeleton, theme, Tree} from 'antd';
 import {SettingsType, useSettings} from "../settings/SettingsContext.tsx";
 import {DirEntry, readDir} from "@tauri-apps/plugin-fs";
 import {join} from '@tauri-apps/api/path';
 import crypto from "crypto-js";
-import {PiFileMdFill} from "react-icons/pi";
 import DebounceSelect from "./DebounceSelect.tsx";
 import {useEvent} from "../event/EventContext.tsx";
 import {EventType} from "../event/event.ts";
+import {PiFileMdFill} from "react-icons/pi";
+import TreeTitle from "./TreeTitle.tsx";
 
+type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>;
+
+const {DirectoryTree} = Tree;
 const {Header} = Layout;
-type MenuItem = Required<MenuProps>['items'][number];
 
-async function processEntriesRecursively(parentPath: string, entries: DirEntry[], parent?: EntryItem) {
-    const items: MenuItem[] = [];
+async function processEntriesRecursively(parentPath: string, entries: DirEntry[], level:number, parent?: EntryItem) {
+    const items: TreeDataNode[] = [];
     const names = new Map<string, EntryItem>();
     for (const entry of entries) {
         if (entry.name.startsWith(".")) {
@@ -33,22 +37,25 @@ async function processEntriesRecursively(parentPath: string, entries: DirEntry[]
         names.set(key, item);
 
         if (entry.isDirectory) {
-            const children = await processEntriesRecursively(path, await readDir(path), item);
+            const children = await processEntriesRecursively(path, await readDir(path), level+1, item);
             //将children的names添加到当前的names中
             for (const [k, v] of children.names) {
                 names.set(k, v);
             }
             items.push({
                 key: key,
-                label: entry.name,
                 icon: <FolderOutlined/>,
+                title: entry.name,
                 children: children.items,
+                level:level,
             })
         } else {
             items.push({
                 key: key,
-                label: entry.name,
+                title: entry.name,
                 icon: <PiFileMdFill/>,
+                isLeaf: true,
+                level:level,
             })
         }
         //对items进行排序，有children的排在顶部，无children的排在底部，有无children的排序都是按照label的字母顺序排序
@@ -62,7 +69,7 @@ async function processEntriesRecursively(parentPath: string, entries: DirEntry[]
                 return 1;
             }
             //@ts-ignore
-            return a.label.localeCompare(b.label);
+            return a.title.localeCompare(b.title);
         });
     }
 
@@ -71,51 +78,41 @@ async function processEntriesRecursively(parentPath: string, entries: DirEntry[]
 
 async function loadDir(dir: string) {
     const entries: DirEntry[] = await readDir(dir);
-    return await processEntriesRecursively(dir, entries);
+    return await processEntriesRecursively(dir, entries, 1);
 }
 
 interface FolderTreeProps {
-    onFileSelect: (key: string, path: string, fileName?: string) => void
+    onFileSelect: (key: string, path: string, fileName?: string) => void,
+    width: number
 }
 
 export type EntryItem = { entry: DirEntry, parent?: EntryItem }
 
-const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect}: FolderTreeProps) => {
+const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTreeProps) => {
     const settings: SettingsType = useSettings();
-    const [items, setItems] = useState<{ items: MenuItem[], names: Map<string, EntryItem> }>();
+    const [items, setItems] = useState<{ items: TreeDataNode[], names: Map<string, EntryItem> }>();
     const [loading, setLoading] = useState(false);
     const {token: {colorBgContainer, colorSplit}} = theme.useToken();
     const {subscribe} = useEvent();
-    const onClick: MenuProps['onClick'] = (value) => {
+    const onClick: DirectoryTreeProps["onSelect"] = (value) => {
         let path;
         let fileName;
-        const {key, keyPath} = value;
-        //event from menu item click
-        if (keyPath) {
-            const names = keyPath.map(k => {
-                return items?.names.get(k)?.entry.name
-            });
-            fileName = items?.names?.get(key)?.entry.name;
-            path = settings.actionOnStartup?.dir + "/" + names.reverse().join('/');
-            onFileSelect(key, path, fileName);
-        } else {
-            //event from search
-            const parents: string[] = [];
-            //@ts-ignore
-            let currentItem: EntryItem | undefined = items?.names?.get(value);
-            fileName = currentItem?.entry.name;
-            while (currentItem) {
-                if (currentItem.parent) {
-                    parents.push(currentItem.parent.entry.name);
-                    currentItem = currentItem.parent;
-                } else {
-                    break;
-                }
+        //event from search
+        const parents: string[] = [];
+        //@ts-ignore
+        let currentItem: EntryItem | undefined = items?.names?.get(Array.isArray(value) ? value[0] : value);
+        fileName = currentItem?.entry.name;
+        while (currentItem) {
+            if (currentItem.parent) {
+                parents.push(currentItem.parent.entry.name);
+                currentItem = currentItem.parent;
+            } else {
+                break;
             }
-            path = settings.actionOnStartup?.dir + "/" + parents.reverse().join('/') + "/" + fileName;
-            //@ts-ignore
-            onFileSelect(value, path, fileName);
         }
+        path = settings.actionOnStartup?.dir + "/" + parents.reverse().join('/') + "/" + fileName;
+        //@ts-ignore
+        onFileSelect(value, path, fileName);
     };
 
     useEffect(() => {
@@ -130,7 +127,7 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect}: FolderTreeProps) 
     }, [settings]);
 
     useEffect(() => {
-        subscribe(EventType.FILE_SAVED,  async ({file})=> {
+        subscribe(EventType.FILE_SAVED, async ({file}) => {
             if (file.isNew) {
                 if (settings.actionOnStartup?.action === 1 && settings.actionOnStartup?.dir) {
                     const rootPath = settings.actionOnStartup?.dir;
@@ -145,7 +142,7 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect}: FolderTreeProps) 
     }, []);
 
     return (
-        <Flex vertical={true} style={{height: '100%', width: '100%'}}>
+        <Flex vertical={true} style={{height: '100%', width: width, overflow: 'hidden'}}>
             <Header style={{
                 margin: 0,
                 padding: 0,
@@ -169,16 +166,29 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect}: FolderTreeProps) 
                 </Flex>
             </Header>
             <Flex id={'left-panel'}
-                  style={{flexGrow: 3, overflowY: 'auto', width: '100%', backgroundColor: colorBgContainer}}>
+                  style={{flexGrow: 3, overflowY: 'auto', overflowX: 'hidden', width: width, backgroundColor: colorBgContainer}}>
                 {loading && <Skeleton active={true}/>}
-                {!loading && <Menu
-                    onClick={onClick}
-                    style={{width: '100%'}}
-                    defaultSelectedKeys={['1']}
-                    defaultOpenKeys={['sub1']}
-                    mode="inline"
-                    items={items?.items || []}
-                />}
+                {!loading &&
+                    <Tree.DirectoryTree
+                        style={{
+                            width:width,
+                            overflowX: 'hidden',
+                        }}
+                        // showIcon={false}
+                        // showLine={true}
+                        draggable={{icon: false, nodeDraggable: () => true}}
+                        titleRender={(nodeData:DateNode)=>{
+                            // console.log(nodeData.title, nodeData.level)
+                            return <TreeTitle nodeData={nodeData} width={width}/>}
+                        }
+                        onSelect={onClick}
+                        onDrop={({event, node, dragNode, dragNodesKeys}) => {
+                            console.log('on drop ', event, node, dragNode, dragNodesKeys)
+                        }}
+                        // onExpand={onExpand}
+                        treeData={items?.items || []}
+                    />
+                }
             </Flex>
         </Flex>
     );
