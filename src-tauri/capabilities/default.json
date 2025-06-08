@@ -2,6 +2,7 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
+  "platforms": ["linux", "macOS", "windows"],
   "windows": [
     "main",
     "settings"
@@ -10,6 +11,14 @@
     "core:default",
     "opener:default",
     "fs:default",
+    "fs:allow-unwatch",
+    {
+      "identifier": "fs:allow-watch",
+      "allow": [
+        "*",
+        "**/*"
+      ]
+    },
     {
       "identifier": "fs:allow-document-read-recursive",
       "allow": [

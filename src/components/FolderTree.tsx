@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {FolderOutlined, PlusOutlined} from '@ant-design/icons';
-import type {GetProps, TreeDataNode} from 'antd';
-import {Button, Flex, Layout, Skeleton, theme, Tree} from 'antd';
+import {Button, Flex, GetProps, Layout, Menu, Skeleton, theme, Tree, TreeDataNode} from 'antd';
 import {SettingsType, useSettings} from "../settings/SettingsContext.tsx";
-import {DirEntry, readDir} from "@tauri-apps/plugin-fs";
+import {DirEntry, readDir, UnwatchFn, watch} from "@tauri-apps/plugin-fs";
 import {join} from '@tauri-apps/api/path';
 import crypto from "crypto-js";
 import DebounceSelect from "./DebounceSelect.tsx";
@@ -11,13 +10,16 @@ import {useEvent} from "../event/EventContext.tsx";
 import {EventType} from "../event/event.ts";
 import {PiFileMdFill} from "react-icons/pi";
 import TreeTitle from "./TreeTitle.tsx";
+import {revealItemInDir} from "@tauri-apps/plugin-opener";
 
 type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>;
 
 const {DirectoryTree} = Tree;
 const {Header} = Layout;
+const menuWidth = 200; // Estimated menu width
+const menuHeight = 150; // Estimated menu height
 
-async function processEntriesRecursively(parentPath: string, entries: DirEntry[], level:number, parent?: EntryItem) {
+async function processEntriesRecursively(parentPath: string, entries: DirEntry[], level: number, parent?: EntryItem) {
     const items: TreeDataNode[] = [];
     const names = new Map<string, EntryItem>();
     for (const entry of entries) {
@@ -37,7 +39,7 @@ async function processEntriesRecursively(parentPath: string, entries: DirEntry[]
         names.set(key, item);
 
         if (entry.isDirectory) {
-            const children = await processEntriesRecursively(path, await readDir(path), level+1, item);
+            const children = await processEntriesRecursively(path, await readDir(path), level + 1, item);
             //将children的names添加到当前的names中
             for (const [k, v] of children.names) {
                 names.set(k, v);
@@ -47,7 +49,7 @@ async function processEntriesRecursively(parentPath: string, entries: DirEntry[]
                 icon: <FolderOutlined/>,
                 title: entry.name,
                 children: children.items,
-                level:level,
+                level: level,
             })
         } else {
             items.push({
@@ -55,7 +57,7 @@ async function processEntriesRecursively(parentPath: string, entries: DirEntry[]
                 title: entry.name,
                 icon: <PiFileMdFill/>,
                 isLeaf: true,
-                level:level,
+                level: level,
             })
         }
         //对items进行排序，有children的排在顶部，无children的排在底部，有无children的排序都是按照label的字母顺序排序
@@ -92,6 +94,14 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
     const settings: SettingsType = useSettings();
     const [items, setItems] = useState<{ items: TreeDataNode[], names: Map<string, EntryItem> }>();
     const [loading, setLoading] = useState(false);
+    const [contextMenu, setContextMenu] = useState({
+        visible: false,
+        x: 0,
+        y: 0,
+        node: null,
+    });
+
+    const contextMenuRef = useRef(null);
     const {token: {colorBgContainer, colorSplit}} = theme.useToken();
     const {subscribe} = useEvent();
     const onClick: DirectoryTreeProps["onSelect"] = (value) => {
@@ -101,6 +111,9 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
         const parents: string[] = [];
         //@ts-ignore
         let currentItem: EntryItem | undefined = items?.names?.get(Array.isArray(value) ? value[0] : value);
+        if (currentItem?.entry.isDirectory) {
+            return;
+        }
         fileName = currentItem?.entry.name;
         while (currentItem) {
             if (currentItem.parent) {
@@ -141,6 +154,68 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
         })
     }, []);
 
+    // Close menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (contextMenuRef.current && !contextMenuRef.current.contains(e.target)) {
+                setContextMenu({...contextMenu, visible: false});
+            }
+        };
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, [contextMenu]);
+
+    const handleMenuAction = (e) => {
+        console.log('Action:', e.key, 'on node:', contextMenu.node);
+        if (e.key === 'reveal') {
+            const value = contextMenu.node.key;
+            let currentItem: EntryItem | undefined = items?.names?.get(value);
+            const fileName = currentItem?.entry.name;
+            const parents: string[] = [];
+            while (currentItem) {
+                if (currentItem.parent) {
+                    parents.push(currentItem.parent.entry.name);
+                    currentItem = currentItem.parent;
+                } else {
+                    break;
+                }
+            }
+            const path = settings.actionOnStartup?.dir + "/" + parents.reverse().join('/') + "/" + fileName;
+            revealItemInDir(path);
+        }
+        setContextMenu({...contextMenu, visible: false}); // Close menu
+    };
+
+    const cb = (event) => {
+        console.log('got event', event)
+        //TODO shunyun 2025/6/6: 排除自己出发的事件
+        // setLoading(true);
+        // loadDir(settings.actionOnStartup?.dir).then(value => {
+        //     setItems(value);
+        //     setLoading(false);
+        // });
+    };
+
+    useEffect(() => {
+        let unwatch:  UnwatchFn;
+
+        if (settings.actionOnStartup?.dir) {
+            watch(settings.actionOnStartup.dir, cb, { delayMs: 1000, recursive: true })
+                .then((uw) => {
+                    unwatch = uw;
+                    console.log("Watching file", settings.actionOnStartup.dir);
+                })
+                .catch((e) => console.log("Error", e));
+        }
+
+        return () => {
+            if (unwatch) {
+                unwatch();
+                console.log("Stopped watching file");
+            }
+        };
+    }, [settings]);
+
     return (
         <Flex vertical={true} style={{height: '100%', width: width, overflow: 'hidden'}}>
             <Header style={{
@@ -166,28 +241,80 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                 </Flex>
             </Header>
             <Flex id={'left-panel'}
-                  style={{flexGrow: 3, overflowY: 'auto', overflowX: 'hidden', width: width, backgroundColor: colorBgContainer}}>
+                  style={{
+                      flexGrow: 3,
+                      overflowY: 'auto',
+                      overflowX: 'hidden',
+                      width: width,
+                      backgroundColor: colorBgContainer
+                  }}>
                 {loading && <Skeleton active={true}/>}
                 {!loading &&
-                    <Tree.DirectoryTree
-                        style={{
-                            width:width,
-                            overflowX: 'hidden',
-                        }}
-                        // showIcon={false}
-                        // showLine={true}
-                        draggable={{icon: false, nodeDraggable: () => true}}
-                        titleRender={(nodeData:DateNode)=>{
-                            // console.log(nodeData.title, nodeData.level)
-                            return <TreeTitle nodeData={nodeData} width={width}/>}
-                        }
-                        onSelect={onClick}
-                        onDrop={({event, node, dragNode, dragNodesKeys}) => {
-                            console.log('on drop ', event, node, dragNode, dragNodesKeys)
-                        }}
-                        // onExpand={onExpand}
-                        treeData={items?.items || []}
-                    />
+                    <>
+                        <Tree.DirectoryTree
+                            style={{
+                                width: width,
+                                overflowX: 'hidden',
+                            }}
+                            draggable={{icon: false, nodeDraggable: () => true}}
+                            titleRender={(nodeData: DateNode) => {
+                                return <TreeTitle nodeData={nodeData} width={width}/>
+                            }
+                            }
+                            onSelect={onClick}
+                            onDrop={({event, node, dragNode, dragNodesKeys}) => {
+                                console.log('on drop ', event, node, dragNode, dragNodesKeys)
+                            }}
+                            treeData={items?.items || []}
+                            onRightClick={({event, node}) => {
+                                event.preventDefault();
+
+                                // Get viewport dimensions
+                                const viewportWidth = window.innerWidth;
+                                const viewportHeight = window.innerHeight;
+
+                                // Calculate adjusted position
+                                let adjustedX = event.clientX;
+                                let adjustedY = event.clientY;
+
+                                // Adjust for right edge
+                                if (event.clientX + menuWidth > viewportWidth) {
+                                    adjustedX = event.clientX - menuWidth;
+                                }
+
+                                // Adjust for bottom edge
+                                if (event.clientY + menuHeight > viewportHeight) {
+                                    adjustedY = event.clientY - menuHeight;
+                                }
+
+                                setContextMenu({
+                                    visible: true,
+                                    x: adjustedX,
+                                    y: adjustedY,
+                                    node: node,
+                                });
+                            }}
+                        />
+                        {contextMenu.visible && (
+                            <div
+                                ref={contextMenuRef}
+                                style={{
+                                    position: 'fixed',
+                                    left: contextMenu.x,
+                                    top: contextMenu.y,
+                                    zIndex: 1000,
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                                }}
+                            >
+                                <Menu onClick={handleMenuAction}>
+                                    <Menu.Item key="reveal">Reveal In Finder</Menu.Item>
+                                    <Menu.Item key="copy">Copy</Menu.Item>
+                                    <Menu.Item key="rename">Rename</Menu.Item>
+                                    <Menu.Item key="delete" danger>Delete</Menu.Item>
+                                </Menu>
+                            </div>
+                        )}
+                    </>
                 }
             </Flex>
         </Flex>

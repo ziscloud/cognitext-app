@@ -12,6 +12,7 @@ import {useSettings} from "../settings/SettingsContext.tsx";
 import {GoDotFill} from "react-icons/go";
 import TableOfContentsList from "./TableOfContentsList.tsx";
 import type {TableOfContentsEntry} from "@lexical/react/LexicalTableOfContentsPlugin";
+import Copilot from "./Copilot.tsx";
 
 type TabsItem = Required<TabsProps>['items'][number];
 
@@ -253,6 +254,9 @@ const MainLayout: React.FC = () => {
                         />
                     </div>
                     <div style={{display: activeMenu === 'search' ? 'block' : 'none', height: '100%', width: sideWidth}}>
+                    </div>
+                    <div style={{display: activeMenu === 'chat' ? 'block' : 'none', height: '100%', width: sideWidth}}>
+                        <Copilot/>
                     </div>
                 </Splitter.Panel>
                 <Splitter.Panel style={{backgroundColor: colorBgContainer}}>

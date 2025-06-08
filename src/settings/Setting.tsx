@@ -10,6 +10,7 @@ import ImageSettings from "./ImageSettings.tsx";
 import LanguageSettings from "./LanguageSettings.tsx";
 import zhCN from 'antd/locale/zh_CN';
 import enUS from 'antd/locale/en_US';
+import AISettings from "./AIChatSettings.tsx";
 
 type SearchProps = GetProps<typeof Input.Search>;
 
@@ -45,7 +46,6 @@ const items: MenuItem[] = [
         ],
 
     },
-
     {
         key: 'themeGroup',
         label: 'Theme',
@@ -55,13 +55,21 @@ const items: MenuItem[] = [
             {key: 'application-theme', label: 'Application'},
         ],
     },
+    {
+        key: 'aiGroup',
+        label: 'AI',
+        type: 'group',
+        children: [
+            {key: 'chat', label: 'Chat'},
+        ],
+    },
 ];
 
-interface HomeProps {
+interface SectionProps {
     settings?: any
 }
 
-function GeneralSettingsSection({settings}: HomeProps) {
+function GeneralSettingsSection({settings}: SectionProps) {
 
     return (
         <Flex justify="flex-start" align="start" style={{height: '100%', padding: '0 16px',}} vertical>
@@ -74,7 +82,7 @@ function GeneralSettingsSection({settings}: HomeProps) {
     );
 }
 
-function ImageSettingsSection({settings}: HomeProps) {
+function ImageSettingsSection({settings}: SectionProps) {
 
     return (
         <Flex justify="flex-start" align="start" style={{height: '100%', padding: '0 16px',}} vertical>
@@ -82,6 +90,18 @@ function ImageSettingsSection({settings}: HomeProps) {
                 Image
             </Typography.Title>
             <ImageSettings settings={settings}/>
+        </Flex>
+    );
+}
+
+function AIChatSettingsSection({settings}: SectionProps) {
+
+    return (
+        <Flex justify="flex-start" align="start" style={{height: '100%', padding: '0 16px',}} vertical>
+            <Typography.Title type="secondary" level={3} style={{whiteSpace: 'nowrap'}}>
+                AI Chat
+            </Typography.Title>
+            <AISettings settings={settings}/>
         </Flex>
     );
 }
@@ -148,6 +168,7 @@ const Setting: React.FC = () => {
                     <Routes>
                         <Route index path="/general" element={<GeneralSettingsSection settings={settings}/>}/>
                         <Route path="/image" element={<ImageSettingsSection settings={settings}/>}/>
+                        <Route path="/chat" element={<AIChatSettingsSection settings={settings}/>}/>
                         <Route path="/keymap" element={<KeyMapSettingsSection/>}/>
                     </Routes>
                 </Splitter.Panel>
