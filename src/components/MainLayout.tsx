@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Button, Layout, MenuProps, Modal, Splitter, Tabs, TabsProps, theme} from 'antd';
+import {Button, Layout, MenuProps, Modal, Tabs, TabsProps, theme} from 'antd';
 import Side from "./Side.tsx";
 import FolderTree from "./FolderTree.tsx";
 import {BaseDirectory, create, readTextFile} from "@tauri-apps/plugin-fs";
@@ -13,6 +13,8 @@ import {GoDotFill} from "react-icons/go";
 import TableOfContentsList from "./TableOfContentsList.tsx";
 import type {TableOfContentsEntry} from "@lexical/react/LexicalTableOfContentsPlugin";
 import Copilot from "./Copilot.tsx";
+import SplitPane, {Pane} from "./react-split-pane-next";
+import {debounce} from "lodash-es";
 
 type TabsItem = Required<TabsProps>['items'][number];
 
@@ -27,7 +29,7 @@ function getFileNameWithoutExtension(path: string): string {
 
 const MainLayout: React.FC = () => {
     // status
-    const [sideWidth, setSideWidth] = useState<number>(200);
+    const [sideWidth, setSideWidth] = useState<string>('200px');
     const [activeTabKey, setActiveTabKey] = useState<string>('');
     const [targetTabKey, setTargetTabKey] = useState<string>('');
     //@ts-ignore
@@ -140,22 +142,26 @@ const MainLayout: React.FC = () => {
             if (tabItemsRef.current.find(item => item.key === 'tab-' + file.tabId)) {
                 setTabItems(prevState => prevState.map((item) => {
                     if ((item.key === 'tab-' + file.tabId)) {
-                        if (file.isNew) {
-                            const fileName = getFileNameWithoutExtension(path)
-                            return {
-                                key: 'tab-' + file.tabId,
-                                label: fileName,
-                                isNew: false,
-                                icon: false,
-                                children: <MarkdownEditor id={file.tabId} key={'editor-' + fileName} file={{
-                                    language: 'markdown',
-                                    value: content || '',
-                                    path: path,
-                                    tabId: file.tabId,
-                                    groupId: '0',
-                                    isNew: false
-                                }}/>,
-                            };
+                        if (file.isNew ) {
+                            if (path) {
+                                const fileName = getFileNameWithoutExtension(path)
+                                return {
+                                    key: 'tab-' + file.tabId,
+                                    label: fileName,
+                                    isNew: false,
+                                    icon: false,
+                                    children: <MarkdownEditor id={file.tabId} key={'editor-' + fileName} file={{
+                                        language: 'markdown',
+                                        value: content || '',
+                                        path: path,
+                                        tabId: file.tabId,
+                                        groupId: '0',
+                                        isNew: false
+                                    }}/>,
+                                };
+                            } else {
+                                return {...item, icon: false}
+                            }
                         } else {
                             return {
                                 ...item,
@@ -238,28 +244,45 @@ const MainLayout: React.FC = () => {
     return (
         <Layout style={{minHeight: '100vh'}}>
             <Side onMenuClick={onMenuClick}/>
-            <Splitter style={{height: '100vh'}} className={'main-content'} lazy={true} onResizeEnd={(sizes)=>{
-                console.log('side size', sizes)
-                setSideWidth(sizes[0]);
-            }}>
-                <Splitter.Panel defaultSize={sideWidth} min="0" max="70%" collapsible={true} style={{overflowX: 'hidden'}}>
-                    <div style={{display: activeMenu === 'notes' ? 'block' : 'none', height: '100%', width: sideWidth, overflow: 'hidden'}}>
+            <SplitPane split="vertical"
+                       className={'main-content'}
+                       onChange={(sizes) => {
+                           debounce(setSideWidth, 50)(sizes[0]);
+                       }}
+            >
+                <Pane
+                    className={'main-side'}
+                    initialSize={sideWidth}
+                >
+                    <div style={{
+                        display: activeMenu === 'notes' ? 'block' : 'none',
+                        height: '100%',
+                        width: '100%',
+                    }}>
                         <FolderTree onFileSelect={onFileSelected} width={sideWidth}/>
                     </div>
 
-                    <div style={{display: activeMenu === 'toc' ? 'block' : 'none', height: '100%', width: sideWidth}}>
+                    <div style={{display: activeMenu === 'toc' ? 'block' : 'none', height: '100%', width: '100%'}}>
                         <TableOfContentsList
                             id={activeTabKey?.substring(4)}
                             tableOfContents={tableOfContents[activeTabKey?.substring(4)]}
                         />
                     </div>
-                    <div style={{display: activeMenu === 'search' ? 'block' : 'none', height: '100%', width: sideWidth}}>
+                    <div
+                        style={{
+                            display: activeMenu === 'search' ? 'block' : 'none',
+                            height: '100%',
+                            width: '100%'
+                        }}>
                     </div>
-                    <div style={{display: activeMenu === 'chat' ? 'block' : 'none', height: '100%', width: sideWidth}}>
+                    <div style={{display: activeMenu === 'chat' ? 'block' : 'none', height: '100%', width: '100%'}}>
                         <Copilot/>
                     </div>
-                </Splitter.Panel>
-                <Splitter.Panel style={{backgroundColor: colorBgContainer}}>
+                </Pane>
+                <Pane
+                    className={'main-body'}
+                    style={{backgroundColor: colorBgContainer}}
+                >
                     <Modal
                         open={open}
                         title="Do you want to save the changes you made to Untitled-4?"
@@ -307,8 +330,8 @@ const MainLayout: React.FC = () => {
                         //@ts-ignore
                           onEdit={onTabEdit}
                     />
-                </Splitter.Panel>
-            </Splitter>
+                </Pane>
+            </SplitPane>
         </Layout>
     );
 };

@@ -11,16 +11,18 @@ import {EventType} from "../event/event.ts";
 import {PiFileMdFill} from "react-icons/pi";
 import TreeTitle from "./TreeTitle.tsx";
 import {revealItemInDir} from "@tauri-apps/plugin-opener";
+import {MenuInfo} from "rc-menu/lib/interface";
 
 type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>;
 
-const {DirectoryTree} = Tree;
 const {Header} = Layout;
 const menuWidth = 200; // Estimated menu width
 const menuHeight = 150; // Estimated menu height
 
+type TreeNode = TreeDataNode & { level: number };
+
 async function processEntriesRecursively(parentPath: string, entries: DirEntry[], level: number, parent?: EntryItem) {
-    const items: TreeDataNode[] = [];
+    const items: TreeNode[] = [];
     const names = new Map<string, EntryItem>();
     for (const entry of entries) {
         if (entry.name.startsWith(".")) {
@@ -85,16 +87,21 @@ async function loadDir(dir: string) {
 
 interface FolderTreeProps {
     onFileSelect: (key: string, path: string, fileName?: string) => void,
-    width: number
+    width: string
 }
 
 export type EntryItem = { entry: DirEntry, parent?: EntryItem }
 
 const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTreeProps) => {
     const settings: SettingsType = useSettings();
-    const [items, setItems] = useState<{ items: TreeDataNode[], names: Map<string, EntryItem> }>();
+    const [items, setItems] = useState<{ items: TreeNode[], names: Map<string, EntryItem> }>();
     const [loading, setLoading] = useState(false);
-    const [contextMenu, setContextMenu] = useState({
+    const [contextMenu, setContextMenu] = useState<{
+        visible: boolean,
+        x: number,
+        y: number,
+        node: TreeDataNode | null,
+    }>({
         visible: false,
         x: 0,
         y: 0,
@@ -156,8 +163,8 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
 
     // Close menu when clicking outside
     useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (contextMenuRef.current && !contextMenuRef.current.contains(e.target)) {
+        const handleClickOutside = (_: MouseEvent) => {
+            if (contextMenuRef.current) {
                 setContextMenu({...contextMenu, visible: false});
             }
         };
@@ -165,11 +172,11 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
         return () => document.removeEventListener('click', handleClickOutside);
     }, [contextMenu]);
 
-    const handleMenuAction = (e) => {
+    const handleMenuAction = (e: MenuInfo) => {
         console.log('Action:', e.key, 'on node:', contextMenu.node);
         if (e.key === 'reveal') {
-            const value = contextMenu.node.key;
-            let currentItem: EntryItem | undefined = items?.names?.get(value);
+            const value = contextMenu.node?.key;
+            let currentItem: EntryItem | undefined = items?.names?.get(value?.toString() || '');
             const fileName = currentItem?.entry.name;
             const parents: string[] = [];
             while (currentItem) {
@@ -186,7 +193,7 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
         setContextMenu({...contextMenu, visible: false}); // Close menu
     };
 
-    const cb = (event) => {
+    const cb = (event: any) => {
         console.log('got event', event)
         //TODO shunyun 2025/6/6: 排除自己出发的事件
         // setLoading(true);
@@ -197,10 +204,10 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
     };
 
     useEffect(() => {
-        let unwatch:  UnwatchFn;
+        let unwatch: UnwatchFn;
 
         if (settings.actionOnStartup?.dir) {
-            watch(settings.actionOnStartup.dir, cb, { delayMs: 1000, recursive: true })
+            watch(settings.actionOnStartup.dir, cb, {delayMs: 1000, recursive: true})
                 .then((uw) => {
                     unwatch = uw;
                     console.log("Watching file", settings.actionOnStartup.dir);
@@ -257,7 +264,7 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                                 overflowX: 'hidden',
                             }}
                             draggable={{icon: false, nodeDraggable: () => true}}
-                            titleRender={(nodeData: DateNode) => {
+                            titleRender={(nodeData) => {
                                 return <TreeTitle nodeData={nodeData} width={width}/>
                             }
                             }

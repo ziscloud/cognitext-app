@@ -26,6 +26,15 @@ html, body, #root {
 
 .main-content {
     width: calc(100% - 56px);
+    height: 100vh;
+}
+
+.main-side {
+    /*overflow-y: scroll;*/
+    height: 100vh;
+}
+.main-body {
+    height: 100vh;
 }
 
 .menu .ant-menu-item {

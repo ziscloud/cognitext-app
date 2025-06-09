@@ -8,6 +8,14 @@ import {DownOutlined} from "@ant-design/icons";
 const MARGIN_ABOVE_EDITOR = 624;
 const HEADING_WIDTH = 9;
 
+type TreeNode = TreeDataNode & {
+    key: string,
+    index: number,
+    tag: string,
+    children: TreeNode[],
+    parent: TreeNode | null
+}
+
 function isHeadingAtTheTopOfThePage(element: HTMLElement): boolean {
     const elementYPosition = element?.getClientRects()[0].y;
     return (
@@ -26,7 +34,7 @@ function isHeadingBelowTheTopOfThePage(element: HTMLElement): boolean {
     return elementYPosition >= MARGIN_ABOVE_EDITOR + HEADING_WIDTH;
 }
 
-function findNearestParent(currentLevel: {}, tag: "h1" | "h2" | "h3" | "h4" | "h5" | "h6") {
+function findNearestParent(currentLevel: TreeNode, tag: "h1" | "h2" | "h3" | "h4" | "h5" | "h6") {
     let cur = currentLevel;
     while (true) {
         if (cur.parent) {
@@ -38,7 +46,7 @@ function findNearestParent(currentLevel: {}, tag: "h1" | "h2" | "h3" | "h4" | "h
                 } else {
                     // current = data;
                     // currentLevel = root;
-                    return undefined;
+                    return null;
                 }
             } else if (cur.parent.tag < tag) {
                 // current = cur.parent.children;
@@ -50,7 +58,7 @@ function findNearestParent(currentLevel: {}, tag: "h1" | "h2" | "h3" | "h4" | "h
         } else {
             // current = data;
             // currentLevel = cur;
-            return undefined;
+            return null;
         }
         cur = cur.parent;
     }
@@ -61,14 +69,16 @@ function TableOfContentsList({
                                  tableOfContents,
                              }: {
     id: string
-    tableOfContents: Array<TableOfContentsEntry>|undefined;
+    tableOfContents: Array<TableOfContentsEntry> | [];
 }): JSX.Element {
+    //@ts-ignore
     const [selectedKey, setSelectedKey] = useState('');
-    const [treeData, setTreeData] = useState<TreeDataNode[]>([]);
+    const [treeData, setTreeData] = useState<TreeNode[]>([]);
     const [keys, setKeys] = useState<string[]>([])
     const selectedIndex = useRef(0);
     const editor = useEditor(id);
     const {token: {colorBgContainer}} = theme.useToken();
+
     function scrollToNode(key: NodeKey, currIndex: number) {
         editor?.getEditorState().read(() => {
             const domElement = editor.getElementByKey(key);
@@ -84,9 +94,10 @@ function TableOfContentsList({
         function scrollCallback() {
             if (
                 tableOfContents.length !== 0 &&
-                selectedIndex.current < tableOfContents.length - 1
+                selectedIndex.current < tableOfContents.length - 1 &&
+                editor
             ) {
-                let currentHeading = editor?.getElementByKey(
+                let currentHeading = editor.getElementByKey(
                     tableOfContents[selectedIndex.current][0],
                 );
                 if (currentHeading) {
@@ -150,13 +161,13 @@ function TableOfContentsList({
             debounceFunction(scrollCallback, 10);
         }
 
-        const data: TreeDataNode[] = [];
-        let currentLevel:any ;
-        const keys:string[] = []
+        const data: TreeNode[] = [];
+        let currentLevel: any;
+        const keys: string[] = []
         tableOfContents?.forEach(([key, text, tag], index) => {
-            keys.push(key);
+                keys.push(key);
                 if (tag === 'h1' || !currentLevel) {
-                    const root = {title: text, key, index, tag, children: [], parent: null};
+                    const root:TreeNode = {title: text, key, index, tag, children: [], parent: null};
                     data.push(root)
                     currentLevel = root;
                 } else {
@@ -172,8 +183,8 @@ function TableOfContentsList({
                     }
 
                     if (tag < currentLevel.tag) {
-                        const parent  = findNearestParent(currentLevel, tag);
-                        const item = {title: text, key, index, tag, children: [], parent: parent};
+                        const parent = findNearestParent(currentLevel, tag);
+                        const item:TreeNode = {title: text, key, index, tag, children: [], parent: parent};
 
                         if (!parent) {
                             data.push(item)
@@ -200,8 +211,8 @@ function TableOfContentsList({
     }, [tableOfContents, id]);
 
     return (
-        <div style={{backgroundColor:colorBgContainer, height: '100%'}}>
-            <Tree
+        <div style={{backgroundColor: colorBgContainer, height: '100%'}}>
+            <Tree<TreeNode>
                 showLine
                 switcherIcon={<DownOutlined/>}
                 expandedKeys={keys}
