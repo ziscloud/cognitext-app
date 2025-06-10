@@ -1,9 +1,10 @@
 import type {TableOfContentsEntry} from "@lexical/react/LexicalTableOfContentsPlugin";
-import {JSX, useEffect, useRef, useState} from "react";
+import React, {JSX, useEffect, useRef, useState} from "react";
 import type {NodeKey} from "lexical";
 import {useEditor} from "../editor/EditorProvider.tsx";
 import {theme, Tree, TreeDataNode} from 'antd';
 import {DownOutlined} from "@ant-design/icons";
+import {CustomScroll} from "react-custom-scroll";
 
 const MARGIN_ABOVE_EDITOR = 624;
 const HEADING_WIDTH = 9;
@@ -69,12 +70,12 @@ function TableOfContentsList({
                                  tableOfContents,
                              }: {
     id: string
-    tableOfContents: Array<TableOfContentsEntry> | [];
+    tableOfContents: Array<TableOfContentsEntry> | undefined;
 }): JSX.Element {
     //@ts-ignore
     const [selectedKey, setSelectedKey] = useState('');
     const [treeData, setTreeData] = useState<TreeNode[]>([]);
-    const [keys, setKeys] = useState<string[]>([])
+    const [keys, setKeys] = useState<React.Key[]>([])
     const selectedIndex = useRef(0);
     const editor = useEditor(id);
     const {token: {colorBgContainer}} = theme.useToken();
@@ -93,6 +94,7 @@ function TableOfContentsList({
     useEffect(() => {
         function scrollCallback() {
             if (
+                tableOfContents &&
                 tableOfContents.length !== 0 &&
                 selectedIndex.current < tableOfContents.length - 1 &&
                 editor
@@ -167,7 +169,7 @@ function TableOfContentsList({
         tableOfContents?.forEach(([key, text, tag], index) => {
                 keys.push(key);
                 if (tag === 'h1' || !currentLevel) {
-                    const root:TreeNode = {title: text, key, index, tag, children: [], parent: null};
+                    const root: TreeNode = {title: text, key, index, tag, children: [], parent: null};
                     data.push(root)
                     currentLevel = root;
                 } else {
@@ -184,7 +186,7 @@ function TableOfContentsList({
 
                     if (tag < currentLevel.tag) {
                         const parent = findNearestParent(currentLevel, tag);
-                        const item:TreeNode = {title: text, key, index, tag, children: [], parent: parent};
+                        const item: TreeNode = {title: text, key, index, tag, children: [], parent: parent};
 
                         if (!parent) {
                             data.push(item)
@@ -212,15 +214,20 @@ function TableOfContentsList({
 
     return (
         <div style={{backgroundColor: colorBgContainer, height: '100%'}}>
-            <Tree<TreeNode>
-                showLine
-                switcherIcon={<DownOutlined/>}
-                expandedKeys={keys}
-                onSelect={(_, info) => {
-                    scrollToNode(info.node.key, info.node.index);
-                }}
-                treeData={treeData}
-            />
+            <CustomScroll heightRelativeToParent={'100%'}>
+                <Tree<TreeNode>
+                    showLine
+                    switcherIcon={<DownOutlined/>}
+                    expandedKeys={keys}
+                    onExpand={(keys:React.Key[], _)=>{
+                        setKeys(keys);
+                    }}
+                    onSelect={(_, info) => {
+                        scrollToNode(info.node.key, info.node.index);
+                    }}
+                    treeData={treeData}
+                />
+            </CustomScroll>
         </div>
     );
 }
