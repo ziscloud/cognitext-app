@@ -1,6 +1,5 @@
 import {
     AppstoreAddOutlined,
-    CloseOutlined,
     CloudUploadOutlined,
     CommentOutlined,
     CopyOutlined,
@@ -21,15 +20,15 @@ import {
     Prompts,
     Sender,
     Suggestion,
-    Welcome,
     useXAgent,
     useXChat,
+    Welcome,
 } from '@ant-design/x';
-import type { Conversation } from '@ant-design/x/es/conversations';
-import { Button, GetProp, GetRef,  Popover, Space, Spin, message } from 'antd';
-import { createStyles } from 'antd-style';
+import type {Conversation} from '@ant-design/x/es/conversations';
+import {Button, GetProp, GetRef, message, Popover, Space, Spin} from 'antd';
+import {createStyles} from 'antd-style';
 import dayjs from 'dayjs';
-import   { useEffect, useRef, useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 type BubbleDataType = {
     role: string;
@@ -64,15 +63,15 @@ const MOCK_SESSION_LIST = [
     },
 ];
 const MOCK_SUGGESTIONS = [
-    { label: 'Write a report', value: 'report' },
-    { label: 'Draw a picture', value: 'draw' },
+    {label: 'Write a report', value: 'report'},
+    {label: 'Draw a picture', value: 'draw'},
     {
         label: 'Check some knowledge',
         value: 'knowledge',
-        icon: <OpenAIFilled />,
+        icon: <OpenAIFilled/>,
         children: [
-            { label: 'About React', value: 'react' },
-            { label: 'About Ant Design', value: 'antd' },
+            {label: 'About React', value: 'react'},
+            {label: 'About Ant Design', value: 'antd'},
         ],
     },
 ];
@@ -83,78 +82,79 @@ const MOCK_QUESTIONS = [
 ];
 const AGENT_PLACEHOLDER = 'Generating content, please wait...';
 
-const useCopilotStyle = createStyles(({ token, css }) => {
+const useCopilotStyle = createStyles(({token, css}) => {
     return {
         copilotChat: css`
-      display: flex;
-      flex-direction: column;
-      background: ${token.colorBgContainer};
-      color: ${token.colorText};
-    `,
+            display: flex;
+            flex-direction: column;
+            background: ${token.colorBgContainer};
+            color: ${token.colorText};
+        `,
         // chatHeader 样式
         chatHeader: css`
-      height: 52px;
-      box-sizing: border-box;
-      border-bottom: 1px solid ${token.colorBorder};
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 10px 0 16px;
-    `,
+            height: 52px;
+            box-sizing: border-box;
+            border-bottom: 1px solid ${token.colorBorder};
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px 0 16px;
+        `,
         headerTitle: css`
-      font-weight: 600;
-      font-size: 15px;
-    `,
+            font-weight: 600;
+            font-size: 15px;
+        `,
         headerButton: css`
-      font-size: 18px;
-    `,
+            font-size: 18px;
+        `,
         conversations: css`
-      width: 300px;
-      .ant-conversations-list {
-        padding-inline-start: 0;
-      }
-    `,
+            width: 300px;
+
+            .ant-conversations-list {
+                padding-inline-start: 0;
+            }
+        `,
         // chatList 样式
         chatList: css`
-      overflow: auto;
-      padding-block: 16px;
-      flex: 1;
-    `,
+            overflow: auto;
+            padding-block: 16px;
+            flex: 1;
+        `,
         chatWelcome: css`
-      margin-inline: 16px;
-      padding: 12px 16px;
-      border-radius: 2px 12px 12px 12px;
-      background: ${token.colorBgTextHover};
-      margin-bottom: 16px;
-    `,
+            margin-inline: 16px;
+            padding: 12px 16px;
+            border-radius: 2px 12px 12px 12px;
+            background: ${token.colorBgTextHover};
+            margin-bottom: 16px;
+        `,
         loadingMessage: css`
-      background-image: linear-gradient(90deg, #ff6b23 0%, #af3cb8 31%, #53b6ff 89%);
-      background-size: 100% 2px;
-      background-repeat: no-repeat;
-      background-position: bottom;
-    `,
+            background-image: linear-gradient(90deg, #ff6b23 0%, #af3cb8 31%, #53b6ff 89%);
+            background-size: 100% 2px;
+            background-repeat: no-repeat;
+            background-position: bottom;
+        `,
         // chatSend 样式
         chatSend: css`
-      padding: 12px;
-    `,
+            padding: 12px;
+        `,
         sendAction: css`
-      display: flex;
-      align-items: center;
-      margin-bottom: 12px;
-      gap: 8px;
-    `,
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 8px;
+        `,
         speechButton: css`
-      font-size: 18px;
-      color: ${token.colorText} !important;
-    `,
+            font-size: 18px;
+            color: ${token.colorText} !important;
+        `,
     };
 });
 
 interface CopilotProps {
 }
 
-const Copilot = (props: CopilotProps) => {
-    const { styles } = useCopilotStyle();
+const Copilot = (_: CopilotProps) => {
+    const {styles} = useCopilotStyle();
     const attachmentsRef = useRef<GetRef<typeof Attachments>>(null);
     const abortController = useRef<AbortController>(null);
 
@@ -184,9 +184,9 @@ const Copilot = (props: CopilotProps) => {
 
     const loading = agent.isRequesting();
 
-    const { messages, onRequest, setMessages } = useXChat({
+    const {messages, onRequest, setMessages} = useXChat({
         agent,
-        requestFallback: (_, { error }) => {
+        requestFallback: (_, {error}) => {
             if (error.name === 'AbortError') {
                 return {
                     content: 'Request is aborted',
@@ -199,7 +199,7 @@ const Copilot = (props: CopilotProps) => {
             };
         },
         transformMessage: (info) => {
-            const { originMessage, chunk } = info || {};
+            const {originMessage, chunk} = info || {};
             let currentContent = '';
             let currentThink = '';
             try {
@@ -232,6 +232,7 @@ const Copilot = (props: CopilotProps) => {
             };
         },
         resolveAbortController: (controller) => {
+            //@ts-ignore
             abortController.current = controller;
         },
     });
@@ -240,13 +241,13 @@ const Copilot = (props: CopilotProps) => {
     const handleUserSubmit = (val: string) => {
         onRequest({
             stream: true,
-            message: { content: val, role: 'user' },
+            message: {content: val, role: 'user'},
         });
 
         // session title mock
         if (sessionList.find((i) => i.key === curSession)?.label === 'New session') {
             setSessionList(
-                sessionList.map((i) => (i.key !== curSession ? i : { ...i, label: val?.slice(0, 20) })),
+                sessionList.map((i) => (i.key !== curSession ? i : {...i, label: val?.slice(0, 20)})),
             );
         }
     };
@@ -265,7 +266,7 @@ const Copilot = (props: CopilotProps) => {
             <Space size={0}>
                 <Button
                     type="text"
-                    icon={<PlusOutlined />}
+                    icon={<PlusOutlined/>}
                     onClick={() => {
                         if (agent.isRequesting()) {
                             message.error(
@@ -281,7 +282,7 @@ const Copilot = (props: CopilotProps) => {
                             // In future versions, the sessionId capability will be added to resolve this problem.
                             setTimeout(() => {
                                 setSessionList([
-                                    { key: timeNow, label: 'New session', group: 'Today' },
+                                    {key: timeNow, label: 'New session', group: 'Today'},
                                     ...sessionList,
                                 ]);
                                 setCurSession(timeNow);
@@ -295,11 +296,11 @@ const Copilot = (props: CopilotProps) => {
                 />
                 <Popover
                     placement="bottom"
-                    styles={{ body: { padding: 0, maxHeight: 600 } }}
+                    styles={{body: {padding: 0, maxHeight: 600}}}
                     content={
                         <Conversations
                             items={sessionList?.map((i) =>
-                                i.key === curSession ? { ...i, label: `[current] ${i.label}` } : i,
+                                i.key === curSession ? {...i, label: `[current] ${i.label}`} : i,
                             )}
                             activeKey={curSession}
                             groupable
@@ -312,12 +313,12 @@ const Copilot = (props: CopilotProps) => {
                                     setMessages(messageHistory?.[val] || []);
                                 }, 100);
                             }}
-                            styles={{ item: { padding: '0 8px' } }}
+                            styles={{item: {padding: '0 8px'}}}
                             className={styles.conversations}
                         />
                     }
                 >
-                    <Button type="text" icon={<CommentOutlined />} className={styles.headerButton} />
+                    <Button type="text" icon={<CommentOutlined/>} className={styles.headerButton}/>
                 </Popover>
             </Space>
         </div>
@@ -327,33 +328,33 @@ const Copilot = (props: CopilotProps) => {
             {messages?.length ? (
                 /** 消息列表 */
                 <Bubble.List
-                    style={{ height: '100%', paddingInline: 16 }}
+                    style={{height: '100%', paddingInline: 16}}
                     items={messages?.map((i) => ({
                         ...i.message,
                         classNames: {
                             content: i.status === 'loading' ? styles.loadingMessage : '',
                         },
-                        typing: i.status === 'loading' ? { step: 5, interval: 20, suffix: <>💗</> } : false,
+                        typing: i.status === 'loading' ? {step: 5, interval: 20, suffix: <>💗</>} : false,
                     }))}
                     roles={{
                         assistant: {
                             placement: 'start',
                             footer: (
-                                <div style={{ display: 'flex' }}>
-                                    <Button type="text" size="small" icon={<ReloadOutlined />} />
-                                    <Button type="text" size="small" icon={<CopyOutlined />} />
-                                    <Button type="text" size="small" icon={<LikeOutlined />} />
-                                    <Button type="text" size="small" icon={<DislikeOutlined />} />
+                                <div style={{display: 'flex'}}>
+                                    <Button type="text" size="small" icon={<ReloadOutlined/>}/>
+                                    <Button type="text" size="small" icon={<CopyOutlined/>}/>
+                                    <Button type="text" size="small" icon={<LikeOutlined/>}/>
+                                    <Button type="text" size="small" icon={<DislikeOutlined/>}/>
                                 </div>
                             ),
                             loadingRender: () => (
                                 <Space>
-                                    <Spin size="small" />
+                                    <Spin size="small"/>
                                     {AGENT_PLACEHOLDER}
                                 </Space>
                             ),
                         },
-                        user: { placement: 'end' },
+                        user: {placement: 'end'},
                     }}
                 />
             ) : (
@@ -369,13 +370,13 @@ const Copilot = (props: CopilotProps) => {
                     <Prompts
                         vertical
                         title="I can help："
-                        items={MOCK_QUESTIONS.map((i) => ({ key: i, description: i }))}
+                        items={MOCK_QUESTIONS.map((i) => ({key: i, description: i}))}
                         onItemClick={(info) => handleUserSubmit(info?.data?.description as string)}
                         style={{
                             marginInline: 16,
                         }}
                         styles={{
-                            title: { fontSize: 14 },
+                            title: {fontSize: 14},
                         }}
                     />
                 </>
@@ -385,7 +386,7 @@ const Copilot = (props: CopilotProps) => {
     const sendHeader = (
         <Sender.Header
             title="Upload File"
-            styles={{ content: { padding: 0 } }}
+            styles={{content: {padding: 0}}}
             open={attachmentsOpen}
             onOpenChange={setAttachmentsOpen}
             forceRender
@@ -394,12 +395,12 @@ const Copilot = (props: CopilotProps) => {
                 ref={attachmentsRef}
                 beforeUpload={() => false}
                 items={files}
-                onChange={({ fileList }) => setFiles(fileList)}
+                onChange={({fileList}) => setFiles(fileList)}
                 placeholder={(type) =>
                     type === 'drop'
-                        ? { title: 'Drop file here' }
+                        ? {title: 'Drop file here'}
                         : {
-                            icon: <CloudUploadOutlined />,
+                            icon: <CloudUploadOutlined/>,
                             title: 'Upload files',
                             description: 'Click or drag files to this area to upload',
                         }
@@ -411,23 +412,23 @@ const Copilot = (props: CopilotProps) => {
         <div className={styles.chatSend}>
             <div className={styles.sendAction}>
                 <Button
-                    icon={<ScheduleOutlined />}
+                    icon={<ScheduleOutlined/>}
                     onClick={() => handleUserSubmit('What has Ant Design X upgraded?')}
                 >
                     Upgrades
                 </Button>
                 <Button
-                    icon={<ProductOutlined />}
+                    icon={<ProductOutlined/>}
                     onClick={() => handleUserSubmit('What component assets are available in Ant Design X?')}
                 >
                     Components
                 </Button>
-                <Button icon={<AppstoreAddOutlined />}>More</Button>
+                <Button icon={<AppstoreAddOutlined/>}>More</Button>
             </div>
 
             {/** 输入框 */}
             <Suggestion items={MOCK_SUGGESTIONS} onSelect={(itemVal) => setInputValue(`[${itemVal}]:`)}>
-                {({ onTrigger, onKeyDown }) => (
+                {({onTrigger, onKeyDown}) => (
                     <Sender
                         loading={loading}
                         value={inputValue}
@@ -449,17 +450,17 @@ const Copilot = (props: CopilotProps) => {
                         prefix={
                             <Button
                                 type="text"
-                                icon={<PaperClipOutlined style={{ fontSize: 18 }} />}
+                                icon={<PaperClipOutlined style={{fontSize: 18}}/>}
                                 onClick={() => setAttachmentsOpen(!attachmentsOpen)}
                             />
                         }
                         onPasteFile={onPasteFile}
                         actions={(_, info) => {
-                            const { SendButton, LoadingButton, SpeechButton } = info.components;
+                            const {SendButton, LoadingButton, SpeechButton} = info.components;
                             return (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                    <SpeechButton className={styles.speechButton} />
-                                    {loading ? <LoadingButton type="default" /> : <SendButton type="primary" />}
+                                <div style={{display: 'flex', alignItems: 'center', gap: 4}}>
+                                    <SpeechButton className={styles.speechButton}/>
+                                    {loading ? <LoadingButton type="default"/> : <SendButton type="primary"/>}
                                 </div>
                             );
                         }}
@@ -480,7 +481,7 @@ const Copilot = (props: CopilotProps) => {
     }, [messages]);
 
     return (
-        <div className={styles.copilotChat} style={{ width: '100%', height: '100%' }}>
+        <div className={styles.copilotChat} style={{width: '100%', height: '100%'}}>
             {/** 对话区 - header */}
             {chatHeader}
 
@@ -493,20 +494,4 @@ const Copilot = (props: CopilotProps) => {
     );
 };
 
-const CopilotDemo = () => {
-
-    // ==================== State =================
-    const [copilotOpen, setCopilotOpen] = useState(true);
-
-    // ==================== Render =================
-    return (
-
-
-
-
-            <Copilot copilotOpen={copilotOpen} setCopilotOpen={setCopilotOpen} />
-
-    );
-};
-
-export default CopilotDemo;
+export default Copilot;
