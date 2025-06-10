@@ -12,6 +12,7 @@ import {PiFileMdFill} from "react-icons/pi";
 import TreeTitle from "./TreeTitle.tsx";
 import {revealItemInDir} from "@tauri-apps/plugin-opener";
 import {MenuInfo} from "rc-menu/lib/interface";
+import {CustomScroll} from "react-custom-scroll";
 
 type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>;
 
@@ -250,14 +251,13 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
             <Flex id={'left-panel'}
                   style={{
                       flexGrow: 3,
-                      overflowY: 'auto',
                       overflowX: 'hidden',
                       width: width,
                       backgroundColor: colorBgContainer
                   }}>
                 {loading && <Skeleton active={true}/>}
                 {!loading &&
-                    <>
+                    <CustomScroll heightRelativeToParent={'100%'}>
                         <Tree.DirectoryTree
                             style={{
                                 width: width,
@@ -321,7 +321,7 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                                 </Menu>
                             </div>
                         )}
-                    </>
+                    </CustomScroll>
                 }
             </Flex>
         </Flex>
