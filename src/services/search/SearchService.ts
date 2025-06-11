@@ -27,9 +27,10 @@ export class SearchService {
   }
 
   async indexDirectory(directoryPath: string): Promise<void> {
+    console.log('Indexing directory:', directoryPath)
     try {
-      const entries = await readDir(directoryPath);
 
+      const entries = await readDir(directoryPath);
       for (const entry of entries) {
         if (entry.isFile && entry.name?.endsWith('.md')) {
           const fullPath =  await join(directoryPath, entry.name);
@@ -44,8 +45,12 @@ export class SearchService {
           this.documents.set(fullPath, doc);
           await this.index.add(doc);
         } else  if (entry.isDirectory) {
-          const dir = await join(directoryPath, entry.name);
-          await this.indexDirectory(dir)
+          if (entry.name.startsWith(".")) {
+            console.log('skip the folder that start with dot', entry.name);
+          } else {
+            const dir = await join(directoryPath, entry.name);
+            await this.indexDirectory(dir)
+          }
         } else {
           //console.log(`Skipping non-file entry: ${entry.name}`);
         }

@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {SearchBar} from './SearchBar.tsx';
 import {SearchableDocument, SearchService} from '../services/search/SearchService';
 import {useSettings} from "../settings/SettingsContext.tsx";
@@ -59,4 +59,4 @@ const FullTextSearch: React.FC<FullTextSearchProps> = ({onDocumentSelect}) => {
     );
 }
 
-export default FullTextSearch;
+export default React.memo(FullTextSearch);
