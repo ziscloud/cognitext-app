@@ -33,8 +33,20 @@ html, body, #root {
     /*overflow-y: scroll;*/
     height: 100vh;
 }
+
+.main-side-menu {
+    height: 100vh;
+    border-inline-end-width: 1px;
+    border-inline-end-style: solid;
+    border-inline-end-color: rgba(0, 0, 0, 0.05);
+}
+
 .main-body {
     height: 100vh;
+}
+
+.menu {
+    border-inline-end-width: 0 !important;
 }
 
 .menu .ant-menu-item {
@@ -48,17 +60,22 @@ html, body, #root {
 .search-file-name, .search-file-name .ant-select-selector, .search-file-name .ant-select-selection-wrap {
     width: 100%;
     max-width: 100%;
-    overflow: hidden; /* 隐藏超出部分 */
-    text-overflow: ellipsis !important; /* 超出部分显示省略号 */
-    white-space: nowrap !important; /* 防止文本换行 */
+    overflow: hidden;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.left-panel-header-container {
+    width: 100%;
+    padding: 0 4px;
 }
 
 .left-panel-header-container .ant-select .ant-select-selection-item {
     width: 100%;
     max-width: 100%;
-    overflow: hidden; /* 隐藏超出部分 */
-    text-overflow: ellipsis; /* 超出部分显示省略号 */
-    white-space: nowrap !important; /* 防止文本换行 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap !important;
 }
 
 .ant-tabs .ant-tabs-tab-btn .ant-tabs-tab-icon:not(:last-child) {

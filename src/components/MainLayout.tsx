@@ -15,6 +15,9 @@ import type {TableOfContentsEntry} from "@lexical/react/LexicalTableOfContentsPl
 import Copilot from "./Copilot.tsx";
 import SplitPane, {Pane} from "./react-split-pane-next";
 import {debounce} from "lodash-es";
+import FullTextSearch from "./FullTextSearch.tsx";
+import {SearchableDocument} from "../services/search/SearchService.ts";
+import crypto from "crypto-js";
 
 type TabsItem = Required<TabsProps>['items'][number];
 
@@ -142,7 +145,7 @@ const MainLayout: React.FC = () => {
             if (tabItemsRef.current.find(item => item.key === 'tab-' + file.tabId)) {
                 setTabItems(prevState => prevState.map((item) => {
                     if ((item.key === 'tab-' + file.tabId)) {
-                        if (file.isNew ) {
+                        if (file.isNew) {
                             if (path) {
                                 const fileName = getFileNameWithoutExtension(path)
                                 return {
@@ -241,6 +244,10 @@ const MainLayout: React.FC = () => {
         });
     }, [subscribe]);
 
+    useEffect(() => {
+        publish(EventType.FILE_ACTIVE, {id: activeTabKey})
+    }, [activeTabKey]);
+
     return (
         <Layout style={{minHeight: '100vh'}}>
             <Side onMenuClick={onMenuClick}/>
@@ -274,6 +281,11 @@ const MainLayout: React.FC = () => {
                             height: '100%',
                             width: '100%'
                         }}>
+                        <FullTextSearch onDocumentSelect={async (document: SearchableDocument) => {
+                            console.log('Selected document:', document);
+                            const key = crypto.MD5(document.path).toString(crypto.enc.Hex);
+                            onFileSelected(key, document.path, document.title);
+                        }}/>
                     </div>
                     <div style={{display: activeMenu === 'chat' ? 'block' : 'none', height: '100%', width: '100%'}}>
                         <Copilot/>

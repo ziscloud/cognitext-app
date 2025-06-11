@@ -25,7 +25,7 @@ import {
     Welcome,
 } from '@ant-design/x';
 import type {Conversation} from '@ant-design/x/es/conversations';
-import {Button, GetProp, GetRef, message, Popover, Space, Spin} from 'antd';
+import {Button, Flex, GetProp, GetRef, message, Popover, Space, Spin} from 'antd';
 import {createStyles} from 'antd-style';
 import dayjs from 'dayjs';
 import {useEffect, useRef, useState} from 'react';
@@ -92,7 +92,7 @@ const useCopilotStyle = createStyles(({token, css}) => {
         `,
         // chatHeader 样式
         chatHeader: css`
-            height: 52px;
+            height: 46px;
             box-sizing: border-box;
             border-bottom: 1px solid ${token.colorBorder};
             display: flex;
@@ -362,8 +362,8 @@ const Copilot = (_: CopilotProps) => {
                 <>
                     <Welcome
                         variant="borderless"
-                        title="👋 Hello, I'm Ant Design X"
-                        description="Base on Ant Design, AGI product interface solution, create a better intelligent vision~"
+                        title="👋 Hello, I'm CogniText"
+                        description="AI-Powered Markdown Editor for Thoughtful Writing"
                         className={styles.chatWelcome}
                     />
 
@@ -410,7 +410,7 @@ const Copilot = (_: CopilotProps) => {
     );
     const chatSender = (
         <div className={styles.chatSend}>
-            <div className={styles.sendAction}>
+            <Flex wrap gap="small" className={styles.sendAction}>
                 <Button
                     icon={<ScheduleOutlined/>}
                     onClick={() => handleUserSubmit('What has Ant Design X upgraded?')}
@@ -424,7 +424,7 @@ const Copilot = (_: CopilotProps) => {
                     Components
                 </Button>
                 <Button icon={<AppstoreAddOutlined/>}>More</Button>
-            </div>
+            </Flex>
 
             {/** 输入框 */}
             <Suggestion items={MOCK_SUGGESTIONS} onSelect={(itemVal) => setInputValue(`[${itemVal}]:`)}>

@@ -43,9 +43,9 @@ const Side: React.FC<SideProps> = ({onMenuClick}: SideProps) => {
     } = theme.useToken();
 
     return (
-        <Sider collapsed={collapsed} onCollapse={(value) => setCollapsed(value)} collapsedWidth={56}
+        <Sider className={'main-side-menu'} collapsed={collapsed} onCollapse={(value) => setCollapsed(value)} collapsedWidth={56}
                width={160} style={{backgroundColor: colorBgContainer}}>
-            <Flex style={{width: '100%', marginTop:'12px', marginBottom:'12px'}} align={'center'} justify={'center'}><img src={'/logo.svg'} style={{width: '38px'}}/></Flex>
+            <Flex style={{width: '100%', marginTop:'12px', marginBottom:'12px'}} align={'center'} justify={'center'}><img src={'/logo.svg'} style={{width: '32px'}}/></Flex>
             <Menu className="menu" defaultSelectedKeys={['notes']} mode="inline" items={items} onClick={onMenuClick}/>
         </Sider>
     )

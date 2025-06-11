@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {FolderOutlined, PlusOutlined} from '@ant-design/icons';
 import {Button, Flex, GetProps, Layout, Menu, Skeleton, theme, Tree, TreeDataNode} from 'antd';
 import {SettingsType, useSettings} from "../settings/SettingsContext.tsx";
-import {DirEntry, readDir, UnwatchFn, watch} from "@tauri-apps/plugin-fs";
+import {DirEntry, readDir} from "@tauri-apps/plugin-fs";
 import {join} from '@tauri-apps/api/path';
 import crypto from "crypto-js";
 import DebounceSelect from "./DebounceSelect.tsx";
@@ -38,7 +38,7 @@ async function processEntriesRecursively(parentPath: string, entries: DirEntry[]
         const path = await join(parentPath, entry.name);
         const key = crypto.MD5(path).toString(crypto.enc.Hex);
 
-        const item = {entry, parent};
+        const item = {entry, parent, key};
         names.set(key, item);
 
         if (entry.isDirectory) {
@@ -91,10 +91,12 @@ interface FolderTreeProps {
     width: string
 }
 
-export type EntryItem = { entry: DirEntry, parent?: EntryItem }
+export type EntryItem = { entry: DirEntry, parent?: EntryItem , key:string}
 
 const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTreeProps) => {
     const settings: SettingsType = useSettings();
+    const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
+    const [expandKeys, setExpandKeys] = useState<React.Key[]>([]);
     const [items, setItems] = useState<{ items: TreeNode[], names: Map<string, EntryItem> }>();
     const [loading, setLoading] = useState(false);
     const [contextMenu, setContextMenu] = useState<{
@@ -194,35 +196,55 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
         setContextMenu({...contextMenu, visible: false}); // Close menu
     };
 
-    const cb = (event: any) => {
-        console.log('got event', event)
-        //TODO shunyun 2025/6/6: 排除自己出发的事件
-        // setLoading(true);
-        // loadDir(settings.actionOnStartup?.dir).then(value => {
-        //     setItems(value);
-        //     setLoading(false);
-        // });
-    };
+    // const cb = (event: any) => {
+    //     console.log('got event', event)
+    //     //TODO shunyun 2025/6/6: 排除自己出发的事件
+    //     // setLoading(true);
+    //     // loadDir(settings.actionOnStartup?.dir).then(value => {
+    //     //     setItems(value);
+    //     //     setLoading(false);
+    //     // });
+    // };
 
     useEffect(() => {
-        let unwatch: UnwatchFn;
-
-        if (settings.actionOnStartup?.dir) {
-            watch(settings.actionOnStartup.dir, cb, {delayMs: 1000, recursive: true})
-                .then((uw) => {
-                    unwatch = uw;
-                    console.log("Watching file", settings.actionOnStartup.dir);
-                })
-                .catch((e) => console.log("Error", e));
-        }
-
-        return () => {
-            if (unwatch) {
-                unwatch();
-                console.log("Stopped watching file");
-            }
-        };
+        // let unwatch: UnwatchFn;
+        //
+        // if (settings.actionOnStartup?.dir) {
+        //     watch(settings.actionOnStartup.dir, cb, {delayMs: 1000, recursive: true})
+        //         .then((uw) => {
+        //             unwatch = uw;
+        //             console.log("Watching file", settings.actionOnStartup.dir);
+        //         })
+        //         .catch((e) => console.log("Error", e));
+        // }
+        //
+        // return () => {
+        //     if (unwatch) {
+        //         unwatch();
+        //         console.log("Stopped watching file");
+        //     }
+        // };
     }, [settings]);
+
+
+    useEffect(() => {
+        return subscribe(EventType.FILE_ACTIVE, ({id}) => {
+            console.log('FILE_ACTIVE', id)
+            if (id) {
+                const key = id.substring(4);
+                const openKeys:string[] = [];
+                let parent = items?.names?.get(key)?.parent;
+                while (parent) {
+                    openKeys.push(parent?.key)
+                    parent = parent.parent;
+                }
+                setExpandKeys(prevState => [...prevState, ...openKeys]);
+                setSelectedKeys([key])
+            } else {
+                setSelectedKeys([])
+            }
+        });
+    }, [subscribe]);
 
     return (
         <Flex vertical={true} style={{height: '100%', width: width, overflow: 'hidden'}}>
@@ -235,8 +257,7 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                 background: colorBgContainer,
                 borderBottom: `1px solid ${colorSplit}`
             }}>
-                <Flex className={'left-panel-header-container'} justify={'space-between'} gap={'small'} align={'center'}
-                      style={{width: '100%', padding: '0 24px'}}>
+                <Flex className={'left-panel-header-container'} justify={'space-between'} gap={'small'} align={'center'}>
                     <Flex id={'left-panel-header-search-container'} flex={1}>
                         <DebounceSelect
                             placeholder="search file name"
@@ -266,8 +287,12 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                             draggable={{icon: false, nodeDraggable: () => true}}
                             titleRender={(nodeData) => {
                                 return <TreeTitle nodeData={nodeData} width={width}/>
-                            }
-                            }
+                            }}
+                            onExpand={(expandedKeys, _) => {
+                                    setExpandKeys(expandedKeys);
+                            }}
+                            expandedKeys={expandKeys}
+                            selectedKeys={selectedKeys}
                             onSelect={onClick}
                             onDrop={({event, node, dragNode, dragNodesKeys}) => {
                                 console.log('on drop ', event, node, dragNode, dragNodesKeys)

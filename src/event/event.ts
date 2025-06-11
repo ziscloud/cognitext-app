@@ -4,6 +4,7 @@ import type {TableOfContentsEntry} from "@lexical/react/LexicalTableOfContentsPl
 
 export enum EventType {
     FILE_SAVED = 'file/saved',
+    FILE_ACTIVE = 'file/active',
     FILE_TOC = 'file/toc',
     SAVE_FILE = 'file/save',
     FILE_CHANGED = 'file/changed',
@@ -17,6 +18,7 @@ export enum EventType {
 export interface EventMap {
     [EventType.FILE_SAVED]: { file: EditorTabFile; path?: string, content?: string };
     [EventType.SAVE]: {};
+    [EventType.FILE_ACTIVE]: {id: string|null|undefined};
     [EventType.FILE_TOC]: {id: string, toc:Array<TableOfContentsEntry>};
     [EventType.FILE_CHANGED]: {tabId: string};
     [EventType.NEW_FILE]: {};
