@@ -12,7 +12,7 @@ import {PiFileMdFill} from "react-icons/pi";
 import TreeTitle from "./TreeTitle.tsx";
 import {revealItemInDir} from "@tauri-apps/plugin-opener";
 import {MenuInfo} from "rc-menu/lib/interface";
-import {CustomScroll} from "react-custom-scroll";
+import {toValue} from "./react-split-pane-next/utils.ts";
 
 type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>;
 
@@ -112,6 +112,8 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
     });
 
     const contextMenuRef = useRef(null);
+    const treeRef = useRef(null);
+    const itemsRef = useRef(items);
     const {token: {colorBgContainer, colorSplit}} = theme.useToken();
     const {subscribe} = useEvent();
     const onClick: DirectoryTreeProps["onSelect"] = (value) => {
@@ -233,18 +235,37 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
             if (id) {
                 const key = id.substring(4);
                 const openKeys:string[] = [];
-                let parent = items?.names?.get(key)?.parent;
+                const item = itemsRef.current?.names?.get(key);
+                let parent = item?.parent;
                 while (parent) {
                     openKeys.push(parent?.key)
                     parent = parent.parent;
                 }
                 setExpandKeys(prevState => [...prevState, ...openKeys]);
                 setSelectedKeys([key])
+                if (treeRef.current) {
+                    const treeElement:HTMLElement = treeRef.current;
+                    if (treeElement) {
+                        const nodeElement = treeElement.querySelector(`[title="${item?.entry.name}"]`);
+                        if (nodeElement) {
+                            // Use the native DOM scrollIntoView method
+                            nodeElement.scrollIntoView({
+                                behavior: 'smooth', // Optional: for smooth scrolling
+                                block: 'nearest',   // Optional: 'start', 'center', 'end', or 'nearest'
+                                inline: 'start'   // Optional: 'start', 'center', 'end', or 'nearest'
+                            });
+                        }
+                    }
+                }
             } else {
                 setSelectedKeys([])
             }
         });
     }, [subscribe]);
+
+    useEffect(() => {
+        itemsRef.current = items;
+    }, [items]);
 
     return (
         <Flex vertical={true} style={{height: '100%', width: width, overflow: 'hidden'}}>
@@ -278,10 +299,10 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                   }}>
                 {loading && <Skeleton active={true}/>}
                 {!loading &&
-                    <CustomScroll heightRelativeToParent={'100%'}>
+                    <div style={{ height: '100%', width: width, overflowY: 'auto'}} ref={treeRef}>
                         <Tree.DirectoryTree
                             style={{
-                                width: width,
+                                width: toValue(width) - 15,
                                 overflowX: 'hidden',
                             }}
                             draggable={{icon: false, nodeDraggable: () => true}}
@@ -346,7 +367,7 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                                 </Menu>
                             </div>
                         )}
-                    </CustomScroll>
+                    </div>
                 }
             </Flex>
         </Flex>
