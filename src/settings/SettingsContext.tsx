@@ -18,6 +18,12 @@ export type SettingsType = {
         globalDir: string;
         preferRelativeFolder: boolean;
     };
+    chat: {
+        baseUrl:string;
+        apiKey:string;
+        model:string;
+        provider:string;
+    }
 };
 
 const SettingsContext = createContext<SettingsType | undefined>(undefined);

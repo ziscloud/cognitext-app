@@ -94,6 +94,7 @@ import {
   formatParagraph,
   formatQuote,
 } from './utils';
+import {AI_CONTINUE_WRITING_COMMAND} from "../AIPlugin";
 
 const rootTypeToRootName = {
   root: 'Root',
@@ -1224,7 +1225,25 @@ export default function ToolbarPlugin({
       {/*  editor={activeEditor}*/}
       {/*  isRTL={toolbarState.isRTL}*/}
       {/*/>*/}
-
+      <Divider />
+      <DropDown
+          disabled={!isEditable}
+          buttonClassName="toolbar-item spaced"
+          buttonLabel="AI"
+          buttonAriaLabel="AI assistant"
+          buttonIconClassName="icon quote">
+        <DropDownItem
+            onClick={() => {
+              activeEditor.dispatchCommand(
+                  AI_CONTINUE_WRITING_COMMAND,
+                  undefined,
+              );
+            }}
+            className="item">
+          <i className="icon horizontal-rule" />
+          <span className="text">AI 续写</span>
+        </DropDownItem>
+      </DropDown>
       {modal}
     </div>
   );

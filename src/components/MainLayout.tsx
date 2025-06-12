@@ -201,7 +201,7 @@ const MainLayout: React.FC = () => {
 
     useEffect(() => {
         return subscribe(EventType.FILE_CHANGED, async ({tabId}) => {
-            console.log('file change of tab', tabId)
+            //console.log('file change of tab', tabId)
             if (tabItemsRef.current.find(item => item.id === 'tab-' + tabId)) {
                 setTabItems(prevState => prevState.map((item) => {
                     if ((item.key === 'tab-' + tabId)) {
@@ -214,7 +214,7 @@ const MainLayout: React.FC = () => {
                     }
                 }));
             } else {
-                console.log('tab is not opened', 'tab-' + tabId)
+                //console.log('tab is not opened', 'tab-' + tabId)
             }
         });
     }, [subscribe]);

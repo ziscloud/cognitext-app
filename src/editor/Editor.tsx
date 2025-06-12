@@ -80,6 +80,7 @@ import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin';
 import {useFile} from "./context/FileContext.tsx";
 import {useEvent} from "../event/EventContext.tsx";
 import {EventType} from "../event/event.ts";
+import AIPlugin from "./plugins/AIPlugin";
 // import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
 const skipCollaborationInit =
@@ -210,6 +211,7 @@ const Editor: React.FC = () => {
                 <KeywordsPlugin/>
                 <SpeechToTextPlugin/>
                 <AutoLinkPlugin/>
+                <AIPlugin/>
                 {/*<CommentPlugin*/}
                 {/*  providerFactory={isCollab ? createWebsocketProvider : undefined}*/}
                 {/*/>*/}
