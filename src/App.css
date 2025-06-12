@@ -86,3 +86,14 @@ html, body, #root {
 .ant-tabs-nav-list {
     padding-top: 6px;
 }
+
+.ant-tree-node-content-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.ant-tree-title {
+    display: flex;
+    align-items: center;
+    height: 32px;
+}
