@@ -1240,7 +1240,7 @@ export default function ToolbarPlugin({
               );
             }}
             className="item">
-          <i className="icon horizontal-rule" />
+          <i className="icon ai-continue-writing" />
           <span className="text">AI 续写</span>
         </DropDownItem>
       </DropDown>

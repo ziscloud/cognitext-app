@@ -910,6 +910,10 @@ i.page-break,
   background-image: url(images/icons/chat-square-quote.svg);
 }
 
+.icon.ai-continue-writing {
+  background-image: url(images/icons/ai-continue-writing.svg);
+}
+
 .icon.code {
   background-image: url(images/icons/code.svg);
 }
