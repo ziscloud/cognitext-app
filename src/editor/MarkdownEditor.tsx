@@ -19,11 +19,11 @@ import {$createHeadingNode, $createQuoteNode} from "@lexical/rich-text";
 import {parseAllowedFontSize} from "./plugins/ToolbarPlugin/fontSize.tsx";
 import {parseAllowedColor} from "./ui/ColorPicker.tsx";
 import {FlashMessageContext} from "./context/FlashMessageContext.tsx";
-import {CustomScroll} from "react-custom-scroll";
 import React, {UIEvent, useEffect, useState} from "react";
 import './index.css'
 import {EditorTabFile, FileProvider} from "./context/FileContext.tsx";
 import {MultipleEditorStorePlugin} from "./plugins/MultipleEditorStorePlugin.tsx";
+import {CustomScroll} from "../components/custom-scroll/CustomScroll.tsx";
 
 function getExtraStyles(element: HTMLElement): string {
     // Parse styles from pasted input, but only if they match exactly the
@@ -209,6 +209,7 @@ const MarkdownEditor: React.FC<{ file: EditorTabFile, id: string }> = ({file, id
             heightRelativeToParent={"100%"}
             onScroll={handleScroll}
             scrollTo={height}
+            keepAtBottom={true}
         >
             <div style={{padding: '0'}} id='editor-wrapper'>
                 <FileProvider file={file}>

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Button, Input, List, Space, Typography} from 'antd';
 import {SettingOutlined} from '@ant-design/icons';
 import {SearchableDocument, SearchService} from '../services/search/SearchService';
-import {CustomScroll} from "react-custom-scroll";
+import {CustomScroll} from "./custom-scroll/CustomScroll.tsx";
 
 const {Text} = Typography;
 

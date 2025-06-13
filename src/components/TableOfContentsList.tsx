@@ -4,7 +4,7 @@ import type {NodeKey} from "lexical";
 import {useEditor} from "../editor/EditorProvider.tsx";
 import {theme, Tree, TreeDataNode} from 'antd';
 import {DownOutlined} from "@ant-design/icons";
-import {CustomScroll} from "react-custom-scroll";
+import {CustomScroll} from "./custom-scroll/CustomScroll.tsx";
 
 const MARGIN_ABOVE_EDITOR = 624;
 const HEADING_WIDTH = 9;
