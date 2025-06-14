@@ -117,3 +117,8 @@ html, body, #root {
     align-items: center;
     height: 32px;
 }
+
+#editor-wrapper {
+    height: 100%;
+    padding: 0;
+}

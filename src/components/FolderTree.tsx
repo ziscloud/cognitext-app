@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {FolderOutlined, PlusOutlined} from '@ant-design/icons';
+import {FolderOutlined, PlusOutlined, SyncOutlined} from '@ant-design/icons';
 import {Button, Flex, GetProps, Layout, Menu, Skeleton, theme, Tree, TreeDataNode} from 'antd';
 import {SettingsType, useSettings} from "../settings/SettingsContext.tsx";
 import {DirEntry, readDir} from "@tauri-apps/plugin-fs";
@@ -91,7 +91,7 @@ interface FolderTreeProps {
     width: string
 }
 
-export type EntryItem = { entry: DirEntry, parent?: EntryItem , key:string}
+export type EntryItem = { entry: DirEntry, parent?: EntryItem, key: string }
 
 const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTreeProps) => {
     const settings: SettingsType = useSettings();
@@ -234,7 +234,7 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
             console.log('FILE_ACTIVE', id)
             if (id) {
                 const key = id.substring(4);
-                const openKeys:string[] = [];
+                const openKeys: string[] = [];
                 const item = itemsRef.current?.names?.get(key);
                 let parent = item?.parent;
                 while (parent) {
@@ -244,7 +244,7 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                 setExpandKeys(prevState => [...prevState, ...openKeys]);
                 setSelectedKeys([key])
                 if (treeRef.current) {
-                    const treeElement:HTMLElement = treeRef.current;
+                    const treeElement: HTMLElement = treeRef.current;
                     if (treeElement) {
                         const nodeElement = treeElement.querySelector(`[title="${item?.entry.name}"]`);
                         if (nodeElement) {
@@ -278,7 +278,8 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                 background: colorBgContainer,
                 borderBottom: `1px solid ${colorSplit}`
             }}>
-                <Flex className={'left-panel-header-container'} justify={'space-between'} gap={'small'} align={'center'}>
+                <Flex className={'left-panel-header-container'} justify={'space-between'} gap={'small'}
+                      align={'center'}>
                     <Flex id={'left-panel-header-search-container'} flex={1}>
                         <DebounceSelect
                             placeholder="search file name"
@@ -288,6 +289,13 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                         />
                     </Flex>
                     <Button icon={<PlusOutlined/>}/>
+                    <Button icon={<SyncOutlined/>} onClick={() => {
+                        setLoading(true);
+                        loadDir(settings.actionOnStartup?.dir).then(value => {
+                            setItems(value);
+                            setLoading(false);
+                        });
+                    }} loading={loading}/>
                 </Flex>
             </Header>
             <Flex id={'left-panel'}
@@ -299,7 +307,7 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                   }}>
                 {loading && <Skeleton active={true}/>}
                 {!loading &&
-                    <div style={{ height: '100%', width: width, overflowY: 'auto'}} ref={treeRef}>
+                    <div style={{height: '100%', width: width, overflowY: 'auto'}} ref={treeRef}>
                         <Tree.DirectoryTree
                             style={{
                                 width: toValue(width) - 15,
@@ -310,7 +318,7 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                                 return <TreeTitle nodeData={nodeData} width={width}/>
                             }}
                             onExpand={(expandedKeys, _) => {
-                                    setExpandKeys(expandedKeys);
+                                setExpandKeys(expandedKeys);
                             }}
                             expandedKeys={expandKeys}
                             selectedKeys={selectedKeys}
