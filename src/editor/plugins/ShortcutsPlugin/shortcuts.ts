@@ -55,6 +55,7 @@ export const SHORTCUTS = Object.freeze({
   ITALIC: IS_APPLE ? '⌘+I' : 'Ctrl+I',
   UNDERLINE: IS_APPLE ? '⌘+U' : 'Ctrl+U',
   INSERT_LINK: IS_APPLE ? '⌘+K' : 'Ctrl+K',
+  FIND: IS_APPLE ? '⌘+F' : 'Ctrl+F',
 });
 
 const CONTROL_OR_META = {ctrlKey: !IS_APPLE, metaKey: IS_APPLE};
@@ -251,3 +252,12 @@ export function isAddComment(event: KeyboardEvent): boolean {
     isModifierMatch(event, {...CONTROL_OR_META, altKey: true})
   );
 }
+
+export function isFind(event: KeyboardEvent): boolean {
+  const {code} = event;
+  return (
+      code === 'KeyF' &&
+      isModifierMatch(event, {...CONTROL_OR_META, altKey: false})
+  );
+}
+

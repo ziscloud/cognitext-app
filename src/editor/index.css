@@ -1492,13 +1492,24 @@ button.action-button:disabled {
   text-align: right;
 }
 
+.find-bar {
+  background: #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  padding: 2px;
+  height: 36px;
+  position: fixed;
+  top: 82px;
+  right: 20px;
+  z-index: 2;
+}
+
 .toolbar {
   display: flex;
   margin-bottom: 1px;
   background: #fff;
+  border-bottom: #eee solid 1px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   padding: 4px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
   vertical-align: middle;
   overflow: auto;
   height: 36px;

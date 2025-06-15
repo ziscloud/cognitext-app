@@ -40,7 +40,7 @@ import {
   isCapitalize,
   isCenterAlign,
   isClearFormatting,
-  isDecreaseFontSize,
+  isDecreaseFontSize, isFind,
   isFormatBulletList,
   isFormatCheckList,
   isFormatCode,
@@ -65,6 +65,7 @@ import {
 // import {SAVE_COMMAND} from "../SavePlugin";
 import {useEvent} from "../../../event/EventContext.tsx";
 import {EventType} from "../../../event/event.ts";
+import {OPEN_SEARCH_COMMAND} from "../FindAndReplace";
 
 export default function ShortcutsPlugin({
   editor,
@@ -146,6 +147,8 @@ export default function ShortcutsPlugin({
       } else if (isSave(event)) {
         publish(EventType.SAVE, {});
         //editor.dispatchCommand(SAVE_COMMAND, undefined);
+      } else if(isFind(event)) {
+        editor.dispatchCommand(OPEN_SEARCH_COMMAND, undefined);
       } else {
         // No match for any of the event handlers
         return false;

@@ -276,7 +276,8 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                 maxWidth: '100%',
                 height: '46px',
                 background: colorBgContainer,
-                borderBottom: `1px solid ${colorSplit}`
+                borderBottom: `1px solid ${colorSplit}`,
+                boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)'
             }}>
                 <Flex className={'left-panel-header-container'} justify={'space-between'} gap={'small'}
                       align={'center'}>

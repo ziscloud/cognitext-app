@@ -219,11 +219,6 @@ const MarkdownEditor: React.FC<{ file: EditorTabFile, id: string }> = ({file, id
                                 <SharedHistoryContext>
                                     <TableContext>
                                         <ToolbarContext>
-                                            {/*<header>*/}
-                                            {/*    <a href="https://lexical.dev" target="_blank" rel="noreferrer">*/}
-                                            {/*        <img src={logo} alt="Lexical Logo" />*/}
-                                            {/*    </a>*/}
-                                            {/*</header>*/}
                                             <div className="editor-shell">
                                                 <Editor/>
                                             </div>
@@ -231,7 +226,6 @@ const MarkdownEditor: React.FC<{ file: EditorTabFile, id: string }> = ({file, id
                                             {/*{isDevPlayground ? <DocsPlugin/> : null}*/}
                                             {/*{isDevPlayground ? <PasteLogPlugin/> : null}*/}
                                             {/*{isDevPlayground ? <TestRecorderPlugin/> : null}*/}
-
                                             {measureTypingPerf ? <TypingPerfPlugin/> : null}
                                             <MultipleEditorStorePlugin id={id} />
                                         </ToolbarContext>

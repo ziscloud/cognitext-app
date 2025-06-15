@@ -81,6 +81,7 @@ import {useFile} from "./context/FileContext.tsx";
 import {useEvent} from "../event/EventContext.tsx";
 import {EventType} from "../event/event.ts";
 import AIPlugin from "./plugins/AIPlugin";
+import {FindAndReplacePlugin} from "./plugins/FindAndReplace";
 // import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
 const skipCollaborationInit =
@@ -155,6 +156,7 @@ const Editor: React.FC = () => {
 
     return (
         <>
+            <FindAndReplacePlugin/>
             {isRichText && (
                 <ToolbarPlugin
                     editor={editor}
