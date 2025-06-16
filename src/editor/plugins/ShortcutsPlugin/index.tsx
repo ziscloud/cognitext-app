@@ -55,7 +55,7 @@ import {
   isJustifyAlign,
   isLeftAlign,
   isLowercase,
-  isOutdent,
+  isOutdent, isPrint,
   isRightAlign, isSave,
   isStrikeThrough,
   isSubscript,
@@ -66,6 +66,7 @@ import {
 import {useEvent} from "../../../event/EventContext.tsx";
 import {EventType} from "../../../event/event.ts";
 import {OPEN_SEARCH_COMMAND} from "../FindAndReplace";
+import {PRINT} from "../PrintPlugin";
 
 export default function ShortcutsPlugin({
   editor,
@@ -149,7 +150,9 @@ export default function ShortcutsPlugin({
         //editor.dispatchCommand(SAVE_COMMAND, undefined);
       } else if(isFind(event)) {
         editor.dispatchCommand(OPEN_SEARCH_COMMAND, undefined);
-      } else {
+      } else if (isPrint(event)) {
+        editor.dispatchCommand(PRINT, undefined);
+      }else {
         // No match for any of the event handlers
         return false;
       }

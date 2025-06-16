@@ -56,6 +56,7 @@ export const SHORTCUTS = Object.freeze({
   UNDERLINE: IS_APPLE ? '⌘+U' : 'Ctrl+U',
   INSERT_LINK: IS_APPLE ? '⌘+K' : 'Ctrl+K',
   FIND: IS_APPLE ? '⌘+F' : 'Ctrl+F',
+  PRINT: IS_APPLE ? '⌘+P' : 'Ctrl+P',
 });
 
 const CONTROL_OR_META = {ctrlKey: !IS_APPLE, metaKey: IS_APPLE};
@@ -257,6 +258,14 @@ export function isFind(event: KeyboardEvent): boolean {
   const {code} = event;
   return (
       code === 'KeyF' &&
+      isModifierMatch(event, {...CONTROL_OR_META, altKey: false})
+  );
+}
+
+export function isPrint(event: KeyboardEvent):  boolean {
+  const {code} = event;
+  return (
+      code === 'KeyP' &&
       isModifierMatch(event, {...CONTROL_OR_META, altKey: false})
   );
 }

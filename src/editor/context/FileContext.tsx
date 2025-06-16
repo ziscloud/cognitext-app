@@ -7,6 +7,7 @@ export type EditorTabFile = {
     value: string;
     language: string;
     isNew: boolean;
+    fileName:string;
 };
 
 const FileContext = createContext<EditorTabFile | undefined>(undefined);

@@ -4,8 +4,8 @@ html, body, #root {
     width: 100%;
     height: 100%;
     overflow-y: hidden;
-    scrollbar-width: thin;             /* auto | thin | none */
-    scrollbar-color: #c1c1c1 #f1f1f1;  /* 滑块颜色 轨道颜色 */
+    scrollbar-width: thin; /* auto | thin | none */
+    scrollbar-color: #c1c1c1 #f1f1f1; /* 滑块颜色 轨道颜色 */
 }
 
 /* Webkit */
@@ -13,15 +13,18 @@ html, body, #root {
     width: 10px;
     height: 10px;
 }
+
 ::-webkit-scrollbar-track {
     background: transparent;
     border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb {
     background: #c1c1c1;
     border-radius: 4px;
     border: 2px solid #f1f1f1;
 }
+
 ::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
 }
@@ -122,3 +125,39 @@ html, body, #root {
     height: 100%;
     padding: 0;
 }
+
+@media print {
+
+
+    .no-print, .main-side, .main-side-menu, .editor-tabs .ant-tabs-nav, .toolbar {
+        display: none !important;
+        height: 0;
+        padding: 0;
+        margin: 0;
+        visibility: hidden;
+    }
+
+    #root, html, body,
+    .main-body,
+    .ant-tabs,
+    .ant-tabs-content-holder,
+    .ant-tabs-content,
+    .ant-tabs-tabpane,
+    .rcs-custom-scroll,
+    .rcs-outer-container,
+    .rcs-inner-container,
+    .rcs-inner-container div,
+    #editor-wrapper {
+        padding: 0;
+        margin: 0;
+        height: auto !important;
+        overflow: visible !important;
+        font-size: 12pt; /* 建议使用pt单位 */
+    }
+
+    @page {
+        size: A4; /* 纸张尺寸 */
+        margin: 1.5cm;
+    }
+}
+

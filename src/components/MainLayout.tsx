@@ -61,6 +61,7 @@ const MainLayout: React.FC = () => {
                 children: <MarkdownEditor id={key} key={'editor-' + key} file={{
                     language: 'markdown',
                     value: fileContent,
+                    fileName: fileName || '',
                     path: path,
                     tabId: key,
                     groupId: '0',
@@ -89,6 +90,7 @@ const MainLayout: React.FC = () => {
             children: <MarkdownEditor id={id} key={'editor-' + fileName} file={{
                 language: 'markdown',
                 value: '# ',
+                fileName: `Untitled ${newFileCount}`,
                 path: path,
                 tabId: id,
                 groupId: '0',
@@ -158,6 +160,7 @@ const MainLayout: React.FC = () => {
                                         value: content || '',
                                         path: path,
                                         tabId: file.tabId,
+                                        fileName: fileName,
                                         groupId: '0',
                                         isNew: false
                                     }}/>,
