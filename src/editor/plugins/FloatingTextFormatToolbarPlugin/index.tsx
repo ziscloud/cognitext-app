@@ -48,6 +48,7 @@ function TextFormatFloatingToolbar({
   isStrikethrough,
   isSubscript,
   isSuperscript,
+  isHighlight,
   setIsLinkEditMode,
 }: {
   editor: LexicalEditor;
@@ -63,6 +64,7 @@ function TextFormatFloatingToolbar({
   isSubscript: boolean;
   isSuperscript: boolean;
   isUnderline: boolean;
+  isHighlight: boolean;
   setIsLinkEditMode: Dispatch<boolean>;
 }): JSX.Element {
   const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
@@ -237,6 +239,16 @@ function TextFormatFloatingToolbar({
             <i className="format strikethrough" />
           </button>
           <button
+              type="button"
+              onClick={() => {
+                editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'highlight');
+              }}
+              className={'popup-item spaced ' + (isHighlight ? 'active' : '')}
+              title="Highlight"
+              aria-label="Format text with a highlight">
+            <i className="format highlight" />
+          </button>
+          <button
             type="button"
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript');
@@ -334,6 +346,7 @@ function useFloatingTextFormatToolbar(
   const [isStrikethrough, setIsStrikethrough] = useState(false);
   const [isSubscript, setIsSubscript] = useState(false);
   const [isSuperscript, setIsSuperscript] = useState(false);
+  const [isHighlight, setIsHighlight] = useState(false);
   const [isCode, setIsCode] = useState(false);
 
   const updatePopup = useCallback(() => {
@@ -373,6 +386,7 @@ function useFloatingTextFormatToolbar(
       setIsSubscript(selection.hasFormat('subscript'));
       setIsSuperscript(selection.hasFormat('superscript'));
       setIsCode(selection.hasFormat('code'));
+      setIsHighlight(selection.hasFormat('highlight'));
 
       // Update links
       const parent = node.getParent();
@@ -438,6 +452,7 @@ function useFloatingTextFormatToolbar(
       isSuperscript={isSuperscript}
       isUnderline={isUnderline}
       isCode={isCode}
+      isHighlight={isHighlight}
       setIsLinkEditMode={setIsLinkEditMode}
     />,
     anchorElem,
