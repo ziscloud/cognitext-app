@@ -69,8 +69,8 @@
   background-color: unset;
 }
 .PlaygroundEditorTheme__textHighlight {
-  background: rgba(255, 212, 0, 0.14);
-  border-bottom: 2px solid rgba(255, 212, 0, 0.3);
+  background: #ffe58f;
+  border-bottom: 2px solid rgba(255, 212, 0);
 }
 .PlaygroundEditorTheme__textItalic {
   font-style: italic;
