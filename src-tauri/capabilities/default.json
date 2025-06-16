@@ -2,7 +2,11 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "platforms": ["linux", "macOS", "windows"],
+  "platforms": [
+    "linux",
+    "macOS",
+    "windows"
+  ],
   "windows": [
     "main",
     "settings"
@@ -51,6 +55,14 @@
         }
       ]
     },
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "https://www.google.com"
+        }
+      ]
+    },
     "dialog:default",
     "core:menu:default",
     "core:menu:allow-new",
@@ -78,6 +90,7 @@
     "core:window:allow-set-enabled",
     "core:window:allow-set-focus",
     "core:webview:allow-create-webview-window",
-    "core:webview:allow-print"
+    "core:webview:allow-print",
+    "shell:default"
   ]
 }

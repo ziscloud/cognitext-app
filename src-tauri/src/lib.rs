@@ -14,52 +14,53 @@ fn greet(name: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-//         .setup(|app| {
-//             //let handle = app.handle();
-//
-//             // my custom settings menu item
-//             let settings = MenuItemBuilder::new("Settings...")
-//                 .id("settings")
-//                 .accelerator("CmdOrCtrl+,")
-//                 .build(app)?;
-//
-//             // my custom app submenu
-//             let app_submenu = SubmenuBuilder::new(app, "App")
-//                 .about(Some(AboutMetadata {
-//                     ..Default::default()
-//                 }))
-//                 .separator()
-//                 .item(&settings)
-//                 .separator()
-//                 .services()
-//                 .separator()
-//                 .hide()
-//                 .hide_others()
-//                 .quit()
-//                 .build()?;
-//
-//             // ... any other submenus
-//
-//             let menu = MenuBuilder::new(app)
-//                 .items(&[
-//                     &app_submenu,
-//                     // ... include references to any other submenus
-//                 ])
-//                 .build()?;
-//
-//             // set the menu
-//             app.set_menu(menu)?;
-//
-//             // listen for menu item click events
-// //             app.on_menu_event(move |app, event| {
-// //                 if event.id() == settings.id() {
-// //                     // emit a window event to the frontend
-// //                     let _event = app.emit("custom-event", "/settings");
-// //                 }
-// //             });
-//
-//             Ok(())
-//         })
+        .plugin(tauri_plugin_shell::init())
+        //         .setup(|app| {
+        //             //let handle = app.handle();
+        //
+        //             // my custom settings menu item
+        //             let settings = MenuItemBuilder::new("Settings...")
+        //                 .id("settings")
+        //                 .accelerator("CmdOrCtrl+,")
+        //                 .build(app)?;
+        //
+        //             // my custom app submenu
+        //             let app_submenu = SubmenuBuilder::new(app, "App")
+        //                 .about(Some(AboutMetadata {
+        //                     ..Default::default()
+        //                 }))
+        //                 .separator()
+        //                 .item(&settings)
+        //                 .separator()
+        //                 .services()
+        //                 .separator()
+        //                 .hide()
+        //                 .hide_others()
+        //                 .quit()
+        //                 .build()?;
+        //
+        //             // ... any other submenus
+        //
+        //             let menu = MenuBuilder::new(app)
+        //                 .items(&[
+        //                     &app_submenu,
+        //                     // ... include references to any other submenus
+        //                 ])
+        //                 .build()?;
+        //
+        //             // set the menu
+        //             app.set_menu(menu)?;
+        //
+        //             // listen for menu item click events
+        // //             app.on_menu_event(move |app, event| {
+        // //                 if event.id() == settings.id() {
+        // //                     // emit a window event to the frontend
+        // //                     let _event = app.emit("custom-event", "/settings");
+        // //                 }
+        // //             });
+        //
+        //             Ok(())
+        //         })
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())

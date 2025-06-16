@@ -270,7 +270,6 @@ pre::-webkit-scrollbar-thumb {
   list-style: none;
   margin: 0;
   border-radius: 8px;
-  max-height: 200px;
   overflow-y: scroll;
 }
 

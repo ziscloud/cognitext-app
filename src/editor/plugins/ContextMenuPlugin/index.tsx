@@ -25,6 +25,7 @@ import {
     PASTE_COMMAND,
 } from 'lexical';
 import * as ReactDOM from 'react-dom';
+import {SEARCH_THE_WEB_COMMAND} from "../WebSearchPlugin";
 
 function ContextMenuItem({
                              index,
@@ -231,6 +232,17 @@ export default function ContextMenuPlugin(): JSX.Element {
                         ...defaultOptions,
                     ];
                 }
+            }
+            const selection = $getSelection();
+            if ($isRangeSelection(selection)) {
+                newOptions = [
+                    new ContextMenuOption(`Search the web`, {
+                        onSelect: (_node) => {
+                            editor.dispatchCommand(SEARCH_THE_WEB_COMMAND, selection.getTextContent());
+                        },
+                    }),
+                    ...defaultOptions,
+                ];
             }
         });
         setOptions(newOptions);

@@ -83,6 +83,7 @@ import {EventType} from "../event/event.ts";
 import AIPlugin from "./plugins/AIPlugin";
 import {FindAndReplacePlugin} from "./plugins/FindAndReplace";
 import {PrintPlugin} from "./plugins/PrintPlugin";
+import WebSearchPlugin from "./plugins/WebSearchPlugin";
 // import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
 const skipCollaborationInit =
@@ -159,6 +160,7 @@ const Editor: React.FC = () => {
         <>
             <FindAndReplacePlugin/>
             <PrintPlugin/>
+            <WebSearchPlugin/>
             {isRichText && (
                 <ToolbarPlugin
                     editor={editor}

@@ -127,8 +127,6 @@ html, body, #root {
 }
 
 @media print {
-
-
     .no-print, .main-side, .main-side-menu, .editor-tabs .ant-tabs-nav, .toolbar {
         display: none !important;
         height: 0;
