@@ -38,9 +38,9 @@ export default function AIPlugin(): JSX.Element | null {
     const settings = useSettings();
     const [messageApi, contextHolder] = message.useMessage();
     const [agent] = useXAgent<YourMessageType>({
-        baseURL: settings.chat.baseUrl,
-        model: settings.chat.model,
-        dangerouslyApiKey: 'Bearer ' + settings.chat.apiKey
+        baseURL: settings.chat?.baseUrl,
+        model: settings.chat?.model,
+        dangerouslyApiKey: 'Bearer ' + settings.chat?.apiKey
     });
     const abortController = useRef<AbortController>(null);
 
@@ -66,6 +66,10 @@ export default function AIPlugin(): JSX.Element | null {
         return editor.registerCommand<string>(
             AI_CONTINUE_WRITING_COMMAND,
             () => {
+                if (!settings.chat || !settings.chat.apiKey || !settings.chat.model || !settings.chat.baseUrl) {
+                    message.error('Please configure the chat settings first');
+                    return false;
+                }
                 let markdown = $convertToMarkdownString(
                     PLAYGROUND_TRANSFORMERS,
                     undefined, //node
