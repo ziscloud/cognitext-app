@@ -48,6 +48,9 @@ async function showSettings() {
 }
 
 async function init() {
+    if (!await exists('', {baseDir: BaseDirectory.AppConfig})) {
+        await mkdir('', {baseDir: BaseDirectory.AppConfig})
+    }
     if (!await exists('Backups', {baseDir: BaseDirectory.AppConfig})) {
         await mkdir('Backups', {baseDir: BaseDirectory.AppConfig})
     }
@@ -56,7 +59,7 @@ async function init() {
 async function initMenu(publish: <E extends EventType>(event: E, data: EventMap[E]) => void) {
     const appMenu = await Submenu.new({
         id: 'app',
-        text: 'app',
+        text: 'CogniText',
         items: [
             {
                 text: "About",
