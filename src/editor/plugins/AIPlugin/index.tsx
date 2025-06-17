@@ -38,9 +38,9 @@ export default function AIPlugin(): JSX.Element | null {
     const settings = useSettings();
     const [messageApi, contextHolder] = message.useMessage();
     const [agent] = useXAgent<YourMessageType>({
-        baseURL: settings.chat?.baseUrl,
-        model: settings.chat?.model,
-        dangerouslyApiKey: 'Bearer ' + settings.chat?.apiKey
+        baseURL: settings.chat?.baseUrl || 'https://please-config-it.com',
+        model: settings.chat?.model || 'please config it',
+        dangerouslyApiKey: 'Bearer ' + settings.chat?.apiKey || 'please config it'
     });
     const abortController = useRef<AbortController>(null);
 
