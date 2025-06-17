@@ -38,6 +38,7 @@
     "antd": "^5.24.9",
     "antd-style": "^3.7.1",
     "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.13",
     "flexsearch": "^0.8.205",
     "inline-style-prefixer": "^7.0.1",
     "katex": "^0.16.22",
