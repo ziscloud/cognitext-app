@@ -20,7 +20,7 @@ import {message} from "antd";
 import {useEvent} from "../../../event/EventContext.tsx";
 import {EventType} from "../../../event/event.ts";
 
-export const SAVE_COMMAND: LexicalCommand<void> = createCommand(
+export const SAVE_COMMAND: LexicalCommand<{path?:string}> = createCommand(
     'SAVE_COMMAND',
 );
 
