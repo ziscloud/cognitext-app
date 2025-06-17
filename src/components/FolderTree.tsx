@@ -251,7 +251,7 @@ const FolderTree: React.FC<FolderTreeProps> = ({onFileSelect, width}: FolderTree
                             // Use the native DOM scrollIntoView method
                             nodeElement.scrollIntoView({
                                 behavior: 'smooth', // Optional: for smooth scrolling
-                                block: 'nearest',   // Optional: 'start', 'center', 'end', or 'nearest'
+                                block: 'center',   // Optional: 'start', 'center', 'end', or 'nearest'
                                 inline: 'start'   // Optional: 'start', 'center', 'end', or 'nearest'
                             });
                         }
