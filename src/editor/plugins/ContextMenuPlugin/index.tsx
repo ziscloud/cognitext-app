@@ -6,9 +6,7 @@
  *
  */
 
-import React, {JSX} from 'react';
-
-import {useCallback, useMemo} from 'react';
+import React, {JSX, useCallback, useMemo} from 'react';
 
 import {$isLinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
@@ -26,6 +24,10 @@ import {
 } from 'lexical';
 import * as ReactDOM from 'react-dom';
 import {SEARCH_THE_WEB_COMMAND} from "../WebSearchPlugin";
+import {RiDeleteBack2Line, RiFileCopy2Line} from "react-icons/ri";
+import {BiPaste} from "react-icons/bi";
+import {TbWorldSearch} from "react-icons/tb";
+import {IoIosCut} from "react-icons/io";
 
 function ContextMenuItem({
                              index,
@@ -55,6 +57,13 @@ function ContextMenuItem({
             id={'typeahead-item-' + index}
             onMouseEnter={onMouseEnter}
             onClick={onClick}>
+            <span style={{
+                display: 'inline-flex',
+                marginRight: '2px',
+                minWidth: '20px',
+                textAlign: 'center',
+                alignItems: 'center',
+            }}>{option.icon}</span>
             <span className="text">{option.title}</span>
         </li>
     );
@@ -91,16 +100,19 @@ function ContextMenu({
 
 export class ContextMenuOption extends MenuOption {
     title: string;
+    icon: JSX.Element | null;
     onSelect: (targetNode: LexicalNode | null) => void;
 
     constructor(
         title: string,
+        icon: JSX.Element | null,
         options: {
             onSelect: (targetNode: LexicalNode | null) => void;
         },
     ) {
         super(title);
         this.title = title;
+        this.icon = icon;
         this.onSelect = options.onSelect.bind(this);
     }
 }
@@ -110,17 +122,17 @@ export default function ContextMenuPlugin(): JSX.Element {
 
     const defaultOptions = useMemo(() => {
         return [
-            new ContextMenuOption(`Copy`, {
+            new ContextMenuOption(`Copy`, <RiFileCopy2Line/>, {
                 onSelect: (_node) => {
                     editor.dispatchCommand(COPY_COMMAND, null);
                 },
             }),
-            new ContextMenuOption(`Cut`, {
+            new ContextMenuOption(`Cut`, <IoIosCut/>, {
                 onSelect: (_node) => {
                     editor.dispatchCommand(CUT_COMMAND, null);
                 },
             }),
-            new ContextMenuOption(`Paste`, {
+            new ContextMenuOption(`Paste`, <BiPaste/>, {
                 onSelect: (_node) => {
                     //@ts-ignore
                     navigator.clipboard.read().then(async function (...args) {
@@ -151,7 +163,7 @@ export default function ContextMenuPlugin(): JSX.Element {
                     });
                 },
             }),
-            new ContextMenuOption(`Paste as Plain Text`, {
+            new ContextMenuOption(`Paste as Plain Text`, null, {
                 onSelect: (_node) => {
                     //@ts-ignore
                     navigator.clipboard.read().then(async function (...args) {
@@ -176,7 +188,7 @@ export default function ContextMenuPlugin(): JSX.Element {
                     });
                 },
             }),
-            new ContextMenuOption(`Delete Node`, {
+            new ContextMenuOption(`Delete Node`, <RiDeleteBack2Line/>, {
                 onSelect: (_node) => {
                     const selection = $getSelection();
                     if ($isRangeSelection(selection)) {
@@ -224,7 +236,7 @@ export default function ContextMenuPlugin(): JSX.Element {
                 const parent = node.getParent();
                 if ($isLinkNode(parent)) {
                     newOptions = [
-                        new ContextMenuOption(`Remove Link`, {
+                        new ContextMenuOption(`Remove Link`, null, {
                             onSelect: (_node) => {
                                 editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
                             },
@@ -236,7 +248,7 @@ export default function ContextMenuPlugin(): JSX.Element {
             const selection = $getSelection();
             if ($isRangeSelection(selection)) {
                 newOptions = [
-                    new ContextMenuOption(`Search the web`, {
+                    new ContextMenuOption(`Search the web`, <TbWorldSearch/>, {
                         onSelect: (_node) => {
                             editor.dispatchCommand(SEARCH_THE_WEB_COMMAND, selection.getTextContent());
                         },
