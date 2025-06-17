@@ -11,6 +11,8 @@ import {basename, dirname, join} from '@tauri-apps/api/path';
 import {useSettings} from "../../../settings/SettingsContext.tsx";
 import {useFile} from "../../context/FileContext.tsx";
 import {INSERT_IMAGE_COMMAND, InsertImagePayload} from "../ImagesPlugin";
+import {Button, message, Space, Typography} from "antd";
+import {showSettings} from "../../../App.tsx";
 
 function base64ToArrayBuffer(base64: string): Uint8Array {
     // 移除 Data URL 前缀（如 "data:image/png;base64,"）
@@ -34,7 +36,32 @@ export default function ImagePastingPlugin(): JSX.Element | null {
     const settings = useSettings();
     const file = useFile();
 
-    async function extracted(imageFileBaseName: string, imagePayload: InsertImagePayload) {
+    function showImageSettings(msg: string) {
+        message.open({
+            type: "info",
+            content: (
+                <Space>
+                    <Typography.Text type={'warning'}>{msg}</Typography.Text>
+                    <Button size={"small"} type={"link"} onClick={async () => {
+                        await showSettings('/image');
+                        message.destroy();
+                    }}>Open Settings</Button>
+                </Space>
+            ),
+            style: {
+                marginTop: "7vh",
+            },
+            duration: 0,
+        })
+    }
+
+    async function saveImageToFile(imageFileBaseName: string, imagePayload: InsertImagePayload) {
+        if (!settings.image) {
+            console.error('ImagePastingPlugin: Image settings are not configured.');
+            showImageSettings('Image settings are not configured.');
+            return;
+        }
+
         if (settings.image.action === 1) {
             //Copy image to designated relative assets or global local folder
             if (settings.image.preferRelativeFolder) {
@@ -63,15 +90,17 @@ export default function ImagePastingPlugin(): JSX.Element | null {
                     await writeFile(filePath, base64ToArrayBuffer(imagePayload.src));
                     return filePath;
                 } else {
-                    //TODO shunyun 2025/5/26: open the setting window and navigate to image setting page
+                    showImageSettings('Image folder is not configured.');
                 }
             }
         } else if (settings.image.action === 3) {
             //Upload image cloud using selected uploader (must be configured below)
             console.error('ImagePastingPlugin: Uploading images is not supported yet.');
+            showImageSettings('Uploading images is not supported yet.');
         } else {
             //Keep original location
             console.error('ImagePastingPlugin: Keeping original location is not supported yet.')
+            showImageSettings('Keeping original location is not supported yet.');
         }
     }
 
@@ -85,7 +114,7 @@ export default function ImagePastingPlugin(): JSX.Element | null {
                 INSERT_IMAGE_COMMAND,
                 (imagePayload) => {
                     const imageFileBaseName = `${Date.now()}-${imagePayload.altText}`;
-                    extracted(imageFileBaseName, imagePayload).then((filePath) => {
+                    saveImageToFile(imageFileBaseName, imagePayload).then((filePath) => {
                         if (filePath) {
                             editor.update(() => {
                                 const imageNode = $createImageNode({...imagePayload, src: filePath});

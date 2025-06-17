@@ -18,12 +18,12 @@ import {EditorProvider} from "./editor/EditorProvider.tsx";
 
 const macOS = navigator.userAgent.includes('Macintosh')
 
-async function showSettings() {
+export async function showSettings(start?:string) {
     const mainWin = await getCurrentWindow();
     // disable main so it can’t be interacted with :contentReference[oaicite:4]{index=4}
     // open the settings modal
     const settingsWin = new WebviewWindow('settings', {
-        url: '/settings.html',
+        url: `/settings.html#${start?? ''}`,
         title: 'Settings',
         width: 800,
         height: 600,
@@ -83,7 +83,7 @@ async function initMenu(publish: <E extends EventType>(event: E, data: EventMap[
                 accelerator: macOS ? 'Cmd+,' : 'Ctrl+,',
                 enabled: true,
                 action: () => {
-                    showSettings();
+                    showSettings("/");
                 }
             },
             // await PredefinedMenuItem.new({text: "Separator", item: 'Separator'}),

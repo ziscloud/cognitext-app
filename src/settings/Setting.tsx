@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {ConfigProvider, Flex, GetProps, Input, Menu, MenuProps, Splitter, Typography} from 'antd';
 import {FileImageOutlined, ProductOutlined, SettingOutlined} from '@ant-design/icons';
-import {Route, Routes, useNavigate} from "react-router";
+import {Route, Routes, useLocation, useNavigate} from "react-router";
 import './Setting.css'
 import ActionOnStartup from "./ActionOnStartup.tsx";
 import {BaseDirectory, exists, readTextFile} from '@tauri-apps/plugin-fs';
@@ -138,6 +138,7 @@ const Desc: React.FC<Readonly<{ text?: string | number }>> = (props) => {
 const Setting: React.FC = () => {
     const [settings, setSettings] = useState()
     const navigate = useNavigate();
+    const location = useLocation();
     const loadSettings = async () => {
         if (await exists(SETTINGS_FILE, {baseDir: BaseDirectory.AppConfig,})) {
             const settingsJson = await readTextFile(SETTINGS_FILE, {
@@ -152,7 +153,12 @@ const Setting: React.FC = () => {
     useEffect(() => {
         loadSettings().then(settings => {
             setSettings(settings);
-            navigate('/general')
+            console.log(location)
+            if (location.hash && location.hash.substring(1) !== '/') {
+                navigate(location.hash.substring(1))
+            } else {
+                navigate('/general')
+            }
         })
     }, [])
 
