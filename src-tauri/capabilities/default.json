@@ -27,7 +27,7 @@
       "identifier": "fs:allow-document-read-recursive",
       "allow": [
         {
-          "path": "$DOCUMENT/**"
+          "path": "**/*"
         }
       ]
     },
@@ -35,7 +35,7 @@
       "identifier": "fs:allow-document-write-recursive",
       "allow": [
         {
-          "path": "$DOCUMENT/**"
+          "path": "**/*"
         }
       ]
     },
