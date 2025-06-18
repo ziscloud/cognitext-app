@@ -126,6 +126,18 @@ html, body, #root {
     padding: 0;
 }
 
+.editor-shell, .editor-scroller, .editor {
+    height: 100%;
+}
+
+.ContentEditable__root {
+    padding-bottom: 140px;
+}
+
+.editor-container {
+    height: calc(100% - 37px);
+}
+
 @media print {
     .no-print, .main-side, .main-side-menu, .editor-tabs .ant-tabs-nav, .toolbar {
         display: none !important;
