@@ -84,6 +84,7 @@ import AIPlugin from "./plugins/AIPlugin";
 import {FindAndReplacePlugin} from "./plugins/FindAndReplace";
 import {PrintPlugin} from "./plugins/PrintPlugin";
 import WebSearchPlugin from "./plugins/WebSearchPlugin";
+import PlainTextPastePlugin from "./plugins/PlainPastePlugin";
 // import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
 const skipCollaborationInit =
@@ -127,7 +128,7 @@ const Editor: React.FC = () => {
     const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
 
     let file = useFile();
-    const {publish} =useEvent();
+    const {publish} = useEvent();
 
     const onRef = (_floatingAnchorElem: HTMLDivElement) => {
         if (_floatingAnchorElem !== null) {
@@ -152,7 +153,7 @@ const Editor: React.FC = () => {
         };
     }, [isSmallWidthViewport]);
 
-    const onChange = ()=>{
+    const onChange = () => {
         publish(EventType.FILE_CHANGED, {tabId: file.tabId})
     }
 
@@ -161,6 +162,7 @@ const Editor: React.FC = () => {
             <FindAndReplacePlugin/>
             <PrintPlugin/>
             <WebSearchPlugin/>
+            <PlainTextPastePlugin/>
             {isRichText && (
                 <ToolbarPlugin
                     editor={editor}

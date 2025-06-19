@@ -17,17 +17,12 @@ import {
     $isDecoratorNode,
     $isNodeSelection,
     $isRangeSelection,
-    COPY_COMMAND,
-    CUT_COMMAND,
     type LexicalNode,
-    PASTE_COMMAND,
 } from 'lexical';
 import * as ReactDOM from 'react-dom';
 import {SEARCH_THE_WEB_COMMAND} from "../WebSearchPlugin";
-import {RiDeleteBack2Line, RiFileCopy2Line} from "react-icons/ri";
-import {BiPaste} from "react-icons/bi";
+import {RiDeleteBack2Line} from "react-icons/ri";
 import {TbWorldSearch} from "react-icons/tb";
-import {IoIosCut} from "react-icons/io";
 
 function ContextMenuItem({
                              index,
@@ -122,72 +117,6 @@ export default function ContextMenuPlugin(): JSX.Element {
 
     const defaultOptions = useMemo(() => {
         return [
-            new ContextMenuOption(`Copy`, <RiFileCopy2Line/>, {
-                onSelect: (_node) => {
-                    editor.dispatchCommand(COPY_COMMAND, null);
-                },
-            }),
-            new ContextMenuOption(`Cut`, <IoIosCut/>, {
-                onSelect: (_node) => {
-                    editor.dispatchCommand(CUT_COMMAND, null);
-                },
-            }),
-            new ContextMenuOption(`Paste`, <BiPaste/>, {
-                onSelect: (_node) => {
-                    //@ts-ignore
-                    navigator.clipboard.read().then(async function (...args) {
-                        const data = new DataTransfer();
-
-                        const items = await navigator.clipboard.read();
-                        const item = items[0];
-
-                        const permission = await navigator.permissions.query({
-                            // @ts-expect-error These types are incorrect.
-                            name: 'clipboard-read',
-                        });
-                        if (permission.state === 'denied') {
-                            alert('Not allowed to paste from clipboard.');
-                            return;
-                        }
-
-                        for (const type of item.types) {
-                            const dataString = await (await item.getType(type)).text();
-                            data.setData(type, dataString);
-                        }
-
-                        const event = new ClipboardEvent('paste', {
-                            clipboardData: data,
-                        });
-
-                        editor.dispatchCommand(PASTE_COMMAND, event);
-                    });
-                },
-            }),
-            new ContextMenuOption(`Paste as Plain Text`, null, {
-                onSelect: (_node) => {
-                    //@ts-ignore
-                    navigator.clipboard.read().then(async function (...args) {
-                        const permission = await navigator.permissions.query({
-                            // @ts-expect-error These types are incorrect.
-                            name: 'clipboard-read',
-                        });
-
-                        if (permission.state === 'denied') {
-                            alert('Not allowed to paste from clipboard.');
-                            return;
-                        }
-
-                        const data = new DataTransfer();
-                        const items = await navigator.clipboard.readText();
-                        data.setData('text/plain', items);
-
-                        const event = new ClipboardEvent('paste', {
-                            clipboardData: data,
-                        });
-                        editor.dispatchCommand(PASTE_COMMAND, event);
-                    });
-                },
-            }),
             new ContextMenuOption(`Delete Node`, <RiDeleteBack2Line/>, {
                 onSelect: (_node) => {
                     const selection = $getSelection();
@@ -246,7 +175,7 @@ export default function ContextMenuPlugin(): JSX.Element {
                 }
             }
             const selection = $getSelection();
-            if ($isRangeSelection(selection)) {
+            if ($isRangeSelection(selection) && selection.getTextContent()) {
                 newOptions = [
                     new ContextMenuOption(`Search the web`, <TbWorldSearch/>, {
                         onSelect: (_node) => {

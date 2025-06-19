@@ -41,6 +41,7 @@ export const SHORTCUTS = Object.freeze({
   JUSTIFY_ALIGN: IS_APPLE ? '⌘+Shift+J' : 'Ctrl+Shift+J',
   LEFT_ALIGN: IS_APPLE ? '⌘+Shift+L' : 'Ctrl+Shift+L',
   RIGHT_ALIGN: IS_APPLE ? '⌘+Shift+R' : 'Ctrl+Shift+R',
+  PLAIN_PASTE: IS_APPLE ? '⌘+Shift+V' : 'Ctrl+Shift+V',
 
   // (Ctrl|⌘) + <key> shortcuts
   SUBSCRIPT: IS_APPLE ? '⌘+,' : 'Ctrl+,',
@@ -267,6 +268,14 @@ export function isPrint(event: KeyboardEvent):  boolean {
   return (
       code === 'KeyP' &&
       isModifierMatch(event, {...CONTROL_OR_META, altKey: false})
+  );
+}
+
+export function isPlainPaste(event: KeyboardEvent):  boolean {
+  const {code} = event;
+  return (
+      code === 'KeyV' &&
+      isModifierMatch(event, {...CONTROL_OR_META, altKey: false, shiftKey: true})
   );
 }
 
