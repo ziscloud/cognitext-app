@@ -60,6 +60,7 @@ function DebounceSelect<
             className={'search-file-name'}
             allowClear={true}
             filterOption={false}
+            popupMatchSelectWidth={false}
             onSearch={debounceFetcher}
             notFoundContent={fetching ? <Spin size="small"/> : 'No results found'}
             options={options}
