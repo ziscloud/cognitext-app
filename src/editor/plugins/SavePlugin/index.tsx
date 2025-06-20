@@ -19,6 +19,8 @@ import {writeTextFile} from "@tauri-apps/plugin-fs";
 import {message} from "antd";
 import {useEvent} from "../../../event/EventContext.tsx";
 import {EventType} from "../../../event/event.ts";
+import {invoke} from "@tauri-apps/api/core";
+import {useSettings} from "../../../settings/SettingsContext.tsx";
 
 export const SAVE_COMMAND: LexicalCommand<{path?:string}> = createCommand(
     'SAVE_COMMAND',
@@ -29,6 +31,7 @@ export default function SavePlugin(): JSX.Element {
     const file = useFile();
     const [messageApi, contextHolder] = message.useMessage();
     const {publish, subscribe} = useEvent();
+    const settings = useSettings();
 
     const doSave = (markdown: string, path?: string) => {
         const fileLocation = path || file.path;
@@ -65,6 +68,13 @@ export default function SavePlugin(): JSX.Element {
                     } else {
                         doSave(markdown);
                     }
+                    invoke('git_commit_changes', {localPath: settings.actionOnStartup.dir, message: 'commit changed files'}).then(
+                        (status) => {
+                            console.log('git status', status);
+                        }
+                    ).catch((e) => {
+                        console.error('execute git status failed', e);
+                    });
                     return true;
                 },
                 COMMAND_PRIORITY_EDITOR,
