@@ -245,7 +245,7 @@ function TableOfContentsList(
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap'
-                        }}>{nodeData.tag.substring(1)}-{nodeData.title}</span>
+                        }}>{nodeData.title}</span>
                     }}
                 />
             </CustomScroll>
