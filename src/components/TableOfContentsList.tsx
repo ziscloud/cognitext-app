@@ -5,9 +5,14 @@ import {useEditor} from "../editor/EditorProvider.tsx";
 import {theme, Tree, TreeDataNode} from 'antd';
 import {DownOutlined} from "@ant-design/icons";
 import {CustomScroll} from "./custom-scroll/CustomScroll.tsx";
+import {toValue} from "./react-split-pane-next/utils.ts";
 
 const MARGIN_ABOVE_EDITOR = 624;
 const HEADING_WIDTH = 9;
+
+const indent = 24;
+const switcher = 24;
+const padding = 16;
 
 type TreeNode = TreeDataNode & {
     key: string,
@@ -65,13 +70,16 @@ function findNearestParent(currentLevel: TreeNode, tag: "h1" | "h2" | "h3" | "h4
     }
 }
 
-function TableOfContentsList({
-                                 id,
-                                 tableOfContents,
-                             }: {
-    id: string
-    tableOfContents: Array<TableOfContentsEntry> | undefined;
-}): JSX.Element {
+function TableOfContentsList(
+    {
+        id,
+        tableOfContents,
+        width
+    }: {
+        id: string;
+        tableOfContents: Array<TableOfContentsEntry> | undefined;
+        width: string;
+    }): JSX.Element {
     //@ts-ignore
     const [selectedKey, setSelectedKey] = useState('');
     const [treeData, setTreeData] = useState<TreeNode[]>([]);
@@ -213,19 +221,32 @@ function TableOfContentsList({
     }, [tableOfContents, id]);
 
     return (
-        <div style={{backgroundColor: colorBgContainer, height: '100%'}}>
+        <div style={{backgroundColor: colorBgContainer, height: '100%', width:width}}>
             <CustomScroll heightRelativeToParent={'100%'}>
                 <Tree<TreeNode>
                     showLine
                     switcherIcon={<DownOutlined/>}
                     expandedKeys={keys}
-                    onExpand={(keys:React.Key[], _)=>{
+                    onExpand={(keys: React.Key[], _) => {
                         setKeys(keys);
                     }}
                     onSelect={(_, info) => {
                         scrollToNode(info.node.key, info.node.index);
                     }}
                     treeData={treeData}
+                    style={{
+                        width: toValue(width) - 15,
+                        overflowX: 'hidden',
+                    }}
+                    titleRender={(nodeData:any)=>{
+                        return <span key={nodeData.key} style={{
+                            display: 'inline-block',
+                            width: toValue(width) - ((nodeData.tag.substring(1)) * indent) - switcher - padding,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                        }}>{nodeData.tag.substring(1)}-{nodeData.title}</span>
+                    }}
                 />
             </CustomScroll>
         </div>

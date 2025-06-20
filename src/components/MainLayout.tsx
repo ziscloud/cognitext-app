@@ -276,6 +276,7 @@ const MainLayout: React.FC = () => {
                         <TableOfContentsList
                             id={activeTabKey?.substring(4)}
                             tableOfContents={tableOfContents[activeTabKey?.substring(4)]}
+                            width={sideWidth}
                         />
                     </div>
                     <div
